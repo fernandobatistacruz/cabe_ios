@@ -10,21 +10,37 @@ internal import Combine
 
 
 struct LancamentosView: View {
+    @State private var showCalendar = false
+    @State private var selectedYear = Calendar.current.component(.year, from: Date())
+    @State private var selectedMonth = Calendar.current.component(.month, from: Date())
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 12) {
                 LancamentosListView()
             }
-            .navigationTitle("Dezembro")
+            .navigationTitle(
+                Calendar.current.monthSymbols[selectedMonth - 1].capitalized
+            )
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        print("Leading tap")
+                        showCalendar = true
+                        
                     } label: {
                         Image(systemName: "chevron.left")
-                        Text("2025")
+                        Text(selectedYear, format: .number.grouping(.never))
                         
+                    }.sheet(isPresented: $showCalendar) {
+                        MonthYearPickerView(
+                            initialYear: selectedYear,
+                            initialMonth: selectedMonth
+                        ) { newYear, newMonth in
+                            selectedYear = newYear
+                            selectedMonth = newMonth
+                        }
+                        .presentationDetents([.large, .large])
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -144,7 +160,6 @@ struct LancamentosListView: View {
                     }
                 }
             }
-            .navigationTitle("Lançamentos")
             .listStyle(.insetGrouped)
         }
     }

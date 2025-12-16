@@ -9,70 +9,46 @@ import SwiftUI
 internal import Combine
 
 struct InicioView: View {
+    @State private var showCalendar = false
+    @State public var selectedYear = Calendar.current.component(.year, from: Date())
+    @State public var selectedMonth = Calendar.current.component(.month, from: Date())
+    
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 12){
-                Text("Favoritos")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal)
-                
-                HStack(spacing: 12) {
-                    CardItem(
-                        title: String(localized: "Balanço"),
-                        value: "R$ 2.500,00",
-                        color: Color.purple,
-                        icone:  "chart.bar.fill",
-                    )
-                    NavigationLink {
-                        CartoesView()
-                    } label: {
-                        CardItem(
-                            title: String(localized: "Cartões"),
-                            value: "R$ 3.500,00",
-                            color: .orange,
-                            icone: "creditcard.fill"
-                        )
-                    }
-                    .buttonStyle(.plain)
+            ScrollView{
+                LazyVStack(spacing: 24){
                     
-                }.padding(.horizontal)
+                    FavoritosView()
+                    
+                    ConsumoResumoView()
+                    
+                    RecentesListView()
+                }
                 
-                HStack(spacing: 12) {
-                    CardItem(
-                        title: String(localized: "Contas"),
-                        value: "R$ 2.500,00",
-                        color: Color.blue,
-                        icone:  "wallet.bifold.fill",
-                    )
-                    CardItem(
-                        title: String(localized: "Despesas"),
-                        value: "R$ 3.500,00",
-                        color: Color.red,
-                        icone: "barcode"
-                        
-                    )
-                }.padding(.horizontal)
-                
-                Text("Consumo")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal)
-                
-                ConsumoResumoView()
-                
-                RecentesListView()
             }
-            .navigationTitle("Dezembro")
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle(
+                Calendar.current.monthSymbols[selectedMonth - 1].capitalized
+            )
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        print("Leading tap")
+                        showCalendar = true
+                        
                     } label: {
                         Image(systemName: "chevron.left")
-                        Text("2025")
+                        Text(selectedYear, format: .number.grouping(.never))
                         
+                    }.sheet(isPresented: $showCalendar) {
+                        MonthYearPickerView(
+                            initialYear: selectedYear,
+                            initialMonth: selectedMonth
+                        ) { newYear, newMonth in
+                            selectedYear = newYear
+                            selectedMonth = newMonth
+                        }
+                        .presentationDetents([.large, .large])
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -96,6 +72,55 @@ struct InicioView: View {
     InicioView().environmentObject(ThemeManager())
 }
 
+struct FavoritosView: View{
+    var body: some View {
+        VStack(alignment: .leading){
+            
+            Text("Favoritos")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .padding(.horizontal)
+            
+            HStack(spacing: 12) {
+                CardItem(
+                    title: String(localized: "Balanço"),
+                    value: "2.500,00",
+                    color: Color.purple,
+                    icone:  "chart.bar.fill",
+                )
+                NavigationLink {
+                    CartoesView()
+                } label: {
+                    CardItem(
+                        title: String(localized: "Cartões"),
+                        value: "3.500,00",
+                        color: .orange,
+                        icone: "creditcard.fill"
+                    )
+                }
+                .buttonStyle(.plain)
+                
+            }.padding(.horizontal)
+            
+            HStack(spacing: 12) {
+                CardItem(
+                    title: String(localized: "Contas"),
+                    value: "2.500,00",
+                    color: Color.blue,
+                    icone:  "wallet.bifold.fill",
+                )
+                CardItem(
+                    title: String(localized: "Despesas"),
+                    value: "3.500,00",
+                    color: Color.red,
+                    icone: "barcode"
+                    
+                )
+            }.padding(.horizontal)
+        }
+    }
+}
+
 struct CardItem: View {
 
     let title: String
@@ -110,7 +135,7 @@ struct CardItem: View {
                 .foregroundStyle(color)
             VStack(alignment: .leading) {
                 Text(title)
-                    .font(.default)
+                    .font(.body)
                     .foregroundStyle(.primary)
                 
                 Text(value)
@@ -195,7 +220,7 @@ struct ConsumoListView: View {
                     Spacer()
 
                     Text("\(Int(item.valor))%")
-                        .font(.default)
+                        .font(.body)
                         .foregroundStyle(.gray)
                 }
             }
@@ -213,20 +238,26 @@ struct ConsumoResumoView: View {
 
     var body: some View {
         
-        HStack(spacing: 24) {
-            ConsumoListView(items: dados)
-                .padding()
-            DonutChartView(items: dados)
+        VStack(alignment: .leading){
+            Text("Consumo")
+                .font(.title3)
+                .fontWeight(.semibold)
                 .padding(.horizontal)
-               
+            
+            HStack(spacing: 24) {
+                ConsumoListView(items: dados)
+                    .padding()
+                DonutChartView(items: dados)
+                    .padding(.horizontal)
+                
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color(.secondarySystemGroupedBackground))
+            )
+            .padding(.horizontal)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 22)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .padding(.horizontal)
     }
-    
 }
 
 struct RecenteItem: Identifiable {
@@ -249,7 +280,19 @@ final class RecentesViewModel: ObservableObject {
         let lista = [
             RecenteItem(descricao: "Supermercado", valor: -120, data: Date(), icone: "cart"),
             RecenteItem(descricao: "Uber", valor: -25, data: Date(), icone: "car"),
-            RecenteItem(descricao: "Salário", valor: 3500, data: Date().addingTimeInterval(-86400), icone: "banknote")
+            RecenteItem(descricao: "Salário", valor: 3500, data: Date().addingTimeInterval(-86400), icone: "banknote"),
+            RecenteItem(
+                descricao: "Cinema",
+                valor: -120,
+                data: Date().addingTimeInterval(-10110000),
+                icone: "star"
+            ),
+            RecenteItem(
+                descricao: "Viagem",
+                valor: -120,
+                data: Date().addingTimeInterval(-10110000),
+                icone: "airplane"
+            ),
         ]
 
         let agrupado = Dictionary(grouping: lista) {
@@ -295,42 +338,43 @@ struct RecentesListView: View {
     @StateObject private var viewModel = RecentesViewModel()
 
     var body: some View {
-        List {
+        LazyVStack(alignment: .leading) {
+
             ForEach(viewModel.grupos, id: \.data) { grupo in
-                Section {
+               
+                Text(grupo.data, format: .dateTime.day().month().year())
+                    .foregroundStyle(.secondary)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 6)
+                    .padding(.top, viewModel.grupos.first?.data == grupo.data ? 0 : 10)
+              
+                VStack() {
                     ForEach(grupo.itens) { item in
+                        
                         RecenteRow(item: item)
-                            .swipeActions(edge: .leading) {
-                                Button(role: .confirm) {
-                                    print("Pago")
-                                } label: {
-                                    Label("Pago", systemImage: "doc")
-                                }.tint(.blue)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    print("Excluir")
-                                } label: {
-                                    Label("Excluir", systemImage: "trash")
-                                }
-                            }
-                            .listRowInsets(
-                                EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16)
-                            )
+
+                        if item.id != grupo.itens.last?.id {
+                            Divider()
+                                .padding(.leading, 40)
+                        }
                     }
-                } header: {
-                    Text(grupo.data, format: .dateTime.day().month().year())
                 }
+                .padding(10)
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             }
-        }
-        .listStyle(.insetGrouped)
-        .padding()
+        }.padding(.horizontal)
     }
 }
+
+
 
 #Preview {
     RecentesListView().environmentObject(ThemeManager())
 }
+
+
+
 
 
 

@@ -29,3 +29,7 @@ struct TabMenuView: View {
         }
     }
 }
+
+#Preview {
+    TabMenuView().environmentObject(ThemeManager())
+}
