@@ -68,6 +68,7 @@ struct MonthYearPickerView: View {
                     }
                 }
             }
+            .navigationTitle( "Calendário")
             .background(Color(uiColor: .secondarySystemBackground))
             .toolbar {
                
@@ -77,8 +78,6 @@ struct MonthYearPickerView: View {
                     } label: {
                         Image(systemName: "xmark")
                     }
-                    .buttonStyle(.glassProminent)
-                    .tint(.gray)
                 }
              
                 ToolbarItem(placement: .topBarTrailing) {
@@ -90,10 +89,7 @@ struct MonthYearPickerView: View {
                         onSelect(year, month)
                         dismiss()
                     }
-                    .buttonStyle(.glassProminent)
                     .fontWeight(.semibold)
-                    .tint(.blue)
-                    
                 }
             }
         }

@@ -9,24 +9,47 @@ import SwiftUI
 internal import Combine
 
 struct InicioView: View {
+    @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
     @State public var selectedYear = Calendar.current.component(.year, from: Date())
     @State public var selectedMonth = Calendar.current.component(.month, from: Date())
     
     var body: some View {
         NavigationStack {
-            ScrollView{
-                LazyVStack(spacing: 24){
-                    
-                    FavoritosView()
-                    
-                    ConsumoResumoView()
-                    
-                    RecentesListView()
+            ZStack {
+                Color(uiColor: .systemGroupedBackground)
+                    .ignoresSafeArea()
+               
+                ScrollView {
+                    LazyVStack(spacing: 24) {
+                        FavoritosView()
+                        ConsumoResumoView()
+                        RecentesListView()
+                    }
+                    .padding(.bottom, 100) // 👈 espaço pro FAB
                 }
                 
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+
+                        Button {
+                            mostrarNovaDespesa = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 56, height: 56)
+                                .background(Color.accentColor)
+                                .clipShape(Circle())
+                                .shadow(radius: 6)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 20)
+                    }
+                }
             }
-            .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle(
                 Calendar.current.monthSymbols[selectedMonth - 1].capitalized
             )
@@ -35,37 +58,36 @@ struct InicioView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         showCalendar = true
-                        
                     } label: {
                         Image(systemName: "chevron.left")
                         Text(selectedYear, format: .number.grouping(.never))
-                        
-                    }.sheet(isPresented: $showCalendar) {
-                        MonthYearPickerView(
-                            initialYear: selectedYear,
-                            initialMonth: selectedMonth
-                        ) { newYear, newMonth in
-                            selectedYear = newYear
-                            selectedMonth = newMonth
-                        }
-                        .presentationDetents([.large, .large])
                     }
                 }
+
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        print("Add")
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+
                     Button {
                         print("Mais")
                     } label: {
                         Image(systemName: "ellipsis")
                     }
                 }
+            }.sheet(isPresented: $showCalendar) {
+                MonthYearPickerView(
+                    initialYear: selectedYear,
+                    initialMonth: selectedMonth
+                ) { newYear, newMonth in
+                    selectedYear = newYear
+                    selectedMonth = newMonth
+                }
+                .presentationDetents([.medium])
             }
         }
+        .sheet(isPresented: $mostrarNovaDespesa) {
+            NovaDespesaView()
+        }
     }
+
 }
 
 #Preview {

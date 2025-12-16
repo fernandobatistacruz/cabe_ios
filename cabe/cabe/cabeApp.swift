@@ -20,7 +20,7 @@ struct cabeApp: App {
         WindowGroup {
             TabMenuView()
                 .environmentObject(themeManager)
-                .preferredColorScheme(colorScheme)
+                .preferredColorScheme(colorScheme)                
         }
     }
 

@@ -10,14 +10,42 @@ internal import Combine
 
 
 struct LancamentosView: View {
+    @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
     @State private var selectedMonth = Calendar.current.component(.month, from: Date())
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 12) {
-                LancamentosListView()
+            ZStack {
+                
+                Color(uiColor: .systemGroupedBackground)
+                    .ignoresSafeArea()
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    LancamentosListView()
+                }
+               
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+
+                        Button {
+                            mostrarNovaDespesa = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 56, height: 56)
+                                .background(Color.accentColor)
+                                .clipShape(Circle())
+                                .shadow(radius: 6)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 20)
+                    }
+                }
             }
             .navigationTitle(
                 Calendar.current.monthSymbols[selectedMonth - 1].capitalized
@@ -27,28 +55,12 @@ struct LancamentosView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         showCalendar = true
-                        
                     } label: {
                         Image(systemName: "chevron.left")
                         Text(selectedYear, format: .number.grouping(.never))
-                        
-                    }.sheet(isPresented: $showCalendar) {
-                        MonthYearPickerView(
-                            initialYear: selectedYear,
-                            initialMonth: selectedMonth
-                        ) { newYear, newMonth in
-                            selectedYear = newYear
-                            selectedMonth = newMonth
-                        }
-                        .presentationDetents([.large, .large])
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        print("Add")
-                    } label: {
-                        Image(systemName: "plus")
-                    }
                     Button {
                         print("Mais")
                     } label: {
@@ -56,9 +68,24 @@ struct LancamentosView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showCalendar) {
+                MonthYearPickerView(
+                    initialYear: selectedYear,
+                    initialMonth: selectedMonth
+                ) { newYear, newMonth in
+                    selectedYear = newYear
+                    selectedMonth = newMonth
+                }
+                .presentationDetents([.medium])
+            }
+        }
+        .sheet(isPresented: $mostrarNovaDespesa) {
+            NovaDespesaView()
         }
     }
+
 }
+
 
 #Preview {
     LancamentosView().environmentObject(ThemeManager())
