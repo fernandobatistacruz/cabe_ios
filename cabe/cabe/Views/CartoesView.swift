@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Model
-
 struct CartaoCredito: Identifiable, Hashable {
     let id = UUID()
     var nome: String
@@ -12,22 +10,11 @@ struct CartaoCredito: Identifiable, Hashable {
     var limite: Double
 }
 
-// MARK: - Root
-
-struct CartoesFlowView: View {
-    var body: some View {
-        CartoesCreditoListView()
-    }
-        
-}
-
-// MARK: - Lista
-
-struct CartoesCreditoListView: View {
-
+struct CartoesListView: View {
+    
     @State private var searchText = ""
     @State private var mostrarNovoCartao = false
-
+    
     @State private var cartoes: [CartaoCredito] = [
         CartaoCredito(
             nome: "Visa Gold",
@@ -46,7 +33,7 @@ struct CartoesCreditoListView: View {
             limite: 12000
         )
     ]
-
+    
     var cartoesFiltrados: [CartaoCredito] {
         searchText.isEmpty
         ? cartoes
@@ -55,42 +42,37 @@ struct CartoesCreditoListView: View {
             $0.operadora.localizedCaseInsensitiveContains(searchText)
         }
     }
-
+    
     var body: some View {
         List(cartoesFiltrados) { cartao in
             NavigationLink {
-                CartaoCreditoDetalheView(cartao: cartao)
+                CartaoDetalheView(cartao: cartao)
             } label: {
-                CartaoCreditoRow(cartao: cartao)
+                CartaoRow(cartao: cartao)
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("Cartões")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle("Cartões")       
         .toolbar(.hidden, for: .tabBar)
-        .searchable(text: $searchText, prompt: "Pesquisar cartão")
+        .searchable(text: $searchText, prompt: "Pesquisar")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Image(systemName: "plus")
-                    .onTapGesture {
-                        mostrarNovoCartao = true
-                    }
+                Button {
+                    mostrarNovoCartao = true
+                } label: {
+                    Image(systemName: "plus")
+                }
             }
         }
-       
         .sheet(isPresented: $mostrarNovoCartao) {
-            NavigationStack {
-                NovoCartaoCreditoView { novo in
-                    cartoes.append(novo)
-                }
+            NovoCartaoView { novo in
+                cartoes.append(novo)
             }
         }
     }
 }
 
-// MARK: - Row
-
-struct CartaoCreditoRow: View {
+struct CartaoRow: View {
 
     let cartao: CartaoCredito
 
@@ -101,7 +83,6 @@ struct CartaoCreditoRow: View {
             
             VStack(alignment: .leading) {
                 Text(cartao.nome)
-                    .font(.body.weight(.medium))
                 Text(cartao.operadora)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -110,14 +91,14 @@ struct CartaoCreditoRow: View {
             Spacer()
             
             Text(cartao.limite, format: .currency(code: "BRL"))
-                .font(.body.weight(.semibold))
+                .foregroundStyle(.gray)
         }
     }
 }
 
 // MARK: - Detalhe
 
-struct CartaoCreditoDetalheView: View {
+struct CartaoDetalheView: View {
 
     let cartao: CartaoCredito
     @State private var mostrarEdicao = false
@@ -155,7 +136,7 @@ struct CartaoCreditoDetalheView: View {
         }
         .sheet(isPresented: $mostrarEdicao) {
             NavigationStack {
-                EditarCartaoCreditoView(cartao: cartao)
+                EditarCartaoView(cartao: cartao)
             }
         }
     }
@@ -163,7 +144,7 @@ struct CartaoCreditoDetalheView: View {
 
 // MARK: - Novo Cartão
 
-struct NovoCartaoCreditoView: View {
+struct NovoCartaoView: View {
 
     @Environment(\.dismiss) private var dismiss
     let onSave: (CartaoCredito) -> Void
@@ -176,43 +157,45 @@ struct NovoCartaoCreditoView: View {
     @State private var limite = ""
 
     var body: some View {
-        Form {
-
-            Section("Cartão") {
-                TextField("Nome", text: $nome)
-                TextField("Operadora", text: $operadora)
+        NavigationStack {
+            Form {
+                
+                Section("Cartão") {
+                    TextField("Nome", text: $nome)
+                    TextField("Operadora", text: $operadora)
+                }
+                
+                Section("Pagamento") {
+                    TextField("Conta de pagamento", text: $contaPagamento)
+                }
+                
+                Section("Fatura") {
+                    TextField("Dia de fechamento", text: $fechamento)
+                        .keyboardType(.numberPad)
+                    
+                    TextField("Dia de vencimento", text: $vencimento)
+                        .keyboardType(.numberPad)
+                }
+                
+                Section("Limite") {
+                    TextField("Limite total", text: $limite)
+                        .keyboardType(.decimalPad)
+                }
             }
-
-            Section("Pagamento") {
-                TextField("Conta de pagamento", text: $contaPagamento)
-            }
-
-            Section("Fatura") {
-                TextField("Dia de fechamento", text: $fechamento)
-                    .keyboardType(.numberPad)
-
-                TextField("Dia de vencimento", text: $vencimento)
-                    .keyboardType(.numberPad)
-            }
-
-            Section("Limite") {
-                TextField("Limite total", text: $limite)
-                    .keyboardType(.decimalPad)
-            }
-        }
-        .navigationTitle("Novo Cartão")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-
-            ToolbarItem(placement: .topBarLeading) {
-                Image(systemName: "xmark")
-                    .onTapGesture { dismiss() }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Image(systemName: "checkmark")
-                    .onTapGesture { salvar() }
-                    .opacity(nome.isEmpty ? 0.4 : 1)
+            .navigationTitle("Novo Cartão")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Image(systemName: "xmark")
+                        .onTapGesture { dismiss() }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Image(systemName: "checkmark")
+                        .onTapGesture { salvar() }
+                        .opacity(nome.isEmpty ? 0.4 : 1)
+                }
             }
         }
     }
@@ -234,7 +217,7 @@ struct NovoCartaoCreditoView: View {
 
 // MARK: - Editar Cartão (TODOS OS CAMPOS)
 
-struct EditarCartaoCreditoView: View {
+struct EditarCartaoView: View {
 
     @Environment(\.dismiss) private var dismiss
     let cartao: CartaoCredito
@@ -319,6 +302,6 @@ struct InfoRow: View {
 // MARK: - Preview
 
 #Preview {
-    CartoesFlowView()
+    CartoesListView().environmentObject(ThemeManager())
 }
 

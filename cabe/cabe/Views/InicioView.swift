@@ -101,7 +101,7 @@ struct InicioView: View {
                     selectedYear = newYear
                     selectedMonth = newMonth
                 }
-                .presentationDetents([.medium])
+                .presentationDetents([.medium,.large])
             }
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
@@ -132,7 +132,7 @@ struct FavoritosView: View{
                     icone:  "chart.bar.fill",
                 )
                 NavigationLink {
-                    CartoesFlowView()
+                    CartoesListView()
                 } label: {
                     CardItem(
                         title: String(localized: "Cartões"),
@@ -142,9 +142,7 @@ struct FavoritosView: View{
                     )
                 }
                 .buttonStyle(.plain)
-                
             }.padding(.horizontal)
-            
             HStack() {
                 NavigationLink {
                     ContasListView()
@@ -155,7 +153,7 @@ struct FavoritosView: View{
                         color: .blue,
                         icone:  "wallet.bifold.fill",
                     )
-                }.buttonStyle(.plain)
+                }.buttonStyle(.plain)                
                 CardItem(
                     title: String(localized: "Despesas"),
                     value: "3.500,00",
@@ -431,18 +429,3 @@ struct RecentesListView: View {
 #Preview {
     RecentesListView().environmentObject(ThemeManager())
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

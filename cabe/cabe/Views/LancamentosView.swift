@@ -76,7 +76,7 @@ struct LancamentosView: View {
                     selectedYear = newYear
                     selectedMonth = newMonth
                 }
-                .presentationDetents([.medium])
+                .presentationDetents([.medium,.large])
             }
         }
         .sheet(isPresented: $mostrarNovaDespesa) {

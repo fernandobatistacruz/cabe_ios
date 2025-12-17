@@ -68,8 +68,8 @@ struct MonthYearPickerView: View {
                     }
                 }
             }
-            .navigationTitle( "Calendário")
-            .background(Color(uiColor: .secondarySystemBackground))
+            .navigationBarTitleDisplayMode(.inline)
+            .background(.regularMaterial)
             .toolbar {
                
                 ToolbarItem(placement: .topBarLeading) {
@@ -153,10 +153,10 @@ struct MonthCell: View {
 
     var body: some View {
         Text(title.capitalized)
-            .font(.subheadline)
+            .font(.footnote)
             .fontWeight(.semibold)
             .foregroundColor(isSelected ? .white : .primary)
-            .frame(maxWidth: .infinity, minHeight: 44)
+            .frame(maxWidth: .infinity, minHeight: 35)
             .background(
                 RoundedRectangle(cornerRadius: 22)
                     .fill(

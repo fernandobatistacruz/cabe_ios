@@ -1,14 +1,10 @@
 import SwiftUI
 
-// MARK: - Model
-
 struct Conta: Identifiable, Hashable {
     let id = UUID()
     var nome: String
     var saldo: Double
 }
-
-// MARK: - Lista de Contas
 
 struct ContasListView: View {
 
@@ -35,7 +31,7 @@ struct ContasListView: View {
             label:{
                 ContaRow(conta: conta)
             }
-        }
+        }        
         .listStyle(.insetGrouped)
         .navigationTitle("Contas")
         .toolbar(.hidden, for: .tabBar)
@@ -52,7 +48,6 @@ struct ContasListView: View {
         .sheet(isPresented: $mostrarNovaConta) {
             NovaContaView()
         }
-        
     }
 }
 
@@ -79,7 +74,7 @@ struct ContaRow: View {
             Spacer()
 
             Text(conta.saldo, format: .currency(code: "BRL"))
-                .font(.body.weight(.semibold))
+                .foregroundStyle(.gray)
         }
         .padding(.vertical, 6)
     }
