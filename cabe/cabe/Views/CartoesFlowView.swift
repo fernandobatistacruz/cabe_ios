@@ -14,12 +14,11 @@ struct CartaoCredito: Identifiable, Hashable {
 
 // MARK: - Root
 
-struct CartoesCreditoFlowView: View {
+struct CartoesFlowView: View {
     var body: some View {
-        NavigationStack {
-            CartoesCreditoListView()
-        }
+        CartoesCreditoListView()
     }
+        
 }
 
 // MARK: - Lista
@@ -59,13 +58,16 @@ struct CartoesCreditoListView: View {
 
     var body: some View {
         List(cartoesFiltrados) { cartao in
-            NavigationLink(value: cartao) {
+            NavigationLink {
+                CartaoCreditoDetalheView(cartao: cartao)
+            } label: {
                 CartaoCreditoRow(cartao: cartao)
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("Cartões de Crédito")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Cartões")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar(.hidden, for: .tabBar)
         .searchable(text: $searchText, prompt: "Pesquisar cartão")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -75,9 +77,7 @@ struct CartoesCreditoListView: View {
                     }
             }
         }
-        .navigationDestination(for: CartaoCredito.self) { cartao in
-            CartaoCreditoDetalheView(cartao: cartao)
-        }
+       
         .sheet(isPresented: $mostrarNovoCartao) {
             NavigationStack {
                 NovoCartaoCreditoView { novo in
@@ -98,7 +98,7 @@ struct CartaoCreditoRow: View {
         HStack(spacing: 12) {
             Image(systemName: "creditcard.fill")
                 .foregroundStyle(.blue)
-
+            
             VStack(alignment: .leading) {
                 Text(cartao.nome)
                     .font(.body.weight(.medium))
@@ -106,13 +106,12 @@ struct CartaoCreditoRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-
+            
             Spacer()
-
+            
             Text(cartao.limite, format: .currency(code: "BRL"))
                 .font(.body.weight(.semibold))
         }
-        .padding(.vertical, 6)
     }
 }
 
@@ -320,6 +319,6 @@ struct InfoRow: View {
 // MARK: - Preview
 
 #Preview {
-    CartoesCreditoFlowView()
+    CartoesFlowView()
 }
 

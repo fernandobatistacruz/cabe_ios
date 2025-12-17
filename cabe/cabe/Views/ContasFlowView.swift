@@ -6,8 +6,6 @@ struct Conta: Identifiable, Hashable {
     let id = UUID()
     var nome: String
     var saldo: Double
-    var icon: String
-    var color: Color
 }
 
 // MARK: - Lista de Contas
@@ -18,9 +16,9 @@ struct ContasListView: View {
     @State private var mostrarNovaConta = false
 
     @State private var contas: [Conta] = [
-        Conta(nome: "Conta Corrente", saldo: 1250.50, icon: "creditcard", color: .blue),
-        Conta(nome: "Poupança", saldo: 8200, icon: "banknote", color: .green),
-        Conta(nome: "Carteira", saldo: 320.75, icon: "wallet.pass", color: .orange)
+        Conta(nome: "Conta Corrente", saldo: 1250.50),
+        Conta(nome: "Poupança", saldo: 8200.00),
+        Conta(nome: "Carteira", saldo: 320.75)
     ]
 
     var contasFiltradas: [Conta] {
@@ -30,46 +28,50 @@ struct ContasListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List(contasFiltradas) { conta in
-                NavigationLink(value: conta) {
-                    ContaRow(conta: conta)
-                }
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Contas")
-            .searchable(text: $searchText, prompt: "Pesquisar")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        mostrarNovaConta = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-            .navigationDestination(for: Conta.self) { conta in
+        List(contasFiltradas) { conta in
+            NavigationLink {
                 ContaDetalheView(conta: conta)
             }
-            .sheet(isPresented: $mostrarNovaConta) {
-                NovaContaView()
+            label:{
+                ContaRow(conta: conta)
             }
         }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Contas")
+        .toolbar(.hidden, for: .tabBar)
+        .searchable(text: $searchText, prompt: "Pesquisar")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    mostrarNovaConta = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $mostrarNovaConta) {
+            NovaContaView()
+        }
+        
     }
 }
 
-// MARK: - Row (ícone simples)
+// MARK: - Row
 
 struct ContaRow: View {
 
     let conta: Conta
 
+    private var iconColor: Color {
+        conta.saldo >= 0 ? .green : .red
+    }
+
     var body: some View {
         HStack(spacing: 12) {
 
-            Image(systemName: conta.icon)
-                .foregroundStyle(conta.color)
-                .font(.system(size: 20, weight: .medium))
+            Image(systemName: "creditcard")
+                .foregroundStyle(iconColor)
+                .font(.system(size: 18, weight: .medium))
 
             Text(conta.nome)
                 .font(.body)
@@ -94,9 +96,9 @@ struct ContaDetalheView: View {
         VStack(spacing: 24) {
 
             VStack(spacing: 8) {
-                Image(systemName: conta.icon)
+                Image(systemName: "creditcard")
                     .font(.system(size: 40))
-                    .foregroundStyle(conta.color)
+                    .foregroundStyle(conta.saldo >= 0 ? .green : .red)
 
                 Text(conta.nome)
                     .font(.title2.bold())
@@ -113,62 +115,129 @@ struct ContaDetalheView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Editar") {
-                    mostrarEdicao = true
-                }
+                Image(systemName: "pencil")
+                    .onTapGesture {
+                        mostrarEdicao = true
+                    }
             }
-        }
+        }        
         .sheet(isPresented: $mostrarEdicao) {
             EditarContaView(conta: conta)
         }
     }
 }
 
-// MARK: - Nova Conta (placeholder)
+// MARK: - Nova Conta
+
 
 struct NovaContaView: View {
+
     @Environment(\.dismiss) private var dismiss
+
+    @State private var nome: String = ""
+    @State private var saldo: String = ""
 
     var body: some View {
         NavigationStack {
-            Text("Nova Conta")
-                .navigationTitle("Adicionar")
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Cancelar") {
-                            dismiss()
-                        }
+            Form {
+                TextField("Nome da conta", text: $nome)
+
+                TextField("Saldo inicial", text: $saldo)
+                    .keyboardType(.decimalPad)
+            }
+            .navigationTitle("Nova Conta")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+
+                // ❌ Cancelar
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                 }
+
+                // ✔️ Salvar
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        salvar()
+                    } label: {
+                        Image(systemName: "checkmark")
+                    }
+                    .disabled(nome.isEmpty)
+                }
+            }
         }
+    }
+
+    private func salvar() {
+        // Aqui futuramente você cria a conta e devolve para a lista
+        dismiss()
     }
 }
 
-// MARK: - Editar Conta (placeholder)
+
+// MARK: - Editar Conta
 
 struct EditarContaView: View {
+
     @Environment(\.dismiss) private var dismiss
+
     let conta: Conta
+
+    @State private var nome: String = ""
+    @State private var saldo: String = ""
 
     var body: some View {
         NavigationStack {
-            Text("Editar \(conta.nome)")
-                .navigationTitle("Editar Conta")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Salvar") {
-                            dismiss()
-                        }
+            Form {
+                TextField("Nome da conta", text: $nome)
+
+                TextField("Saldo", text: $saldo)
+                    .keyboardType(.decimalPad)
+            }
+            .navigationTitle("Editar Conta")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+
+                // ❌ Cancelar
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                 }
+
+                // ✔️ Salvar
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        salvar()
+                    } label: {
+                        Image(systemName: "checkmark")
+                    }
+                    .disabled(nome.isEmpty)
+                }
+            }
+            .onAppear {
+                nome = conta.nome
+                saldo = String(conta.saldo)
+            }
         }
     }
+
+    private func salvar() {
+        // Aqui futuramente você atualiza a conta
+        dismiss()
+    }
 }
+
 
 // MARK: - Preview
 
 #Preview {
     ContasListView()
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
 }
 

@@ -17,13 +17,17 @@ struct AjustesView: View {
                 List {
                     Section() {
                         HStack{
+                           
                             Image(systemName: "person.fill")
-                                .font(.system(size: 40))
-                                .foregroundStyle(.blue)
-                            Spacer()
+                                .font(.system(size: 45))
+                                .foregroundStyle(.blue).padding(.horizontal,6)
                             VStack(alignment: .leading){
                                 Text("Conta")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
                                 Text("fernandobatistacruz@gmail.com")
+                                    .font(.subheadline)
+                                    .tint(.secondary)
                             }
                             Spacer()
                             Image(systemName: "chevron.right")

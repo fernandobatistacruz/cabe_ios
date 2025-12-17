@@ -26,7 +26,7 @@ struct InicioView: View {
                         ConsumoResumoView()
                         RecentesListView()
                     }
-                    .padding(.bottom, 100) // 👈 espaço pro FAB
+                   .padding(.bottom, 10)
                 }
                 
                 VStack {
@@ -103,15 +103,15 @@ struct FavoritosView: View{
                 .fontWeight(.semibold)
                 .padding(.horizontal)
             
-            HStack(spacing: 12) {
+            HStack() {
                 CardItem(
                     title: String(localized: "Balanço"),
                     value: "2.500,00",
-                    color: Color.purple,
+                    color: .purple,
                     icone:  "chart.bar.fill",
                 )
                 NavigationLink {
-                    CartoesView()
+                    CartoesFlowView()
                 } label: {
                     CardItem(
                         title: String(localized: "Cartões"),
@@ -124,17 +124,21 @@ struct FavoritosView: View{
                 
             }.padding(.horizontal)
             
-            HStack(spacing: 12) {
-                CardItem(
-                    title: String(localized: "Contas"),
-                    value: "2.500,00",
-                    color: Color.blue,
-                    icone:  "wallet.bifold.fill",
-                )
+            HStack() {
+                NavigationLink {
+                    ContasListView()
+                } label: {
+                    CardItem(
+                        title: String(localized: "Contas"),
+                        value: "2.500,00",
+                        color: .blue,
+                        icone:  "wallet.bifold.fill",
+                    )
+                }.buttonStyle(.plain)
                 CardItem(
                     title: String(localized: "Despesas"),
                     value: "3.500,00",
-                    color: Color.red,
+                    color: .red,
                     icone: "barcode"
                     
                 )
@@ -150,6 +154,16 @@ struct CardItem: View {
     let color: Color
     let icone: String
     
+    // Generates a subtle vertical gradient derived from the base color
+    // Keeps good contrast in light/dark mode and avoids fully opaque blocks
+    private func gradientColors(from base: Color) -> [Color] {
+        // Slightly vary opacity for depth while keeping the hue
+        let top = base.opacity(0.32)
+        let middle = base.opacity(0.25)
+        let bottom = base.opacity(0.36)
+        return [top, middle, bottom]
+    }
+
     var body: some View {
         HStack() {
             Image(systemName: icone)
@@ -162,16 +176,20 @@ struct CardItem: View {
                 
                 Text(value)
                     .font(.headline)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
                     .foregroundStyle(color)
             }
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(color.opacity(0.15)))
+            LinearGradient(
+                colors: gradientColors(from: color),
+                startPoint: .top,
+                endPoint: .bottom
+            )
         )
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 }
 
@@ -394,8 +412,6 @@ struct RecentesListView: View {
 #Preview {
     RecentesListView().environmentObject(ThemeManager())
 }
-
-
 
 
 
