@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 12/12/25.
-//
-
 import SwiftUI
 
 struct TabMenuView: View {
@@ -12,16 +5,19 @@ struct TabMenuView: View {
         TabView {
             InicioView()
                 .tabItem {
-                    Label("Início", systemImage: "text.rectangle.page")
+                    Label("Início", systemImage: "doc.text.image")
                 }
+
             LancamentosView()
                 .tabItem {
                     Label("Lançamentos", systemImage: "square.stack.fill")
                 }
+
             ResumoView()
                 .tabItem {
                     Label("Resumo", systemImage: "chart.bar.xaxis")
                 }
+            
             AjustesView()
                 .tabItem {
                     Label("Ajustes", systemImage: "gear")
@@ -31,5 +27,6 @@ struct TabMenuView: View {
 }
 
 #Preview {
-    TabMenuView().environmentObject(ThemeManager())
+    TabMenuView()
 }
+

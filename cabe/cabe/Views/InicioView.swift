@@ -11,6 +11,7 @@ internal import Combine
 struct InicioView: View {
     @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
+    @StateObject private var vm = NotificacoesViewModel()
     @State public var selectedYear = Calendar.current.component(.year, from: Date())
     @State public var selectedMonth = Calendar.current.component(.month, from: Date())
     
@@ -63,16 +64,36 @@ struct InicioView: View {
                         Text(selectedYear, format: .number.grouping(.never))
                     }
                 }
-
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    NavigationLink(
+                        destination: NotificacoesView(vm: vm)
+                    ) {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "bell")
+                                .font(.system(size: 20))
+                            
+                            if vm.totalNotificacoes > 0 {
+                                Text("\(vm.totalNotificacoes)")
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                                    .padding(5)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 8, y: -6)
+                            }
+                        }
+                        .frame(minWidth: 36, minHeight: 36)
 
+                    }
                     Button {
                         print("Mais")
                     } label: {
                         Image(systemName: "ellipsis")
                     }
+                    
                 }
-            }.sheet(isPresented: $showCalendar) {
+            }
+            .sheet(isPresented: $showCalendar) {
                 MonthYearPickerView(
                     initialYear: selectedYear,
                     initialMonth: selectedMonth
@@ -98,7 +119,7 @@ struct FavoritosView: View{
     var body: some View {
         VStack(alignment: .leading){
             
-            Text("Favoritos")
+            Text("Resumo")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
@@ -407,11 +428,10 @@ struct RecentesListView: View {
     }
 }
 
-
-
 #Preview {
     RecentesListView().environmentObject(ThemeManager())
 }
+
 
 
 
