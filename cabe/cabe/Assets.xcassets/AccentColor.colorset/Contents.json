@@ -2,7 +2,7 @@
   "colors" : [
     {
       "color" : {
-        "platform" : "universal",
+        "platform" : "ios",
         "reference" : "systemIndigoColor"
       },
       "idiom" : "universal"
@@ -15,7 +15,7 @@
         }
       ],
       "color" : {
-        "platform" : "universal",
+        "platform" : "ios",
         "reference" : "systemIndigoColor"
       },
       "idiom" : "universal"
@@ -28,7 +28,7 @@
         }
       ],
       "color" : {
-        "platform" : "universal",
+        "platform" : "ios",
         "reference" : "systemIndigoColor"
       },
       "idiom" : "universal"
