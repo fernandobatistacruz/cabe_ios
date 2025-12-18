@@ -164,7 +164,7 @@ struct LancamentosListView: View {
                         ForEach(grupo.itens) { item in
                             LancamentoRow(item: item)
                                 .swipeActions(edge: .leading) {
-                                    Button(role: .confirm) {
+                                    Button() {
                                         print("Pago")
                                     } label: {
                                         Label("Pago", systemImage: "doc")
