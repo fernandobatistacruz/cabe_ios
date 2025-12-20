@@ -17,7 +17,6 @@ struct AjustesView: View {
                 List {
                     Section() {
                         HStack{
-                           
                             Image(systemName: "person.fill")
                                 .font(.system(size: 45))
                                 .foregroundStyle(.blue).padding(.horizontal,6)
@@ -77,7 +76,7 @@ struct AjustesView: View {
                             NavigationLink("", destination: BackupSettingsView())
                                 .opacity(0)
                         )
-
+                        
                         
                         HStack {
                             Image(systemName: "purchased")
@@ -122,16 +121,15 @@ struct AjustesView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                   
+                    
                 }
                 .listStyle(.insetGrouped)
-                
-            }.navigationTitle("Ajustes")
-        }
-        .navigationTitle("Ajustes")
-        .navigationBarTitleDisplayMode(.automatic)
+            }
+            .navigationTitle("Ajustes")
+            .navigationBarTitleDisplayMode(.large)
+        }        
     }
-    }
+}
 #Preview {
     AjustesView().environmentObject(ThemeManager())
 }

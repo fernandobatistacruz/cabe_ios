@@ -33,46 +33,43 @@ struct NovaDespesaView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-
+                VStack(spacing: 24) {
                     Picker("", selection: $tipo) {
                         Text("Despesa").tag(Tipo.despesa)
                         Text("Receita").tag(Tipo.receita)
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
-
                     VStack(spacing: 0) {
                         TextField("Descrição", text: $descricao)
                             .padding()
-
                         Divider()
-
+                            .padding(.horizontal)
                         NavigationLink {
                             Text("Selecionar Categoria")
                         } label: {
                             HStack {
                                 Text("Categoria")
+                                    .tint(.secondary)
                                 Spacer()
-                                Text(categoria.isEmpty ? "Categoria" : categoria)
-                                    .foregroundStyle(.secondary)
+                                Text(categoria.isEmpty ? "Nenhuma" : categoria)
+                                    .tint(.secondary)
+                                
                                 Image(systemName: "chevron.right")
-                                    .foregroundStyle(.secondary)
+                                    .tint(.secondary)
+                                   
                             }
                             .padding()
                         }
                     }
-                    .background(.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .background(Color(uiColor: .systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 22))
                     .padding(.horizontal)
 
                     VStack(spacing: 0) {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Pago Com")
-                                Text("Cartão")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
                             }
                             Spacer()
                             Text(pagoCom)
@@ -80,9 +77,10 @@ struct NovaDespesaView: View {
                             Image(systemName: "chevron.right")
                                 .foregroundStyle(.secondary)
                         }
-                        .padding()
+                       .padding()
 
                         Divider()
+                            .padding(.horizontal)
 
                         HStack {
                             Text("Fatura")
@@ -95,11 +93,13 @@ struct NovaDespesaView: View {
                         .padding()
 
                         Divider()
+                            .padding(.horizontal)
 
                         Toggle("Dividida", isOn: $dividida)
                             .padding()
 
                         Divider()
+                            .padding(.horizontal)
 
                         HStack {
                             Text("Repete")
@@ -112,47 +112,33 @@ struct NovaDespesaView: View {
                         .padding()
 
                         Divider()
+                            .padding(.horizontal)
 
                         TextField("Valor", text: $valor)
                             .keyboardType(.decimalPad)
                             .padding()
                         
                         Divider()
+                            .padding(.horizontal)
 
                         Toggle("Pago", isOn: $pago)
-                            .padding()
-
-                        Divider()
-
-                        DatePicker(selection: $dataCompra, displayedComponents: .date) {
-                            HStack {
-                                Text("Data da Compra")
-                                Spacer()
-                                Text(dataCompra.formatted(date: .numeric, time: .omitted))
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .datePickerStyle(.wheel)
-                        .padding(.vertical)
-
-                     
+                           .padding()
                     }
-                    .background(.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .background(Color(uiColor: .systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 22))
                     .padding(.horizontal)
 
-                    VStack {
+                    VStack() {
                         TextField("Anotação", text: $anotacao, axis: .vertical)
                             .lineLimit(4...6)
                             .padding()
                     }
-                    .background(.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .background(Color(uiColor: .systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 22))
                     .padding(.horizontal)
                 }
-                .padding(.vertical)
             }
-            .background(Color(uiColor: .systemGroupedBackground))
+            .background(Color(uiColor: .secondarySystemBackground))
             .navigationTitle("Nova")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -169,7 +155,11 @@ struct NovaDespesaView: View {
                         // salvar
                     } label: {
                         Image(systemName: "checkmark")
-                    }                   
+                            .foregroundColor(.white)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
+                    .disabled(descricao.isEmpty || valor.isEmpty)
                     
                 }
             }

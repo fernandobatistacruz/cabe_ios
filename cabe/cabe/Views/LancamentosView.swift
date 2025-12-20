@@ -80,7 +80,7 @@ struct LancamentosView: View {
             }
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
-            NovaDespesaView()
+           NovaDespesaView()
         }
     }
 

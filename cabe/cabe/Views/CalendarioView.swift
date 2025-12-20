@@ -69,7 +69,6 @@ struct MonthYearPickerView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .background(.regularMaterial)
             .toolbar {
                
                 ToolbarItem(placement: .topBarLeading) {

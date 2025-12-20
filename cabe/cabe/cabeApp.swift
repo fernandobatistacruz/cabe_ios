@@ -11,7 +11,6 @@ import SwiftUI
 struct cabeApp: App {
     
     @StateObject private var themeManager = ThemeManager()
-   
     
     var body: some Scene {
         WindowGroup {
