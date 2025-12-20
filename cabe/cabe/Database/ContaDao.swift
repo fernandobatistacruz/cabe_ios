@@ -16,8 +16,9 @@ import GRDB
 import Foundation
 
 final class ContaDAO {
+    
+    fileprivate let db: AppDatabase
 
-    private let db: AppDatabase
     
     init (db: AppDatabase = .shared){
         self.db = db
@@ -45,7 +46,6 @@ final class ContaDAO {
                 .deleteAll(db)
         }
     }
-
     
     func limparDados() throws {
        _ =  try db.dbQueue.write { db in
@@ -67,4 +67,35 @@ final class ContaDAO {
         }
     }
 }
+
+protocol ContaRepositoryProtocol {
+    func observeContas(
+        onChange: @escaping ([ContaModel]) -> Void
+    ) -> AnyDatabaseCancellable
+}
+
+final class ContaRepository: ContaRepositoryProtocol {
+
+    private let dbQueue: DatabaseQueue
+
+    init(dbQueue: DatabaseQueue) {
+        self.dbQueue = dbQueue
+    }
+
+    func observeContas(
+        onChange: @escaping ([ContaModel]) -> Void
+    ) -> AnyDatabaseCancellable {
+
+        let observation = ValueObservation.tracking { db in
+            try ContaModel.fetchAll(db)
+        }
+
+        return observation.start(
+            in: dbQueue,
+            onError: { print("Erro DB:", $0) },
+            onChange: onChange
+        )
+    }
+}
+
 

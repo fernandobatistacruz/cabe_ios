@@ -2,32 +2,41 @@ import SwiftUI
 import GRDB
 internal import Combine
 
+import GRDB
+import SwiftUI
+
+
 @MainActor
 final class ContaRepositorio: ObservableObject {
 
-    @Published var contas: [ContaModel] = []
+    @Published private(set) var contas: [ContaModel] = []
 
-    private let repository = ContaDAO()
-    
-    init() {
-        carregarContas()
+    private let repository: ContaRepositoryProtocol
+    private var cancellable: AnyDatabaseCancellable?
+
+    init(repository: ContaRepositoryProtocol) {
+        self.repository = repository
+        observar()
     }
-    
-    func carregarContas() {
-        do {
-            contas = try repository.listar()
-        } catch {
-            print("Erro ao listar contas:", error)
+
+    private func observar() {
+        cancellable = repository.observeContas { [weak self] contas in
+            self?.contas = contas
         }
     }
 }
-
 
 struct ContasListView: View {
 
     @State private var searchText = ""
     @State private var mostrarNovaConta = false
-    @StateObject private var contaRepsitorio = ContaRepositorio()
+
+    @StateObject private var contaRepsitorio = ContaRepositorio(
+        repository: ContaRepository(
+            dbQueue: AppDatabase.shared.dbQueue
+        )
+    )
+
     
     var contasFiltradas: [ContaModel] {
         searchText.isEmpty
@@ -42,6 +51,18 @@ struct ContasListView: View {
                 ContaDetalheView(conta: conta)
             } label: {
                 ContaRow(conta: conta)
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            do {
+                                try ContaDAO()
+                                    .remover(id: conta.id ?? 0, uuid: conta.uuid)
+                            }catch{
+                                debugPrint("Erro ao remover conta", error)
+                            }
+                        } label: {
+                            Label("Excluir", systemImage: "trash")
+                        }
+                    }
             }
         }        
         .listStyle(.insetGrouped)
@@ -75,7 +96,6 @@ struct ContaRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-
             Image(systemName: "creditcard")
                 .foregroundStyle(iconColor)
                 .font(.system(size: 18, weight: .medium))
@@ -88,7 +108,6 @@ struct ContaRow: View {
             Text(conta.saldo, format: .currency(code: "BRL"))
                 .foregroundStyle(.gray)
         }
-        .padding(.vertical, 6)
     }
 }
 
@@ -142,21 +161,19 @@ struct NovaContaView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var nome: String = ""
-    @State private var saldo: String = ""
+    @State private var saldo: Double? = nil
 
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Nome da conta", text: $nome)
 
-                TextField("Saldo inicial", text: $saldo)
+                TextField("Saldo", value: $saldo, format: .number)
                     .keyboardType(.decimalPad)
             }
             .navigationTitle("Nova Conta")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-
-                // ❌ Cancelar
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         dismiss()
@@ -164,22 +181,36 @@ struct NovaContaView: View {
                         Image(systemName: "xmark")
                     }
                 }
-
-                // ✔️ Salvar
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         salvar()
                     } label: {
                         Image(systemName: "checkmark")
+                            .foregroundColor(.white)
+                            
                     }
-                    .disabled(nome.isEmpty)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
+                    .disabled(nome.isEmpty || saldo == nil)
                 }
             }
         }
     }
 
     private func salvar() {
-        // Aqui futuramente você cria a conta e devolve para a lista
+        var conta = ContaModel.init(
+            uuid: UUID().uuidString,
+            nome: nome,
+            saldo: saldo ?? 0.0,
+        )
+        
+        do {
+            try ContaDAO().salvar(&conta)
+        }
+        catch{
+            debugPrint("Erro ao editar conta", error)
+        }
+        
         dismiss()
     }
 }
@@ -191,24 +222,22 @@ struct EditarContaView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    let conta: ContaModel
+    @State var conta: ContaModel
 
     @State private var nome: String = ""
-    @State private var saldo: String = ""
+    @State private var saldo: Double? = nil
 
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Nome da conta", text: $nome)
 
-                TextField("Saldo", text: $saldo)
+                TextField("Saldo", value: $saldo, format: .number)
                     .keyboardType(.decimalPad)
             }
             .navigationTitle("Editar Conta")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-
-                // ❌ Cancelar
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         dismiss()
@@ -216,26 +245,37 @@ struct EditarContaView: View {
                         Image(systemName: "xmark")
                     }
                 }
-
-                // ✔️ Salvar
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         salvar()
                     } label: {
                         Image(systemName: "checkmark")
+                            .foregroundColor(.white)
                     }
-                    .disabled(nome.isEmpty)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
+                    .disabled(nome.isEmpty || saldo == nil)
                 }
             }
             .onAppear {
                 nome = conta.nome
-                saldo = String(conta.saldo)
+                saldo = conta.saldo
             }
         }
     }
 
     private func salvar() {
-        // Aqui futuramente você atualiza a conta
+        
+        conta.nome = nome
+        conta.saldo = saldo ?? 0.0
+        
+        do {
+            try ContaDAO().editar(conta)
+        }
+        catch{
+            debugPrint("Erro ao editar conta", error)
+        }
+        
         dismiss()
     }
 }
