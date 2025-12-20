@@ -12,6 +12,10 @@ struct cabeApp: App {
     
     @StateObject private var themeManager = ThemeManager()
     
+    init () {
+        _ = AppDatabase.shared
+    }
+        
     var body: some Scene {
         WindowGroup {
             TabMenuView()

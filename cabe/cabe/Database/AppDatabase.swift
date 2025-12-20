@@ -11,19 +11,26 @@ import Foundation
 
 final class AppDatabase {
 
-    static let shared = try! AppDatabase()
+    static let shared = AppDatabase()
 
     let dbQueue: DatabaseQueue
 
-    private init() throws {
-        let url = try FileManager.default
-            .url(for: .applicationSupportDirectory,
-                 in: .userDomainMask,
-                 appropriateFor: nil,
-                 create: true)
-            .appendingPathComponent("cabe.db")
-
-        dbQueue = try DatabaseQueue(path: url.path)
-        try Self.makeMigrator().migrate(dbQueue)
+    private init() {
+        do {
+            let url = try FileManager.default
+                .url(for: .documentDirectory,
+                     in: .userDomainMask,
+                     appropriateFor: nil,
+                     create: true)
+                .appendingPathComponent("cabe.db")
+            
+            dbQueue = try DatabaseQueue(path: url.path)
+            
+            try Self.makeMigrator().migrate(dbQueue)
+        }
+        catch {
+            debugPrint("Erro ao abrir o banco", error)
+            fatalError("Não foi possível abrir o banco")
+        }
     }
 }

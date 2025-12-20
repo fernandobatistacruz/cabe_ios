@@ -7,6 +7,7 @@
 
 import SwiftUI
 internal import Combine
+import GRDB
 
 struct InicioView: View {
     @State private var mostrarNovaDespesa = false
@@ -144,7 +145,7 @@ struct FavoritosView: View{
                 .buttonStyle(.plain)
             }.padding(.horizontal)
             HStack() {
-                NavigationLink {
+                NavigationLink {                    
                     ContasListView()
                 } label: {
                     CardItem(
@@ -429,3 +430,4 @@ struct RecentesListView: View {
 #Preview {
     RecentesListView().environmentObject(ThemeManager())
 }
+

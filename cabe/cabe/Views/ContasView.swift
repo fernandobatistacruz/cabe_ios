@@ -1,34 +1,46 @@
 import SwiftUI
+import GRDB
+internal import Combine
 
-struct Conta: Identifiable, Hashable {
-    let id = UUID()
-    var nome: String
-    var saldo: Double
+@MainActor
+final class ContaRepositorio: ObservableObject {
+
+    @Published var contas: [ContaModel] = []
+
+    private let repository = ContaDAO()
+    
+    init() {
+        carregarContas()
+    }
+    
+    func carregarContas() {
+        do {
+            contas = try repository.listar()
+        } catch {
+            print("Erro ao listar contas:", error)
+        }
+    }
 }
+
 
 struct ContasListView: View {
 
     @State private var searchText = ""
     @State private var mostrarNovaConta = false
-
-    @State private var contas: [Conta] = [
-        Conta(nome: "Conta Corrente", saldo: 1250.50),
-        Conta(nome: "Poupança", saldo: 8200.00),
-        Conta(nome: "Carteira", saldo: 320.75)
-    ]
-
-    var contasFiltradas: [Conta] {
+    @StateObject private var contaRepsitorio = ContaRepositorio()
+    
+    var contasFiltradas: [ContaModel] {
         searchText.isEmpty
-        ? contas
-        : contas.filter { $0.nome.localizedCaseInsensitiveContains(searchText) }
+        ? contaRepsitorio.contas
+        : contaRepsitorio.contas
+            .filter { $0.nome.localizedCaseInsensitiveContains(searchText) }
     }
 
     var body: some View {
         List(contasFiltradas) { conta in
             NavigationLink {
                 ContaDetalheView(conta: conta)
-            }
-            label:{
+            } label: {
                 ContaRow(conta: conta)
             }
         }        
@@ -55,7 +67,7 @@ struct ContasListView: View {
 
 struct ContaRow: View {
 
-    let conta: Conta
+    let conta: ContaModel
 
     private var iconColor: Color {
         conta.saldo >= 0 ? .green : .red
@@ -84,7 +96,7 @@ struct ContaRow: View {
 
 struct ContaDetalheView: View {
 
-    let conta: Conta
+    let conta: ContaModel
     @State private var mostrarEdicao = false
 
     var body: some View {
@@ -179,7 +191,7 @@ struct EditarContaView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    let conta: Conta
+    let conta: ContaModel
 
     @State private var nome: String = ""
     @State private var saldo: String = ""
@@ -231,8 +243,18 @@ struct EditarContaView: View {
 
 // MARK: - Preview
 
+/*
 #Preview {
-    ContasListView()
-        .preferredColorScheme(.light)
+    struct MockRepo: ContaDAO {
+        func listar() throws -> [ContaModel] { [
+            ContaModel(nome: "Nubank", saldo: 1200),
+            ContaModel(nome: "Inter", saldo: -50)
+        ] }
+    }
+    NavigationStack {
+        ContasListView(repository: MockRepo())
+            .preferredColorScheme(.light)
+    }
 }
+ */
 
