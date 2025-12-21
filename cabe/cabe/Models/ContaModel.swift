@@ -12,6 +12,7 @@
 //  Created by Fernando Batista da Cruz on 19/12/25.
 //
 
+import Foundation
 import GRDB
 
 struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
@@ -21,14 +22,21 @@ struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var uuid: String
     var nome: String
     var saldo: Double
+    var currencyCode: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case uuid
+        case nome
+        case saldo
+        case currencyCode = "currency_code"
+    }
     
     enum Columns {
         static let id = Column("id")
         static let uuid = Column("uuid")
         static let nome = Column("nome")
         static let saldo = Column("saldo")
+        static let currencyCode = Column("currency_code")
     }
 }
-
-
-

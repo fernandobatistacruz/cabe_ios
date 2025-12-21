@@ -61,15 +61,19 @@ extension AppDatabase {
 
             //AppAjustes().setCarteira(["conta", "0", "Conta Inicial"])
         }
-
-        // 🔵 Futuras migrations (exemplo)
-        // migrator.registerMigration("v24_add_index_lancamento") { db in
-        //     try db.create(index: "idx_lancamento_data",
-        //                   on: "lancamento",
-        //                   columns: ["data_criacao"])
-        // }
+        
+        migrator.registerMigration("addCurrencyCodeToConta") { db in
+            try db.execute(sql: """
+                        ALTER TABLE conta
+                        ADD COLUMN currency_code TEXT NOT NULL DEFAULT 'BRL';
+                    """)
+        }
 
         return migrator
     }
 }
+
+
+
+
 

@@ -30,6 +30,8 @@ struct ContasListView: View {
 
     @State private var searchText = ""
     @State private var mostrarNovaConta = false
+    @State private var mostrarConfirmacao = false
+    @State private var contaParaExcluir: ContaModel?
 
     @StateObject private var contaRepsitorio = ContaRepositorio(
         repository: ContaRepository(
@@ -51,24 +53,41 @@ struct ContasListView: View {
                 ContaDetalheView(conta: conta)
             } label: {
                 ContaRow(conta: conta)
-                    .swipeActions(edge: .trailing) {
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
-                            do {
-                                try ContaDAO()
-                                    .remover(id: conta.id ?? 0, uuid: conta.uuid)
-                            }catch{
-                                debugPrint("Erro ao remover conta", error)
-                            }
+                            contaParaExcluir = conta
+                            mostrarConfirmacao = true
                         } label: {
                             Label("Excluir", systemImage: "trash")
                         }
                     }
             }
-        }        
+        }
+        
         .listStyle(.insetGrouped)
         .navigationTitle("Contas")
         .toolbar(.hidden, for: .tabBar)
-        .searchable(text: $searchText, prompt: "Pesquisar")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Buscar"
+        )
+        .alert(
+            "Excluir conta?",
+            isPresented: $mostrarConfirmacao,
+            //titleVisibility: .visible
+        )
+        {
+            Button("Excluir", role: .destructive) {
+                if let conta = contaParaExcluir {
+                    excluir(conta)
+                }
+            }
+            Button("Cancelar", role: .cancel) { }
+        }
+        message: {
+            Text("Essa ação não poderá ser desfeita.")
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -82,6 +101,15 @@ struct ContasListView: View {
             NovaContaView()
         }
     }
+    
+    private func excluir(_ conta: ContaModel) {
+        do {
+            try ContaDAO()
+                .remover(id: conta.id ?? 0, uuid: conta.uuid)
+        }catch{
+            debugPrint("Erro ao remover conta", error)
+        }
+    }
 }
 
 // MARK: - Row
@@ -93,6 +121,9 @@ struct ContaRow: View {
     private var iconColor: Color {
         conta.saldo >= 0 ? .green : .red
     }
+    
+    let locale = Locale(identifier: "pt_BR")
+
 
     var body: some View {
         HStack(spacing: 12) {
@@ -105,8 +136,9 @@ struct ContaRow: View {
 
             Spacer()
 
-            Text(conta.saldo, format: .currency(code: "BRL"))
+            Text(conta.saldo, format: .currency(code: conta.currencyCode).locale(locale))
                 .foregroundStyle(.gray)
+               
         }
     }
 }
@@ -129,7 +161,7 @@ struct ContaDetalheView: View {
                 Text(conta.nome)
                     .font(.title2.bold())
 
-                Text(conta.saldo, format: .currency(code: "BRL"))
+                Text(conta.saldo, format: .currency(code: conta.currencyCode))
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
@@ -137,7 +169,7 @@ struct ContaDetalheView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle("Detalhes")
+        .navigationTitle("Detalhar Conta")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -161,15 +193,22 @@ struct NovaContaView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var nome: String = ""
-    @State private var saldo: Double? = nil
+    @State private var saldoText: String = ""
+    @State private var saldoDecimal: Decimal? = nil
+
 
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Nome da conta", text: $nome)
-
-                TextField("Saldo", value: $saldo, format: .number)
+                
+                TextField("Saldo", text: $saldoText)
                     .keyboardType(.decimalPad)
+                    .onChange(of: saldoText) { value in
+                        saldoDecimal = NumberFormatter.decimalInput
+                            .number(from: value) as? Decimal
+                    }
+
             }
             .navigationTitle("Nova Conta")
             .navigationBarTitleDisplayMode(.inline)
@@ -191,17 +230,19 @@ struct NovaContaView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    .disabled(nome.isEmpty || saldo == nil)
+                    .disabled(nome.isEmpty || saldoDecimal == nil)
                 }
             }
         }
     }
 
     private func salvar() {
+        
         var conta = ContaModel.init(
             uuid: UUID().uuidString,
             nome: nome,
-            saldo: saldo ?? 0.0,
+            saldo: NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue,
+            currencyCode : Locale.current.currency?.identifier ?? "BRL"
         )
         
         do {
@@ -225,15 +266,20 @@ struct EditarContaView: View {
     @State var conta: ContaModel
 
     @State private var nome: String = ""
-    @State private var saldo: Double? = nil
-
+    @State private var saldoText: String = ""
+    @State private var saldoDecimal: Decimal? = nil
+    
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Nome da conta", text: $nome)
 
-                TextField("Saldo", value: $saldo, format: .number)
+                TextField("Saldo", text: $saldoText)
                     .keyboardType(.decimalPad)
+                    .onChange(of: saldoText) { value in
+                        saldoDecimal = NumberFormatter.decimalInput
+                            .number(from: value) as? Decimal
+                    }
             }
             .navigationTitle("Editar Conta")
             .navigationBarTitleDisplayMode(.inline)
@@ -254,12 +300,16 @@ struct EditarContaView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    .disabled(nome.isEmpty || saldo == nil)
+                    .disabled(nome.isEmpty || saldoDecimal == nil)
                 }
             }
             .onAppear {
                 nome = conta.nome
-                saldo = conta.saldo
+                let formatter = NumberFormatter.decimalInput
+                saldoText = formatter.string(
+                    from: NSDecimalNumber(value: conta.saldo)
+                ) ?? ""
+                saldoDecimal = NSDecimalNumber(value: conta.saldo).decimalValue
             }
         }
     }
@@ -267,7 +317,7 @@ struct EditarContaView: View {
     private func salvar() {
         
         conta.nome = nome
-        conta.saldo = saldo ?? 0.0
+        conta.saldo = NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue
         
         do {
             try ContaDAO().editar(conta)

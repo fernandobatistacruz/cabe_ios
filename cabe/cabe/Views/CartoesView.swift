@@ -54,7 +54,11 @@ struct CartoesListView: View {
         .listStyle(.insetGrouped)
         .navigationTitle("Cartões")       
         .toolbar(.hidden, for: .tabBar)
-        .searchable(text: $searchText, prompt: "Pesquisar")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Buscar"
+        )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
