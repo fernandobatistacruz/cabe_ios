@@ -3,8 +3,20 @@
 //  cabe
 //
 //  Created by Fernando Batista da Cruz on 19/12/25.
+//  Copyright © 2025 Fernando Batista da Cruz. All rights reserved.
 //
-
+//  Description:
+//      Responsável pela configuração do banco de dados do aplicativo,
+//      incluindo inicialização do dbQueue, migrações e seeds.
+//
+//  Version:
+//      1.0.0 - Inicialização do banco e configuração básica
+//
+//  Notes:
+//      - Usar GRDB para acesso a SQLite.
+//      - Todas as migrações devem ser registradas em Migrations.swift.
+//      - Classe singleton para acesso global ao banco.
+//
 
 import GRDB
 import Foundation
@@ -12,7 +24,6 @@ import Foundation
 final class AppDatabase {
 
     static let shared = AppDatabase()
-
     let dbQueue: DatabaseQueue
 
     private init() {

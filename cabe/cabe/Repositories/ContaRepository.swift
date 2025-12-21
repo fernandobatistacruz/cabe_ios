@@ -1,29 +1,36 @@
 //
-//  ContaDao.swift
+//  ContaRepository
 //  cabe
 //
 //  Created by Fernando Batista da Cruz on 20/12/25.
 //
 
-//
-//  LancamentoDao.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 19/12/25.
-//
-
 import GRDB
 import Foundation
 
-final class ContaDAO {
+final class ContaRepository : ContaRepositoryProtocol{
     
     fileprivate let db: AppDatabase
-
     
     init (db: AppDatabase = .shared){
         self.db = db
     }
     
+    func observeContas(
+        onChange: @escaping ([ContaModel]) -> Void
+    ) -> AnyDatabaseCancellable {
+        
+        let observation = ValueObservation.tracking { db in
+            try ContaModel.fetchAll(db)
+        }
+        
+        return observation.start(
+            in: db.dbQueue,
+            onError: { print("Erro DB:", $0) },
+            onChange: onChange
+        )
+    }
+
     func salvar(_ conta: inout ContaModel) throws {
         try db.dbQueue.write { db in
             try conta.insert(db)
@@ -69,33 +76,12 @@ final class ContaDAO {
 }
 
 protocol ContaRepositoryProtocol {
-    func observeContas(
-        onChange: @escaping ([ContaModel]) -> Void
-    ) -> AnyDatabaseCancellable
+   
+    func observeContas(onChange: @escaping ([ContaModel]) -> Void) -> AnyDatabaseCancellable
+    func salvar(_ conta: inout ContaModel) throws
+    func editar(_ conta: ContaModel) throws
+    func remover(id: Int64, uuid: String) throws
+    func limparDados() throws
+    func listar() throws -> [ContaModel]
+    func consultarPorUuid(_ uuid: String) throws -> [ContaModel]
 }
-
-final class ContaRepository: ContaRepositoryProtocol {
-
-    private let dbQueue: DatabaseQueue
-
-    init(dbQueue: DatabaseQueue) {
-        self.dbQueue = dbQueue
-    }
-
-    func observeContas(
-        onChange: @escaping ([ContaModel]) -> Void
-    ) -> AnyDatabaseCancellable {
-
-        let observation = ValueObservation.tracking { db in
-            try ContaModel.fetchAll(db)
-        }
-
-        return observation.start(
-            in: dbQueue,
-            onError: { print("Erro DB:", $0) },
-            onChange: onChange
-        )
-    }
-}
-
-

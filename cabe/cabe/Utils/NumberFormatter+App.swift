@@ -1,10 +1,3 @@
-//
-//  NumberFormatter+App.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 21/12/25.
-//
-
 import Foundation
 
 extension NumberFormatter {

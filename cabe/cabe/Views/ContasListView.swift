@@ -2,30 +2,6 @@ import SwiftUI
 import GRDB
 internal import Combine
 
-import GRDB
-import SwiftUI
-
-
-@MainActor
-final class ContaRepositorio: ObservableObject {
-
-    @Published private(set) var contas: [ContaModel] = []
-
-    private let repository: ContaRepositoryProtocol
-    private var cancellable: AnyDatabaseCancellable?
-
-    init(repository: ContaRepositoryProtocol) {
-        self.repository = repository
-        observar()
-    }
-
-    private func observar() {
-        cancellable = repository.observeContas { [weak self] contas in
-            self?.contas = contas
-        }
-    }
-}
-
 struct ContasListView: View {
 
     @State private var searchText = ""
@@ -33,17 +9,19 @@ struct ContasListView: View {
     @State private var mostrarConfirmacao = false
     @State private var contaParaExcluir: ContaModel?
 
-    @StateObject private var contaRepsitorio = ContaRepositorio(
-        repository: ContaRepository(
-            dbQueue: AppDatabase.shared.dbQueue
-        )
-    )
+    @StateObject private var viewModel: ContaListViewModel
 
+    init() {
+        let repository = ContaRepository()
+            _viewModel = StateObject(
+                wrappedValue: ContaListViewModel(repository: repository)
+            )
+        }
     
     var contasFiltradas: [ContaModel] {
         searchText.isEmpty
-        ? contaRepsitorio.contas
-        : contaRepsitorio.contas
+        ? viewModel.contas
+        : viewModel.contas
             .filter { $0.nome.localizedCaseInsensitiveContains(searchText) }
     }
 
@@ -63,9 +41,19 @@ struct ContasListView: View {
                     }
             }
         }
-        
         .listStyle(.insetGrouped)
         .navigationTitle("Contas")
+        .overlay(
+                Group {
+                    if contasFiltradas.isEmpty {
+                        Text("Nenhuma conta encontrada")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    }
+                }
+            )
         .toolbar(.hidden, for: .tabBar)
         .searchable(
             text: $searchText,
@@ -104,7 +92,7 @@ struct ContasListView: View {
     
     private func excluir(_ conta: ContaModel) {
         do {
-            try ContaDAO()
+            try ContaRepository()
                 .remover(id: conta.id ?? 0, uuid: conta.uuid)
         }catch{
             debugPrint("Erro ao remover conta", error)
@@ -246,7 +234,7 @@ struct NovaContaView: View {
         )
         
         do {
-            try ContaDAO().salvar(&conta)
+            try ContaRepository().salvar(&conta)
         }
         catch{
             debugPrint("Erro ao editar conta", error)
@@ -320,7 +308,7 @@ struct EditarContaView: View {
         conta.saldo = NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue
         
         do {
-            try ContaDAO().editar(conta)
+            try ContaRepository().editar(conta)
         }
         catch{
             debugPrint("Erro ao editar conta", error)
@@ -347,4 +335,5 @@ struct EditarContaView: View {
     }
 }
  */
+
 

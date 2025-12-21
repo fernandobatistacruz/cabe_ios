@@ -1,17 +1,3 @@
-//
-//  ContaModel.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 20/12/25.
-//
-
-//
-//  Lancamento.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 19/12/25.
-//
-
 import Foundation
 import GRDB
 
