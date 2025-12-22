@@ -269,7 +269,7 @@ struct NovoCartaoView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    //.disabled(!viewModel.formValido)
+                    .disabled(!viewModel.formValido)
                 }
             }
             .alert(item: $erroValidacao) { erro in
