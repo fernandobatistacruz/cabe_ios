@@ -22,7 +22,7 @@ struct ContaZoomView: View {
                 Spacer()
                 if conta.id == contaSelecionada?.id {
                     Image(systemName: "checkmark")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.accentColor)
                 }
             }
             .listStyle(.insetGrouped)

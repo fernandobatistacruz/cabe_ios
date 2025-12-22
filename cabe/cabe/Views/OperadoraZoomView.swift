@@ -25,7 +25,7 @@ struct OperadoraZoomView: View {
 
                 if operadora == operadoraSelecionada {
                     Image(systemName: "checkmark")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.accentColor)
                 }
             }
             .listStyle(.insetGrouped)
