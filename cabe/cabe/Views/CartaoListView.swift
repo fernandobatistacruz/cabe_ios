@@ -57,7 +57,23 @@ struct CartaoListView: View {
                         ForEach(cartoesFiltrados) { cartao in
                             NavigationLink(destination: CartaoDetalheView(cartao: cartao)) {
                                 CartaoRow(cartao: cartao)
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            cartaoParaExcluir = cartao
+                                            mostrarConfirmacao = true
+                                        } label: {
+                                            Label("Excluir", systemImage: "trash")
+                                        }
+                                    }
                             }
+                            .listRowInsets(
+                                EdgeInsets(
+                                    top: 8,
+                                    leading: 16,
+                                    bottom: 8,
+                                    trailing: 16
+                                )
+                            )
                         }
                     }
                 }
@@ -123,11 +139,16 @@ struct CartaoRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(cartao.operadoraEnum.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-            Text(cartao.nome)
-                .font(.body)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+            VStack (alignment: .leading){
+                Text(cartao.nome)
+                    .font(.body)
+                Text(cartao.conta?.nome ?? "")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
         }
     }
 }
@@ -140,20 +161,58 @@ struct CartaoDetalheView: View {
     @State private var mostrarEdicao = false
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 8) {
-                Image(cartao.operadoraEnum.imageName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 40, height: 40)
-
-                Text(cartao.nome)
-                    .font(.title2.bold())
+        Form {
+            Section {
+                HStack(spacing: 16) {
+                    Image(cartao.operadoraEnum.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                    
+                    Text(cartao.nome)
+                        .font(.title2.bold())
+                }
             }
-
-            Spacer()
+            
+            Section(header: Text("Informações do Cartão")) {
+                HStack {
+                    Text("Operadora")
+                    Spacer()
+                    Text(cartao.operadoraEnum.nome)
+                        .foregroundColor(.secondary)
+                }
+                
+                HStack {
+                    Text("Conta")
+                    Spacer()
+                    Text(cartao.conta?.nome ?? "")
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Section(header: Text("Detalhes Financeiros")) {
+                HStack {
+                    Text("Dia de Vencimento")
+                    Spacer()
+                    Text("\(cartao.vencimento)")
+                        .foregroundColor(.secondary)
+                }
+                
+                HStack {
+                    Text("Dia de Fechamento")
+                    Spacer()
+                    Text("\(cartao.fechamento)")
+                        .foregroundColor(.secondary)
+                }
+                
+                HStack {
+                    Text("Limite")
+                    Spacer()
+                    Text(cartao.limite, format: .currency(code: cartao.conta?.currencyCode ?? "BRL"))
+                        .foregroundColor(.secondary)
+                }
+            }
         }
-        .padding()
         .navigationTitle("Detalhar Cartão")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -180,7 +239,7 @@ enum NovoCartaoSheet: Identifiable {
 }
 
 struct NovoCartaoView: View {
-
+   
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = NovoCartaoViewModel()
     @State private var sheetAtivo: NovoCartaoSheet?
@@ -198,7 +257,7 @@ struct NovoCartaoView: View {
                             Text("Operadora")
                                 .foregroundColor(.primary)
                             Spacer()
-                            Text(viewModel.operadora?.nome ?? "Nenhuma")
+                            Text(viewModel.operadora?.nome ?? String(localized: "Nenhuma"))
                                                             .foregroundColor(.secondary)
                                 .foregroundColor(.secondary)
                             Image(systemName: "chevron.right")
@@ -214,7 +273,7 @@ struct NovoCartaoView: View {
                             Text("Conta")
                                 .foregroundColor(.primary)
                             Spacer()
-                            Text(viewModel.conta?.nome ?? "Nenhuma")
+                            Text(viewModel.conta?.nome ?? String(localized: "Nenhuma"))
                                 .foregroundColor(.secondary)
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
@@ -303,20 +362,78 @@ struct NovoCartaoView: View {
 // MARK: - Editar Cartão
 
 struct EditarCartaoView: View {
-
-    @Environment(\.dismiss) private var dismiss
-
-    @State var cartao: CartaoModel
-
-    @State private var nome: String = ""
     
+    @State var cartao: CartaoModel
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel = NovoCartaoViewModel()
+    @State private var sheetAtivo: NovoCartaoSheet?
+    @State private var erroValidacao: CartaoValidacaoErro?
+
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Nome do cartão", text: $nome)
+                Section{
+                    TextField("Nome", text: $viewModel.nome)
+                    Button {
+                        sheetAtivo = .operadora
+                    } label: {
+                        HStack {
+                            Text("Operadora")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text(viewModel.operadora?.nome ?? "Nenhuma")
+                                                            .foregroundColor(.secondary)
+                                .foregroundColor(.secondary)
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                        }
+                    }
+                    
+                    Button {
+                        sheetAtivo = .conta
+                    } label: {
+                        HStack {
+                            Text("Conta")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text(viewModel.conta?.nome ?? "Nenhuma")
+                                .foregroundColor(.secondary)
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                        }
+                    }
+                }
+                Section{
+                    TextField("Dia do Vencimento", text: $viewModel.vencimentoTexto)
+                        .keyboardType(.numberPad)
+
+                    TextField("Dia do Fechamento", text: $viewModel.fechamentoTexto)
+                        .keyboardType(.numberPad)
+
+                    TextField("Limite", text: $viewModel.limiteTexto)
+                                            .keyboardType(.decimalPad)
+                }
+                
             }
             .navigationTitle("Editar Cartão")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $sheetAtivo) { sheet in
+                NavigationStack {
+                    switch sheet {
+                    case .conta:
+                        ContaZoomView(
+                            contaSelecionada: $viewModel.conta
+                        )
+                        
+                    case .operadora:
+                        OperadoraZoomView(
+                            operadoraSelecionada: $viewModel.operadora
+                        )
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -331,29 +448,44 @@ struct EditarCartaoView: View {
                     } label: {
                         Image(systemName: "checkmark")
                             .foregroundColor(.white)
+                            
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    .disabled(nome.isEmpty)
+                    .disabled(!viewModel.formValido)
                 }
             }
-            .onAppear {
-                nome = cartao.nome
+            .alert(item: $erroValidacao) { erro in
+                Alert(
+                    title: Text("Erro"),
+                    message: Text(erro.localizedDescription),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+            .onAppear(){               
+                viewModel.nome = cartao.nome
+                viewModel.operadora = cartao.operadoraEnum
+                viewModel.conta = cartao.conta
+                viewModel.vencimentoTexto = cartao.vencimento.description
+                viewModel.fechamentoTexto = cartao.fechamento.description
+                viewModel.setLimite(cartao.limite)
             }
         }
     }
 
     private func salvar() {
-        
-        cartao.nome = nome
-        
         do {
+            var cartao = try viewModel.construirCartao()
+            cartao.id = self.cartao.id
+            cartao.uuid = self.cartao.uuid
+            
             try CartaoRepository().editar(cartao)
+            dismiss()
+        } catch let erro as CartaoValidacaoErro {
+            erroValidacao = erro
+        } catch {
+            debugPrint("Erro inesperado ao editar cartão", error)
         }
-        catch{
-            debugPrint("Erro ao editar cartão", error)
-        }
-        
-        dismiss()
     }
 }
+

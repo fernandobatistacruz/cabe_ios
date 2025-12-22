@@ -257,7 +257,6 @@ struct EditarContaView: View {
         NavigationStack {
             Form {
                 TextField("Nome da conta", text: $nome)
-
                 TextField("Saldo", text: $saldoText)
                     .keyboardType(.decimalPad)
                     .onChange(of: saldoText) { value in

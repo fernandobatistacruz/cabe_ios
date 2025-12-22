@@ -5,6 +5,8 @@
 //  Created by Fernando Batista da Cruz on 22/12/25.
 //
 
+import Foundation
+
 
 enum FiltroCartao: Int, CaseIterable, Identifiable {
     case ativos
@@ -12,7 +14,7 @@ enum FiltroCartao: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var titulo: String {
+    var titulo: LocalizedStringResource {
         switch self {
         case .ativos:
             return "Ativos"

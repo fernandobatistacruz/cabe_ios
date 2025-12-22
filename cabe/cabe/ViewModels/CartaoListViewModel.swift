@@ -23,7 +23,7 @@ final class CartaoListViewModel: ObservableObject {
     }
   
     private func observarCartoes() {
-        dbCancellable = repository.observeContas { [weak self] cartoes in
+        dbCancellable = repository.observeCartoes { [weak self] cartoes in
             self?.cartoes = cartoes
         }
     }

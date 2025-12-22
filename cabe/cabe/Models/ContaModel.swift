@@ -1,6 +1,6 @@
 import GRDB
 
-struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
+struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord, Equatable {
     static let databaseTableName = "conta"
     
     var id: Int64?

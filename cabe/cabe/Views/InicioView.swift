@@ -32,7 +32,7 @@ struct InicioView: View {
                 }
                 
                 VStack {
-                    Spacer()
+                   Spacer()
                     HStack {
                         Spacer()
 
@@ -42,10 +42,9 @@ struct InicioView: View {
                             Image(systemName: "plus")
                                 .font(.system(size: 22, weight: .bold))
                                 .foregroundStyle(.white)
-                                .frame(width: 56, height: 56)
+                                .frame(width: 48, height: 48)
                                 .background(Color.accentColor)
                                 .clipShape(Circle())
-                                .shadow(radius: 6)
                         }
                         .padding(.trailing, 20)
                         .padding(.bottom, 20)

@@ -7,7 +7,8 @@
 
 import GRDB
 
-struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
+struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord, Equatable {
+    
     static let databaseTableName = "cartao"
     
     var id: Int64?
@@ -19,17 +20,11 @@ struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var arquivado: Int
     var contaUuid: String
     var limite: Double
+   
+    var conta: ContaModel?
     
     enum CodingKeys: String, CodingKey {
-        case id
-        case uuid
-        case nome
-        case vencimento
-        case fechamento
-        case operadora
-        case arquivado
-        case contaUuid = "conta_uuid"
-        case limite
+        case id, uuid, nome, vencimento, fechamento, operadora, arquivado, contaUuid = "conta_uuid", limite
     }
     
     enum Columns {
@@ -48,3 +43,4 @@ struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         OperadoraCartao(rawValue: operadora) ?? .outra
     }
 }
+
