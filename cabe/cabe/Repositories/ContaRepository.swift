@@ -6,7 +6,6 @@
 //
 
 import GRDB
-import Foundation
 
 final class ContaRepository : ContaRepositoryProtocol{
     
@@ -69,7 +68,7 @@ final class ContaRepository : ContaRepositoryProtocol{
     func consultarPorUuid(_ uuid: String) throws -> [ContaModel] {
         try db.dbQueue.read { db in
             try ContaModel
-                .filter(Column("uuid") == uuid)
+                .filter(ContaModel.Columns.uuid == uuid)
                 .fetchAll(db)
         }
     }

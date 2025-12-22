@@ -2,7 +2,7 @@ import SwiftUI
 import GRDB
 internal import Combine
 
-struct ContasListView: View {
+struct ContaListView: View {
 
     @State private var searchText = ""
     @State private var mostrarNovaConta = false
@@ -62,8 +62,7 @@ struct ContasListView: View {
         )
         .alert(
             "Excluir conta?",
-            isPresented: $mostrarConfirmacao,
-            //titleVisibility: .visible
+            isPresented: $mostrarConfirmacao,          
         )
         {
             Button("Excluir", role: .destructive) {
@@ -109,9 +108,6 @@ struct ContaRow: View {
     private var iconColor: Color {
         conta.saldo >= 0 ? .green : .red
     }
-    
-    let locale = Locale(identifier: "pt_BR")
-
 
     var body: some View {
         HStack(spacing: 12) {
@@ -124,7 +120,7 @@ struct ContaRow: View {
 
             Spacer()
 
-            Text(conta.saldo, format: .currency(code: conta.currencyCode).locale(locale))
+            Text(conta.saldo, format: .currency(code: conta.currencyCode))
                 .foregroundStyle(.gray)
                
         }
@@ -188,7 +184,7 @@ struct NovaContaView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Nome da conta", text: $nome)
+                TextField("Nome", text: $nome)
                 
                 TextField("Saldo", text: $saldoText)
                     .keyboardType(.decimalPad)

@@ -3,10 +3,12 @@ import Foundation
 extension NumberFormatter {
     
     static let decimalInput: NumberFormatter = {
-        let f = NumberFormatter()
-        f.numberStyle = .decimal
-        f.locale = .current
-        f.generatesDecimalNumbers = true
-        return f
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = .current
+        formatter.generatesDecimalNumbers = true
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 0
+        return formatter
     }()
 }

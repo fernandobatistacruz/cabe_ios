@@ -7,10 +7,7 @@
 
 import SwiftUI
 
-struct NovaDespesaView: View {
-    enum Tipo {
-        case despesa, receita
-    }
+struct NovaDespesaView: View {    
 
     @Environment(\.dismiss) private var dismiss
 

@@ -1,4 +1,3 @@
-import Foundation
 import GRDB
 
 struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {

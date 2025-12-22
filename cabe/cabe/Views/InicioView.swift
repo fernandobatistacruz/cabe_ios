@@ -133,7 +133,7 @@ struct FavoritosView: View{
                     icone:  "chart.bar.fill",
                 )
                 NavigationLink {
-                    CartoesListView()
+                    CartaoListView()
                 } label: {
                     CardItem(
                         title: String(localized: "Cartões"),
@@ -146,7 +146,7 @@ struct FavoritosView: View{
             }.padding(.horizontal)
             HStack() {
                 NavigationLink {                    
-                    ContasListView()
+                    ContaListView()
                 } label: {
                     CardItem(
                         title: String(localized: "Contas"),
