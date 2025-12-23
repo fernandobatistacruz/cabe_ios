@@ -46,75 +46,53 @@ struct LancamentoListView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
+                List {
+                    ForEach(lancamentosAgrupados, id: \.date) { section in
 
-                ScrollView {
-                    LazyVStack(spacing: 16) {
+                        Section {
+                            ForEach(section.items) { item in
+                                switch item {
 
-                        ForEach(lancamentosAgrupados, id: \.date) { section in
+                                case .simples(let lancamento):
+                                    NavigationLink {
+                                        LancamentoDetalheView(lancamento: lancamento)
+                                    } label: {
+                                        LancamentoRow(lancamento: lancamento)
+                                    }
 
-                            // 📅 Header da data
-                            Text(section.date, format: .dateTime.day().month(.wide))
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundColor(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal)
-                                .padding(.bottom, 6)
-
-                            // 📦 Card do dia
-                            VStack(spacing: 0) {
-                                ForEach(section.items) { item in
-                                    VStack(spacing: 0) {
-
-                                        switch item {
-
-                                        case .simples(let lancamento):
-                                            NavigationLink {
-                                                LancamentoDetalheView(lancamento: lancamento)
-                                            } label: {
-                                                LancamentoRow(lancamento: lancamento)
-                                                    .padding(12)
-                                            }
-
-                                        case .cartaoAgrupado(let cartao, let total, let lancamentos):
-                                            NavigationLink {
-                                                CartaoFaturaView(
-                                                    cartao: cartao,
-                                                    lancamentos: lancamentos
-                                                )
-                                            } label: {
-                                                CartaoAgrupadoRow(
-                                                    cartao: cartao,
-                                                    total: total
-                                                )
-                                                .padding(12)
-                                            }
-                                        }
-
-                                        if item.id != section.items.last?.id {
-                                            Divider()
-                                                .padding(.leading, 44)
-                                        }
+                                case .cartaoAgrupado(let cartao, let total, let lancamentos):
+                                    NavigationLink {
+                                        CartaoFaturaView(
+                                            cartao: cartao,
+                                            lancamentos: lancamentos
+                                        )
+                                    } label: {
+                                        CartaoAgrupadoRow(
+                                            cartao: cartao,
+                                            total: total
+                                        )
                                     }
                                 }
                             }
-                            .background(Color(uiColor: .secondarySystemGroupedBackground))
-                            .clipShape(
-                                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .listRowInsets(
+                                EdgeInsets(
+                                    top: 8,
+                                    leading: 16,
+                                    bottom: 8,
+                                    trailing: 16
+                                )
                             )
-                            .padding(.horizontal)
+                        } header: {
+                            Text(section.date, format: .dateTime.day().month(.wide))
                         }
-
-                        Spacer(minLength: 80)
                     }
                 }
+                .listStyle(.insetGrouped)
                 .id(chaveMes)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
                 .animation(.easeInOut(duration: 0.25), value: chaveMes)
 
-
-                // ➕ FAB
+                // ➕ FAB (continua igual)
                 VStack {
                     Spacer()
                     HStack {
@@ -137,14 +115,12 @@ struct LancamentoListView: View {
             .navigationTitle(
                 Calendar.current.monthSymbols[selectedMonth - 1].capitalized
             )
-            .animation(.easeInOut(duration: 0.2), value: selectedMonth)
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "Buscar")
 
             // 🔹 TOOLBAR
             .toolbar {
 
-                // 📅 Calendário (leading)
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         showCalendar = true
@@ -154,7 +130,6 @@ struct LancamentoListView: View {
                     }
                 }
 
-                // ⋯ Menu (trailing)
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         print("Mais ações")
@@ -180,9 +155,9 @@ struct LancamentoListView: View {
                 }
                 .presentationDetents([.medium, .large])
             }
-
         }
     }
+
 
 
     // MARK: - Agrupamento
@@ -282,36 +257,62 @@ struct CartaoFaturaView: View {
     let lancamentos: [LancamentoModel]
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 16) {
-
-                // 📌 Cabeçalho do cartão
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(cartao.nome)
-                        .font(.largeTitle)
-                        .bold()
-
-                    Text("Vencimento dia \(cartao.vencimento)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-
-                // 📌 Lista de lançamentos do cartão
-                LazyVStack(spacing: 8) {
-                    ForEach(lancamentos) { lancamento in
+        List {
+            Section("Entries") {
+                ForEach(lancamentos) { lancamento in
+                    NavigationLink {
+                        LancamentoDetalheView(lancamento: lancamento)
+                    } label: {
                         LancamentoRow(lancamento: lancamento)
                     }
                 }
-                .padding(.horizontal)
+                .listRowInsets(
+                    EdgeInsets(
+                        top: 8,
+                        leading: 16,
+                        bottom: 8,
+                        trailing: 16
+                    )
+                )
             }
+        }
+        .listStyle(.insetGrouped)
+        .safeAreaInset(edge: .top) {
+            cartaoCard
+                .padding(.horizontal)
+                .padding(.top, 8)
+               .background(Color(uiColor: .systemGroupedBackground))
         }
         .navigationTitle("Cartão")
         .navigationBarTitleDisplayMode(.inline)
-        .background(Color(uiColor: .systemGroupedBackground))
+        .toolbar(.hidden, for: .tabBar)
+    }
+
+    // Card isolado
+    private var cartaoCard: some View {
+        HStack(spacing: 16) {
+            Image(cartao.operadoraEnum.imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 40, height: 40)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(cartao.nome)
+                    .font(.title3.bold())
+
+                Text("Vencimento dia \(cartao.vencimento)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 }
+
 
 struct CartaoAgrupadoRow: View {
 
@@ -320,8 +321,10 @@ struct CartaoAgrupadoRow: View {
 
     var body: some View {
         HStack {
-            Image(systemName: "creditcard")
-                .font(.system(size: 18))
+            Image(cartao.operadoraEnum.imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(cartao.nome)
@@ -354,10 +357,11 @@ struct LancamentoRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "creditcard")
-                .font(.system(size: 18))
+            Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
+                .foregroundColor(lancamento.categoria?.getCor().cor)
 
-            VStack(alignment: .leading, spacing: 2) {
+
+            VStack(alignment: .leading) {
                 Text(lancamento.descricao)
                     .font(.body)
                     .foregroundColor(.primary)
@@ -368,10 +372,21 @@ struct LancamentoRow: View {
             }
 
             Spacer()
+            Text(
+                lancamento.valor,
+                format:
+                        .currency(
+                            code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+                        )
+            )
+            .font(.body.weight(.semibold))
+            .foregroundColor(.secondary)
 
+            /*
             Image(systemName: "chevron.right")
                 .font(.footnote.weight(.semibold))
                 .foregroundColor(.secondary)
+             */
         }
     }
 }
@@ -389,59 +404,105 @@ struct LancamentoDetalheView: View {
         Form {
             Section {
                 HStack(spacing: 16) {
-                    Image(systemName: "creditcard")
-                    Text(lancamento.descricao)
-                        .font(.title2.bold())
-                }
-            }
-            
-            Section(header: Text("Informações do Cartão")) {
-                HStack {
-                    Text("Operadora")
-                    Spacer()
-                    Text(lancamento.descricao)
-                        .foregroundColor(.secondary)
-                }
-                
-                HStack {
-                    Text("Conta")
-                    Spacer()
-                    Text(lancamento.descricao)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            Section(header: Text("Detalhes Financeiros")) {
-                HStack {
-                    Text("Dia de Vencimento")
-                    Spacer()
-                    Text("\(lancamento.descricao)")
-                        .foregroundColor(.secondary)
-                }
-                
-                HStack {
-                    Text("Dia de Fechamento")
-                    Spacer()
-                    Text("\(lancamento.descricao)")
-                        .foregroundColor(.secondary)
-                }
-                
-                HStack {
-                    Text("Limite")
+                    Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
+                        .foregroundColor(lancamento.categoria?.getCor().cor)
+                    VStack (alignment: .leading){
+                        Text(lancamento.descricao)
+                            .font(.title2.bold())
+                        Text(lancamento.categoria?.nome ?? "")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
                     Spacer()
                     Text(
                         lancamento.valor,
-                        format:
-                                .currency(
-                                    code: lancamento.conta?.currencyCode ?? "BRL"
-                                )
+                        format: .currency(code: lancamento.conta?.currencyCode ?? "BRL")
                     )
-                        .foregroundColor(.secondary)
+                        .font(.title2.bold())
+                        .foregroundStyle(.secondary)
                 }
             }
+            Section(header: Text("Geral")) {
+                HStack {
+                    HStack {
+                        Text("Situação")
+                        Spacer()
+                        Text(lancamento.pago ? String(localized: "Sim") : String(localized: "Não"))
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                HStack {
+                    HStack {
+                        Text("Repete")
+                        Spacer()
+                        Text("Fixo")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                HStack {
+                    HStack {
+                        Text("Pago Com")
+                        Spacer()
+                        Text("Fixo")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            if (lancamento.cartao != nil){
+                Section(header: Text("Cartão de Crédito")) {
+                    HStack {
+                        Text("Fatura")
+                        Spacer()
+                        Text("\(lancamento.descricao)")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("Cartão")
+                        Spacer()
+                        Text("\(lancamento.cartao?.nome ?? "")")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("Data da Compra")
+                        Spacer()
+                        Text(lancamento.descricao)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+            }
+            
+            if (lancamento.dividido){
+                Section(header: Text("Dividida")) {
+                    HStack {
+                        Text("Dividida")
+                        Spacer()
+                        Text(lancamento.dividido ? String(localized: "Sim") : String(localized: "Não"))
+                            .foregroundColor(.secondary)
+                    }
+                    HStack {
+                        Text("Valor")
+                        Spacer()
+                        Text("\(lancamento.valor/2)")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            Section(header: Text("Anotação")) {
+                HStack {
+                    Text(lancamento.anotacao).lineLimit(5)
+                }
+            }
+            
         }
         .navigationTitle("Detalhar Lançamento")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Image(systemName: "pencil")

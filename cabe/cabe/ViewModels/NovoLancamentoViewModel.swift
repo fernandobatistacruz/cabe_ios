@@ -101,7 +101,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             descricao: "",
             anotacao: "",
             tipo: 2,
-            transferencia: 0,
+            transferenciaRaw: 0,
             dia: 1,
             mes: 1,
             ano: 2025,
@@ -114,10 +114,10 @@ final class NovoLancamentoViewModel: ObservableObject {
             parcelas: 1,
             parcelaMes: "",
             valor: 100.00,
-            pago: 0,
-            dividido: 0,
-            contaUuid: "",        
-            notificado: 0,
+            pagoRaw: 0,
+            divididoRaw: 0,
+            contaUuid: "",
+            notificadoRaw: 0,
             dataCriacao: Date()
         )
     }

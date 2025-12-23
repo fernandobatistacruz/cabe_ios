@@ -18,7 +18,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var descricao: String
     var anotacao: String
     var tipo: Int
-    var transferencia: Int
+    var transferenciaRaw: Int
     var dia: Int
     var mes: Int
     var ano: Int
@@ -31,10 +31,10 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var parcelas: Int
     var parcelaMes: String
     var valor: Double
-    var pago: Int
-    var dividido: Int
+    var pagoRaw: Int
+    var divididoRaw: Int
     var contaUuid: String
-    var notificado: Int
+    var notificadoRaw: Int
     var dataCriacao: Date
     
     var categoria: CategoriaModel?
@@ -42,14 +42,13 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var conta: ContaModel?
     var conferido: Int?
     
-    
     enum CodingKeys: String, CodingKey {
         case id
         case uuid
         case descricao = "notas"
         case anotacao
         case tipo
-        case transferencia
+        case transferenciaRaw = "transferencia"
         case dia
         case mes
         case ano
@@ -60,12 +59,12 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         case parcelas
         case parcelaMes
         case valor
-        case pago
-        case dividido
+        case pagoRaw = "pago"
+        case divididoRaw = "dividido"
         case contaUuid = "conta_uuid"
         case categoriaID = "categoria"
         case cartaoUuid = "cartao_uuid"
-        case notificado
+        case notificadoRaw = "notificado"
         case dataCriacao
     }
     
@@ -75,7 +74,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         static let descricao = Column("notas")
         static let anotacao = Column("anotacao")
         static let tipo = Column("tipo")
-        static let transferencia = Column("transferencia")
+        static let transferenciaRaw = Column("transferencia")
         static let dia = Column("dia")
         static let mes = Column("mes")
         static let ano = Column("ano")
@@ -86,12 +85,12 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         static let parcelas = Column("parcelas")
         static let parcelaMes = Column("parcelaMes")
         static let valor = Column("valor")
-        static let pago = Column("pago")
-        static let dividido = Column("dividido")
+        static let pagoRaw = Column("pago")
+        static let divididoRaw = Column("dividido")
         static let contaUuid = Column("conta_uuid")
         static let categoriaID = Column("categoria")
         static let cartaoUuid = Column("cartao_uuid")
-        static let notificado = Column("notificado")
+        static let notificadoRaw = Column("notificado")
         static let dataCriacao = Column("dataCriacao")
     }
 }
@@ -123,5 +122,26 @@ extension LancamentoModel {
     }
 }
 
+extension LancamentoModel {
+    var pago: Bool {
+        pagoRaw == 1
+    }
+}
 
+extension LancamentoModel {
+    var dividido: Bool{
+        divididoRaw == 1
+    }
+}
 
+extension LancamentoModel {
+    var notificado: Bool{
+        notificadoRaw == 1
+    }
+}
+
+extension LancamentoModel {
+    var transferencia: Bool{
+        transferenciaRaw == 1
+    }
+}

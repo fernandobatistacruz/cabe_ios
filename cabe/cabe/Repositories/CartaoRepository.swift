@@ -20,7 +20,7 @@ final class CartaoRepository : CartaoRepositoryProtocol{
     ) -> AnyDatabaseCancellable {
 
         let observation = ValueObservation.tracking { db in
-            try self.listar()
+            try self.listar(db: db)
         }
         
         return observation.start(
@@ -61,35 +61,55 @@ final class CartaoRepository : CartaoRepositoryProtocol{
     
     func listar() throws -> [CartaoModel] {
         try db.dbQueue.read { db in
-            let rows = try Row.fetchAll(db, sql: """
-                SELECT c.*, a.*
+            try listar(db: db)
+        }
+    }
+    
+    private func listar(db: Database) throws -> [CartaoModel] {
+        let rows = try Row.fetchAll(db, sql: """
+                SELECT
+                    c.id            AS cartao_id,
+                    c.uuid          AS cartao_uuid,
+                    c.nome          AS cartao_nome,
+                    c.vencimento,
+                    c.fechamento,
+                    c.operadora,
+                    c.arquivado,
+                    c.conta_uuid,
+                    c.limite,
+            
+                    a.id            AS conta_id,
+                    a.uuid          AS conta_uuid,
+                    a.nome          AS conta_nome,
+                    a.saldo,
+                    a.currency_code
                 FROM cartao c
                 JOIN conta a ON c.conta_uuid = a.uuid
             """)
-
-            return rows.map { row in
-                let conta = ContaModel(
-                    id: row["a.id"],
-                    uuid: row["a.uuid"],
-                    nome: row["a.nome"],
-                    saldo: row["a.saldo"],
-                    currencyCode: row["a.currency_code"]
-                )
-
-                return CartaoModel(
-                    id: row["c.id"],
-                    uuid: row["c.uuid"],
-                    nome: row["c.nome"],
-                    vencimento: row["c.vencimento"],
-                    fechamento: row["c.fechamento"],
-                    operadora: row["c.operadora"],
-                    arquivado: row["c.arquivado"],
-                    contaUuid: row["c.conta_uuid"],
-                    limite: row["c.limite"],
-                    conta: conta
-                )
-            }
-        }
+        
+        return rows.map { row in
+            
+            let conta = ContaModel(
+                id: row["conta_id"],
+                uuid: row["conta_uuid"],
+                nome: row["conta_nome"],
+                saldo: row["saldo"],
+                currencyCode: row["currency_code"]
+            )
+            
+            return CartaoModel(
+                id: row["cartao_id"],
+                uuid: row["cartao_uuid"],
+                nome: row["cartao_nome"],
+                vencimento: row["vencimento"],
+                fechamento: row["fechamento"],
+                operadora: row["operadora"],
+                arquivado: row["arquivado"],
+                contaUuid: row["conta_uuid"],
+                limite: row["limite"],
+                conta: conta
+            )
+        }        
     }
     
     func consultarPorUuid(_ uuid: String) throws -> [CartaoModel] {
