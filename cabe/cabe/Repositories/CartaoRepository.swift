@@ -18,41 +18,9 @@ final class CartaoRepository : CartaoRepositoryProtocol{
     func observeCartoes(
         onChange: @escaping ([CartaoModel]) -> Void
     ) -> AnyDatabaseCancellable {
-        
+
         let observation = ValueObservation.tracking { db in
-            let rows = try Row.fetchAll(db, sql: """
-                SELECT c.id AS c_id, c.uuid AS c_uuid, c.nome AS c_nome,
-                       c.vencimento AS c_vencimento, c.fechamento AS c_fechamento,
-                       c.operadora AS c_operadora, c.arquivado AS c_arquivado,
-                       c.conta_uuid AS c_contaUuid, c.limite AS c_limite,
-                       a.id AS a_id, a.uuid AS a_uuid, a.nome AS a_nome,
-                       a.saldo AS a_saldo, a.currency_code AS a_currency
-                FROM cartao c
-                JOIN conta a ON c.conta_uuid = a.uuid
-            """)            
-          
-            return rows.map { row in
-                let conta = ContaModel(
-                    id: row["a_id"],
-                    uuid: row["a_uuid"],
-                    nome: row["a_nome"],
-                    saldo: row["a_saldo"],
-                    currencyCode: row["a_currency"]
-                )
-                
-                return CartaoModel(
-                    id: row["c_id"],
-                    uuid: row["c_uuid"],
-                    nome: row["c_nome"],
-                    vencimento: row["c_vencimento"],
-                    fechamento: row["c_fechamento"],
-                    operadora: row["c_operadora"],
-                    arquivado: row["c_arquivado"],
-                    contaUuid: row["c_contaUuid"],
-                    limite: row["c_limite"],
-                    conta: conta
-                )
-            }
+            try self.listar()
         }
         
         return observation.start(
@@ -61,7 +29,6 @@ final class CartaoRepository : CartaoRepositoryProtocol{
             onChange: onChange
         )
     }
-
 
     func salvar(_ cartao: inout CartaoModel) throws {
         try db.dbQueue.write { db in

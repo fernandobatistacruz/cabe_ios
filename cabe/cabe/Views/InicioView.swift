@@ -35,7 +35,6 @@ struct InicioView: View {
                    Spacer()
                     HStack {
                         Spacer()
-
                         Button {
                             mostrarNovaDespesa = true
                         } label: {
@@ -105,7 +104,7 @@ struct InicioView: View {
             }
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
-            NovaDespesaView()
+            NovoLancamentoView()
         }
     }
 

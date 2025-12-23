@@ -8,7 +8,7 @@ struct TabMenuView: View {
                     Label("Início", systemImage: "doc.text.image")
                 }
 
-            LancamentosView()
+            LancamentoListView()
                 .tabItem {
                     Label("Lançamentos", systemImage: "square.stack.fill")
                 }
