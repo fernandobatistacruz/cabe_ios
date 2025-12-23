@@ -293,22 +293,24 @@ struct CartaoFaturaView: View {
                 .font(.title2.bold())
                 .foregroundStyle(.secondary)
             }
-            Section("Entries") {
-                ForEach(filtroLancamentos) { lancamento in
-                    NavigationLink {
-                        LancamentoDetalheView(lancamento: lancamento)
-                    } label: {
-                        LancamentoRow(lancamento: lancamento)
+            if(!filtroLancamentos.isEmpty){
+                Section("Entries") {
+                    ForEach(filtroLancamentos) { lancamento in
+                        NavigationLink {
+                            LancamentoDetalheView(lancamento: lancamento)
+                        } label: {
+                            LancamentoRow(lancamento: lancamento)
+                        }
                     }
-                }
-                .listRowInsets(
-                    EdgeInsets(
-                        top: 8,
-                        leading: 16,
-                        bottom: 8,
-                        trailing: 16
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: 8,
+                            leading: 16,
+                            bottom: 8,
+                            trailing: 16
+                        )
                     )
-                )
+                }
             }
             
         }
