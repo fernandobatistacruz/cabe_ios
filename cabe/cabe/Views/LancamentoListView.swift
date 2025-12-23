@@ -11,64 +11,66 @@ import GRDB
 internal import Combine
 
 struct LancamentoListView: View {
-
+    
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
     @State private var mostrarConfirmacao = false
     @State private var lancamentoParaExcluir: LancamentoModel?
     @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
-
+    
     @State public var selectedYear = Calendar.current.component(.year, from: Date())
     @State public var selectedMonth = Calendar.current.component(.month, from: Date())
     private var chaveMes: String {
         "\(selectedYear)-\(selectedMonth)"
     }
-
+    
     init() {
         let repository = LancamentoRepository()
         _viewModel = StateObject(
             wrappedValue: LancamentoListViewModel(repository: repository)
         )
     }
-
+    
     // MARK: - Filtro
     var lancamentosFiltrados: [LancamentoModel] {
         let texto = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !texto.isEmpty else { return viewModel.lancamentos }
-
+        
         return viewModel.lancamentos.filter {
             $0.descricao.localizedCaseInsensitiveContains(texto)
         }
     }
-
+    
     // MARK: - View
     var body: some View {
         NavigationStack {
             ZStack {
                 List {
                     ForEach(lancamentosAgrupados, id: \.date) { section in
-
+                        
                         Section {
                             ForEach(section.items) { item in
                                 switch item {
-
                                 case .simples(let lancamento):
                                     NavigationLink {
                                         LancamentoDetalheView(lancamento: lancamento)
                                     } label: {
                                         LancamentoRow(lancamento: lancamento)
                                     }
-
+                                    
                                 case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                     NavigationLink {
                                         CartaoFaturaView(
                                             cartao: cartao,
-                                            lancamentos: lancamentos
+                                            lancamentos: lancamentos,
+                                            total: total,
+                                            vencimento: section.date
                                         )
                                     } label: {
                                         CartaoAgrupadoRow(
                                             cartao: cartao,
+                                            lancamentos: lancamentos,
                                             total: total
                                         )
                                     }
@@ -91,7 +93,7 @@ struct LancamentoListView: View {
                 .id(chaveMes)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
                 .animation(.easeInOut(duration: 0.25), value: chaveMes)
-
+                
                 // ➕ FAB (continua igual)
                 VStack {
                     Spacer()
@@ -117,10 +119,10 @@ struct LancamentoListView: View {
             )
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "Buscar")
-
+            
             // 🔹 TOOLBAR
             .toolbar {
-
+                
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         showCalendar = true
@@ -129,7 +131,7 @@ struct LancamentoListView: View {
                         Text(selectedYear, format: .number.grouping(.never))
                     }
                 }
-
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         print("Mais ações")
@@ -138,7 +140,7 @@ struct LancamentoListView: View {
                     }
                 }
             }
-
+            
             // 🔹 SHEETS
             .sheet(isPresented: $mostrarNovoLancamento) {
                 NovoLancamentoView()
@@ -157,7 +159,6 @@ struct LancamentoListView: View {
             }
         }
     }
-
 
 
     // MARK: - Agrupamento
@@ -255,11 +256,45 @@ struct LancamentoCartaoRow: View {
 struct CartaoFaturaView: View {
     let cartao: CartaoModel
     let lancamentos: [LancamentoModel]
+    let total: Decimal
+    let vencimento: Date
+    
+    @State private var searchText = ""
+    
+    var filtroLancamentos: [LancamentoModel] {
+        searchText.isEmpty
+        ? lancamentos
+        : lancamentos
+            .filter {
+                $0.descricao.localizedCaseInsensitiveContains(searchText)
+            }
+    }
 
     var body: some View {
         List {
+            HStack(spacing: 16) {
+                Image(cartao.operadoraEnum.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 45, height: 45)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(cartao.nome)
+                        .font(.title3.bold())
+                    Text(vencimento.formatted(date: .long, time: .omitted))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text(
+                    total,
+                    format: .currency(code: cartao.conta?.currencyCode ?? "BRL")
+                )
+                .font(.title2.bold())
+                .foregroundStyle(.secondary)
+            }
             Section("Entries") {
-                ForEach(lancamentos) { lancamento in
+                ForEach(filtroLancamentos) { lancamento in
                     NavigationLink {
                         LancamentoDetalheView(lancamento: lancamento)
                     } label: {
@@ -275,48 +310,68 @@ struct CartaoFaturaView: View {
                     )
                 )
             }
+            
         }
         .listStyle(.insetGrouped)
-        .safeAreaInset(edge: .top) {
-            cartaoCard
-                .padding(.horizontal)
-                .padding(.top, 8)
-               .background(Color(uiColor: .systemGroupedBackground))
-        }
-        .navigationTitle("Cartão")
+        .navigationTitle("Fatura")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
-    }
-
-    // Card isolado
-    private var cartaoCard: some View {
-        HStack(spacing: 16) {
-            Image(cartao.operadoraEnum.imageName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 40, height: 40)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(cartao.nome)
-                    .font(.title3.bold())
-
-                Text("Vencimento dia \(cartao.vencimento)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                HStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        
+                        TextField("Buscar", text: $searchText)
+                    }
+                    .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                    .clipShape(Capsule())
+                }
             }
-
-            Spacer()
         }
-        .padding()
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button{
+                    print("Filtro")
+                    
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease")
+                }
+                Menu {
+                    Button {
+                        print("Ação")
+                    } label: {
+                        Label("Conferência de Fatura", systemImage: "doc.text.magnifyingglass")
+                    }
+                    Button {
+                        print("Ação")
+                    } label: {
+                        Label("Exportar Fatura", systemImage: "square.and.arrow.up")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+        }
+        .overlay(
+            Group {
+                if filtroLancamentos.isEmpty {
+                    Text("Nenhum lançamento encontrado")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
+            }
+        )
     }
 }
-
 
 struct CartaoAgrupadoRow: View {
 
     let cartao: CartaoModel
+    let lancamentos: [LancamentoModel]
     let total: Decimal
 
     var body: some View {
@@ -325,13 +380,13 @@ struct CartaoAgrupadoRow: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 24, height: 24)
-
+            
             VStack(alignment: .leading, spacing: 2) {
                 Text(cartao.nome)
                     .font(.body)
                     .foregroundColor(.primary)
-
-                Text("Fatura do cartão")
+                
+                Text("Fatura")
                     .font(.footnote)
                     .foregroundColor(.secondary)
             }
@@ -342,7 +397,6 @@ struct CartaoAgrupadoRow: View {
                 total,
                 format: .currency(code: cartao.conta?.currencyCode ?? "BRL")
             )
-            .font(.body.weight(.semibold))
             .foregroundColor(.secondary)
         }
     }
@@ -379,14 +433,7 @@ struct LancamentoRow: View {
                             code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
                         )
             )
-            .font(.body.weight(.semibold))
             .foregroundColor(.secondary)
-
-            /*
-            Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
-                .foregroundColor(.secondary)
-             */
         }
     }
 }
@@ -404,8 +451,9 @@ struct LancamentoDetalheView: View {
         Form {
             Section {
                 HStack(spacing: 16) {
-                    Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
+                    Image(systemName: lancamento.categoria?.getIcone().systemName ?? "",)
                         .foregroundColor(lancamento.categoria?.getCor().cor)
+                        .font(.system(size: 30))
                     VStack (alignment: .leading){
                         Text(lancamento.descricao)
                             .font(.title2.bold())
@@ -772,4 +820,5 @@ struct EditarLancamentoView: View {
         }
     }
 }
+
 
