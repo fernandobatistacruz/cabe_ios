@@ -1,0 +1,53 @@
+//
+//  MeioPagamento.swift
+//  cabe
+//
+//  Created by Fernando Batista da Cruz on 24/12/25.
+//
+
+enum MeioPagamento: Identifiable, Equatable {
+
+    case cartao(CartaoModel)
+    case conta(ContaModel)
+
+    var id: String {
+        switch self {
+        case .cartao(let cartao):
+            return "cartao-\(cartao.uuid)"
+        case .conta(let conta):
+            return "conta-\(conta.uuid)"
+        }
+    }
+
+    var titulo: String {
+        switch self {
+        case .cartao(let cartao):
+            return cartao.nome
+        case .conta(let conta):
+            return conta.nome
+        }
+    }
+
+    var subtitulo: String {
+        switch self {
+        case .cartao:
+            return "Cartão"
+        case .conta:
+            return "Conta"
+        }
+    }
+
+    // 👇 Implementação manual do Equatable
+    static func == (lhs: MeioPagamento, rhs: MeioPagamento) -> Bool {
+        switch (lhs, rhs) {
+        case (.cartao(let c1), .cartao(let c2)):
+            return c1.uuid == c2.uuid
+
+        case (.conta(let c1), .conta(let c2)):
+            return c1.uuid == c2.uuid
+
+        default:
+            return false
+        }
+    }
+}

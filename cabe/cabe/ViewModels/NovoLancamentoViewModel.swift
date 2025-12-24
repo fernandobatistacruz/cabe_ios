@@ -25,6 +25,8 @@ final class NovoLancamentoViewModel: ObservableObject {
     @Published var pago: Bool = false
     @Published var dataSelecionada: Date = Date()
     @Published var anotacao: String = ""
+    @Published var tipoRecorrente: TipoRecorrente = .nunca
+    @Published var meioPagamentoSelecionado: MeioPagamento?
 
 
     // MARK: - Conversões (usando seu utils)

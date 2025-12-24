@@ -10,16 +10,24 @@ struct CategoriaZoomView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Binding var categoriaSelecionada: CategoriaModel?
+    @State private var searchText = ""
 
     let tipo: Tipo
 
     @State private var categorias: [CategoriaModel] = []
 
     private let repository = CategoriaRepository()
+    
+    var categoriasFiltradas: [CategoriaModel] {
+        searchText.isEmpty
+        ? categorias
+        : categorias
+            .filter { $0.nome.localizedCaseInsensitiveContains(searchText) }
+    }
 
     var body: some View {
         List {
-            ForEach(Array(categorias.enumerated()), id: \.offset) { _, categoria in
+            ForEach(Array(categoriasFiltradas.enumerated()), id: \.offset) { _, categoria in
                 Button {
                     categoriaSelecionada = categoria
                     dismiss()
@@ -53,13 +61,32 @@ struct CategoriaZoomView: View {
             
             print("➡️ Categorias carregadas:", categorias.count)
         }
-
+        /*
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Buscar"
+        )
+         */
+       
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
+                }
+            }
+            ToolbarItemGroup(placement: .bottomBar) {
+                HStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        
+                        TextField("Buscar", text: $searchText)
+                    }
+                    .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                    .clipShape(Capsule())
                 }
             }
         }

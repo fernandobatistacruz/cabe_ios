@@ -18,12 +18,7 @@ struct LancamentoListView: View {
     @State private var lancamentoParaExcluir: LancamentoModel?
     @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
-    
-    @State public var selectedYear = Calendar.current.component(.year, from: Date())
-    @State public var selectedMonth = Calendar.current.component(.month, from: Date())
-    private var chaveMes: String {
-        "\(selectedYear)-\(selectedMonth)"
-    }
+    @State private var selectedDate: Date = Date()
     
     init() {
         let repository = LancamentoRepository()
@@ -90,10 +85,6 @@ struct LancamentoListView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
-                .id(chaveMes)
-                .transition(.move(edge: .trailing).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.25), value: chaveMes)
-                
                 // ➕ FAB (continua igual)
                 VStack {
                     Spacer()
@@ -115,7 +106,7 @@ struct LancamentoListView: View {
                 }
             }
             .navigationTitle(
-                Calendar.current.monthSymbols[selectedMonth - 1].capitalized
+                Text(selectedDate, format: .dateTime.month(.wide))
             )
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "Buscar")
@@ -128,7 +119,7 @@ struct LancamentoListView: View {
                         showCalendar = true
                     } label: {
                         Image(systemName: "chevron.left")
-                        Text(selectedYear, format: .number.grouping(.never))
+                        Text(selectedDate, format: .dateTime.year())
                     }
                 }
                 
@@ -146,16 +137,8 @@ struct LancamentoListView: View {
                 NovoLancamentoView()
             }
             .sheet(isPresented: $showCalendar) {
-                MonthYearPickerView(
-                    initialYear: selectedYear,
-                    initialMonth: selectedMonth
-                ) { newYear, newMonth in
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        selectedYear = newYear
-                        selectedMonth = newMonth
-                    }
-                }
-                .presentationDetents([.medium, .large])
+                CalendarioZoomView(selectedDate: $selectedDate)
+                    .presentationDetents([.medium, .large])
             }
         }
     }
@@ -571,8 +554,8 @@ struct LancamentoDetalheView: View {
 
 enum NovoLancamentoSheet: Identifiable {
     case categoria
-    case operadora
-    case conta
+    case pagamento
+    case fatura
 
     var id: Int { hashValue }
 }
@@ -585,7 +568,9 @@ struct NovoLancamentoView: View {
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
     @State private var mostrarZoomCategoria = false
-
+    @State private var showCalendar = false
+    @State private var selectedFatura = Date()
+   
     var body: some View {
         NavigationStack{
             ZStack {
@@ -627,43 +612,75 @@ struct NovoLancamentoView: View {
                         }
                         Section{
                             Button {
-                                sheetAtivo = .operadora
+                                sheetAtivo = .pagamento
                             } label: {
                                 HStack {
-                                    Text("Pago Com")
+                                    Text("Pagamento")
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text(vm.operadora?.nome ?? String(localized: "Nenhuma"))
-                                        .foregroundColor(.secondary)
+                                    Text(vm.meioPagamentoSelecionado?.titulo ??  String(
+                                        localized: "Nenhuma")
+                                    ).foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)
                                         .font(.footnote)
                                 }
                             }
-                            HStack {
-                                Text("Fatura")
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Text(vm.operadora?.nome ?? String(localized: "Nenhuma"))
+                            Button {
+                                sheetAtivo = .fatura
+                            } label: {
+                                HStack {
+                                    Text("Fatura")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(
+                                        selectedFatura.formatted(
+                                            .dateTime
+                                                .month(.wide)
+                                                .year()
+                                        )
+                                    )
                                     .foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
                             }
                             
                             if(vm.tipo == .despesa){
                                 Toggle(isOn: $vm.dividida) {Text("Dividida")}
                             }
                             
+                            /* Quando precisar filtar a que aparece no menu
+                             
+                             var opcoesDisponiveis: [TipoRecorrente] {
+                                 if formaPagamento == .cartao {
+                                     return TipoRecorrente.allCases
+                                 } else {
+                                     return TipoRecorrente.allCases.filter { $0 != .parcelado }
+                                 }
+                             }
+                             
+                             Picker("Recorrência", selection: $tipoRecorrente) {
+                                 ForEach(opcoesDisponiveis) { item in
+                                     Text(item.titulo)
+                                         .tag(item)
+                                 }
+                             }
+                             .pickerStyle(.menu)
+                             .tint(.secondary)
+                             
+                             */
+                            
                             HStack {
-                                Text("Repete")
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Text(vm.operadora?.nome ?? String(localized: "Nenhuma"))
-                                    .foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
+                                Picker("Repete", selection: $vm.tipoRecorrente) {
+                                    ForEach(TipoRecorrente.allCases) { item in
+                                        Text(item.titulo)
+                                            .tag(item)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .tint(.secondary)
                             }
                             
                             TextField("Valor", text: $vm.limiteTexto)
@@ -681,7 +698,7 @@ struct NovoLancamentoView: View {
                                     Text("\(vm.dataSelecionada.formatted(date: .abbreviated, time: .omitted))")
                                         .foregroundColor(.primary)
                                         .padding(.horizontal, 12)
-                                        .padding(.vertical, 8)
+                                        .padding(.vertical, 6)
                                         .background(
                                             RoundedRectangle(cornerRadius: 22)
                                                 .fill(
@@ -730,14 +747,14 @@ struct NovoLancamentoView: View {
                             categoriaSelecionada: $vm.categoria,
                             tipo: vm.tipo
                         )
-                    case .operadora:
-                        OperadoraZoomView(
-                            operadoraSelecionada: $vm.operadora
+                    case .pagamento:
+                        ZoomPagamentoView(selecionado: $vm.meioPagamentoSelecionado)
+                    case .fatura:
+                        CalendarioZoomView(
+                            selectedDate: $selectedFatura
                         )
-                    case .conta:
-                        ContaZoomView(
-                            contaSelecionada: $vm.conta
-                        )
+                        .presentationDetents([.medium, .large])
+                        
                     }
                 }
             }
@@ -804,6 +821,9 @@ struct EditarLancamentoView: View {
     @StateObject private var viewModel = NovoLancamentoViewModel()
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
+    @State public var selectedYear = Calendar.current.component(.year, from: Date())
+    @State public var selectedMonth = Calendar.current.component(.month, from: Date())
+    @State private var faturaData = Date()
 
     var body: some View {
         NavigationStack {
@@ -811,7 +831,7 @@ struct EditarLancamentoView: View {
                 Section{
                     TextField("Nome", text: $viewModel.descricao)
                     Button {
-                        sheetAtivo = .operadora
+                        sheetAtivo = .categoria
                     } label: {
                         HStack {
                             Text("Operadora")
@@ -827,7 +847,7 @@ struct EditarLancamentoView: View {
                     }
                     
                     Button {
-                        sheetAtivo = .conta
+                        sheetAtivo = .categoria
                     } label: {
                         HStack {
                             Text("Conta")
@@ -863,14 +883,13 @@ struct EditarLancamentoView: View {
                             categoriaSelecionada: $viewModel.categoria,
                             tipo: viewModel.tipo
                         )
-                    case .operadora:
+                    case .pagamento:
                         OperadoraZoomView(
                             operadoraSelecionada: $viewModel.operadora
                         )
-                    case .conta:
-                        ContaZoomView(
-                            contaSelecionada: $viewModel.conta
-                        )
+                    case .fatura:
+                        CalendarioZoomView(selectedDate: $faturaData)
+                            .presentationDetents([.medium,.large])
                     }
                 }
             }

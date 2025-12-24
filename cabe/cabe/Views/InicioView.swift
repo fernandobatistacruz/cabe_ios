@@ -13,26 +13,25 @@ struct InicioView: View {
     @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
     @StateObject private var vm = NotificacoesViewModel()
-    @State public var selectedYear = Calendar.current.component(.year, from: Date())
-    @State public var selectedMonth = Calendar.current.component(.month, from: Date())
+    @State private var selectedDate: Date = Date()
     
     var body: some View {
         NavigationStack {
             ZStack {
                 Color(uiColor: .systemGroupedBackground)
                     .ignoresSafeArea()
-               
+                
                 ScrollView {
                     LazyVStack(spacing: 24) {
                         FavoritosView()
                         ConsumoResumoView()
                         RecentesListView()
                     }
-                   .padding(.bottom, 10)
+                    .padding(.bottom, 10)
                 }
                 
                 VStack {
-                   Spacer()
+                    Spacer()
                     HStack {
                         Spacer()
                         Button {
@@ -51,7 +50,7 @@ struct InicioView: View {
                 }
             }
             .navigationTitle(
-                Calendar.current.monthSymbols[selectedMonth - 1].capitalized
+                Text(selectedDate, format: .dateTime.month(.wide))
             )
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -60,7 +59,7 @@ struct InicioView: View {
                         showCalendar = true
                     } label: {
                         Image(systemName: "chevron.left")
-                        Text(selectedYear, format: .number.grouping(.never))
+                        Text(selectedDate, format: .dateTime.year())
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -82,7 +81,7 @@ struct InicioView: View {
                             }
                         }
                         .frame(minWidth: 36, minHeight: 36)
-
+                        
                     }
                     Button {
                         print("Mais")
@@ -93,14 +92,8 @@ struct InicioView: View {
                 }
             }
             .sheet(isPresented: $showCalendar) {
-                MonthYearPickerView(
-                    initialYear: selectedYear,
-                    initialMonth: selectedMonth
-                ) { newYear, newMonth in
-                    selectedYear = newYear
-                    selectedMonth = newMonth
-                }
-                .presentationDetents([.medium,.large])
+                CalendarioZoomView(selectedDate: $selectedDate)
+                    .presentationDetents([.medium, .large])
             }
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
