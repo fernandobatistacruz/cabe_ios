@@ -13,13 +13,19 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     // MARK: - Inputs da tela
     
-    @Published var nome: String = ""
+    @Published var descricao: String = ""
     @Published var operadora: OperadoraCartao?
     @Published var conta: ContaModel?
-    
+    @Published var categoria: CategoriaModel?
+    @Published var tipo: Tipo = .despesa    
     @Published var vencimentoTexto: String = ""
     @Published var fechamentoTexto: String = ""
     @Published var limiteTexto: String = ""
+    @Published var dividida: Bool = false
+    @Published var pago: Bool = false
+    @Published var dataSelecionada: Date = Date()
+    @Published var anotacao: String = ""
+
 
     // MARK: - Conversões (usando seu utils)
     
@@ -56,8 +62,8 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     func validar() -> LancamentoValidacaoErro? {
 
-        if nome.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return .nomeVazio
+        if descricao.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return .descricaoVazio
         }
 
         guard let limite = limiteDouble, limite > 0 else {

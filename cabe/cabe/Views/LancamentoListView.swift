@@ -570,8 +570,9 @@ struct LancamentoDetalheView: View {
 // MARK: - Novo Cartão
 
 enum NovoLancamentoSheet: Identifiable {
-    case conta
+    case categoria
     case operadora
+    case conta
 
     var id: Int { hashValue }
 }
@@ -579,71 +580,163 @@ enum NovoLancamentoSheet: Identifiable {
 struct NovoLancamentoView: View {
    
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = NovoLancamentoViewModel()
+    @StateObject private var vm = NovoLancamentoViewModel()
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
+    @State private var mostrarCalendario = false
+    @State private var mostrarZoomCategoria = false
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section{
-                    TextField("Nome", text: $viewModel.nome)
-                    Button {
-                        sheetAtivo = .operadora
-                    } label: {
-                        HStack {
-                            Text("Operadora")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text(viewModel.operadora?.nome ?? String(localized: "Nenhuma"))
-                                                            .foregroundColor(.secondary)
-                                .foregroundColor(.secondary)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.footnote)
-                        }
-                    }
-                    
-                    Button {
-                        sheetAtivo = .conta
-                    } label: {
-                        HStack {
-                            Text("Conta")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text(viewModel.conta?.nome ?? String(localized: "Nenhuma"))
-                                .foregroundColor(.secondary)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.footnote)
-                        }
-                    }
-                }
-                Section{
-                    TextField("Dia do Vencimento", text: $viewModel.vencimentoTexto)
-                        .keyboardType(.numberPad)
-
-                    TextField("Dia do Fechamento", text: $viewModel.fechamentoTexto)
-                        .keyboardType(.numberPad)
-
-                    TextField("Limite", text: $viewModel.limiteTexto)
-                                            .keyboardType(.decimalPad)
-                }
+        NavigationStack{
+            ZStack {
+                Color(uiColor: .systemGroupedBackground)
+                    .ignoresSafeArea()
                 
+                VStack(spacing: 0) {
+                    Picker("Tipo", selection: $vm.tipo) {
+                        ForEach(Tipo.allCases.reversed(), id: \.self) { tipo in
+                            Text(tipo.descricao).tag(tipo)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    .padding(.top)
+                    
+                    Form {
+                        Section{
+                            TextField("Descrição", text: $vm.descricao)
+                            Button {
+                                sheetAtivo = .categoria
+                            } label: {
+                                HStack {
+                                    Text("Categoria")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(
+                                        vm.categoria?.nome ?? String(
+                                            localized: "Nenhuma"
+                                        )
+                                    )
+                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
+                            }
+                        }
+                        Section{
+                            Button {
+                                sheetAtivo = .operadora
+                            } label: {
+                                HStack {
+                                    Text("Pago Com")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(vm.operadora?.nome ?? String(localized: "Nenhuma"))
+                                        .foregroundColor(.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
+                            }
+                            HStack {
+                                Text("Fatura")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text(vm.operadora?.nome ?? String(localized: "Nenhuma"))
+                                    .foregroundColor(.secondary)
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
+                            }
+                            
+                            if(vm.tipo == .despesa){
+                                Toggle(isOn: $vm.dividida) {Text("Dividida")}
+                            }
+                            
+                            HStack {
+                                Text("Repete")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text(vm.operadora?.nome ?? String(localized: "Nenhuma"))
+                                    .foregroundColor(.secondary)
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
+                            }
+                            
+                            TextField("Valor", text: $vm.limiteTexto)
+                                .keyboardType(.decimalPad)
+                            
+                            Toggle(isOn: $vm.pago) {Text("Pago")}
+                            
+                            Button {
+                                mostrarCalendario.toggle()
+                            } label: {
+                                HStack {
+                                    Text("Data da Compra")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text("\(vm.dataSelecionada.formatted(date: .abbreviated, time: .omitted))")
+                                        .foregroundColor(.primary)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 22)
+                                                .fill(
+                                                    Color(
+                                                        uiColor: .secondarySystemFill
+                                                    )
+                                                )
+                                        )
+                                }
+                            }
+                            
+                            if mostrarCalendario {
+                                DatePicker(
+                                    "",
+                                    selection: $vm.dataSelecionada,
+                                    displayedComponents: [.date]
+                                )
+                                .datePickerStyle(.graphical)
+                            }
+                            
+                        }
+                        Section{
+                            ZStack(alignment: .topLeading) {
+                                if vm.anotacao.isEmpty {
+                                    Text("Anotação")
+                                        .foregroundColor(.secondary)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 10)
+                                }
+                                TextEditor(text: $vm.anotacao)
+                                    .padding(8)
+                                    .background(Color.clear)
+                            }
+                            .frame(minHeight: 80, maxHeight: 100)
+                        }
+                    }
+                }
             }
-            .navigationTitle("Novo Cartão")
+            .navigationTitle("Nova")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $sheetAtivo) { sheet in
                 NavigationStack {
                     switch sheet {
-                    case .conta:
-                        ContaZoomView(
-                            contaSelecionada: $viewModel.conta
+                    case .categoria:
+                        CategoriaZoomView(
+                            categoriaSelecionada: $vm.categoria,
+                            tipo: vm.tipo
                         )
-                        
                     case .operadora:
                         OperadoraZoomView(
-                            operadoraSelecionada: $viewModel.operadora
+                            operadoraSelecionada: $vm.operadora
+                        )
+                    case .conta:
+                        ContaZoomView(
+                            contaSelecionada: $vm.conta
                         )
                     }
                 }
@@ -662,11 +755,11 @@ struct NovoLancamentoView: View {
                     } label: {
                         Image(systemName: "checkmark")
                             .foregroundColor(.white)
-                            
+                        
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    .disabled(!viewModel.formValido)
+                    .disabled(!vm.formValido)
                 }
             }
             .alert(item: $erroValidacao) { erro in
@@ -678,16 +771,21 @@ struct NovoLancamentoView: View {
             }
         }
     }
+    
 
     private func salvar() {
-        do {
-            var lancamento = try viewModel.construirLancamento()
-            try LancamentoRepository().salvar(&lancamento)
-            dismiss()
-        } catch let erro as LancamentoValidacaoErro {
-            erroValidacao = erro
-        } catch {
-            debugPrint("Erro inesperado ao salvar lançamento", error)
+        if vm.tipo == .despesa {
+            do {
+                var lancamento = try vm.construirLancamento()
+                try LancamentoRepository().salvar(&lancamento)
+                dismiss()
+            } catch let erro as LancamentoValidacaoErro {
+                erroValidacao = erro
+            } catch {
+                debugPrint("Erro inesperado ao salvar lançamento", error)
+            }
+        } else {
+            //Salvar Receita
         }
     }
 }
@@ -711,7 +809,7 @@ struct EditarLancamentoView: View {
         NavigationStack {
             Form {
                 Section{
-                    TextField("Nome", text: $viewModel.nome)
+                    TextField("Nome", text: $viewModel.descricao)
                     Button {
                         sheetAtivo = .operadora
                     } label: {
@@ -760,14 +858,18 @@ struct EditarLancamentoView: View {
             .sheet(item: $sheetAtivo) { sheet in
                 NavigationStack {
                     switch sheet {
-                    case .conta:
-                        ContaZoomView(
-                            contaSelecionada: $viewModel.conta
+                    case .categoria:
+                        CategoriaZoomView(
+                            categoriaSelecionada: $viewModel.categoria,
+                            tipo: viewModel.tipo
                         )
-                        
                     case .operadora:
                         OperadoraZoomView(
                             operadoraSelecionada: $viewModel.operadora
+                        )
+                    case .conta:
+                        ContaZoomView(
+                            contaSelecionada: $viewModel.conta
                         )
                     }
                 }
@@ -801,7 +903,7 @@ struct EditarLancamentoView: View {
                 )
             }
             .onAppear(){
-                viewModel.nome = lancamento.descricao
+                viewModel.descricao = lancamento.descricao
                 viewModel.setLimite(lancamento.valor)
             }
         }
@@ -822,5 +924,6 @@ struct EditarLancamentoView: View {
         }
     }
 }
+
 
 

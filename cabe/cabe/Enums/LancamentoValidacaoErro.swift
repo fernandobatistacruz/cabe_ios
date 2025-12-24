@@ -9,7 +9,7 @@ import Foundation
 
 enum LancamentoValidacaoErro: LocalizedError, Identifiable {
 
-    case nomeVazio
+    case descricaoVazio
     case vencimentoInvalido
     case fechamentoInvalido
     case limiteInvalido
@@ -21,7 +21,7 @@ enum LancamentoValidacaoErro: LocalizedError, Identifiable {
     var errorDescription: String? {
         switch self {
 
-        case .nomeVazio:
+        case .descricaoVazio:
             return NSLocalizedString("Informe o nome do cartão.", comment: "")
 
         case .vencimentoInvalido:

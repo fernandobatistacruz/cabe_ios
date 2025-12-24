@@ -258,7 +258,6 @@ struct NovoCartaoView: View {
                                 .foregroundColor(.primary)
                             Spacer()
                             Text(viewModel.operadora?.nome ?? String(localized: "Nenhuma"))
-                                                            .foregroundColor(.secondary)
                                 .foregroundColor(.secondary)
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
@@ -289,7 +288,7 @@ struct NovoCartaoView: View {
                         .keyboardType(.numberPad)
 
                     TextField("Limite", text: $viewModel.limiteTexto)
-                                            .keyboardType(.decimalPad)
+                        .keyboardType(.decimalPad)
                 }
                 
             }
