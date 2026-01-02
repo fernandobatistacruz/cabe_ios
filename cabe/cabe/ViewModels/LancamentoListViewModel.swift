@@ -13,20 +13,44 @@ internal import Combine
 final class LancamentoListViewModel: ObservableObject {
     
     @Published var lancamentos: [LancamentoModel] = []
+    @Published private(set) var mesAtual: Int
+    @Published private(set) var anoAtual: Int
+
     
     private let repository: LancamentoRepository
     private var dbCancellable: AnyDatabaseCancellable?
     
-    init(repository: LancamentoRepository) {
+    init(
+        repository: LancamentoRepository,
+        mes: Int? = nil,
+        ano: Int? = nil
+    ) {
         self.repository = repository
+
+        let hoje = Date()
+        self.mesAtual = mes ?? Calendar.current.component(.month, from: hoje)
+        self.anoAtual = ano ?? Calendar.current.component(.year, from: hoje)
+
         observarLancamentos()
     }
-  
+
+
     private func observarLancamentos() {
-        dbCancellable = repository
-            .observeLancamentos { [weak self] lancamentos in
-                self?.lancamentos = lancamentos
+        dbCancellable?.cancel()
+
+        dbCancellable = repository.observeLancamentos(
+            mes: mesAtual,
+            ano: anoAtual
+        ) { [weak self] lancamentos in
+            self?.lancamentos = lancamentos
         }
+    }
+    
+    func selecionar(data: Date) {
+        let calendar = Calendar.current
+        mesAtual = calendar.component(.month, from: data)
+        anoAtual = calendar.component(.year, from: data)
+        observarLancamentos()
     }
    
     func salvar(_ lancamento: inout LancamentoModel) {

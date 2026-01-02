@@ -13,7 +13,31 @@ struct InicioView: View {
     @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
     @StateObject private var vm = NotificacoesViewModel()
-    @State private var selectedDate: Date = Date()
+    @StateObject private var viewModel: LancamentoListViewModel
+    
+    private var selectedDate: Date {
+        Calendar.current.date(
+            from: DateComponents(
+                year: viewModel.anoAtual,
+                month: viewModel.mesAtual,
+                day: 1
+            )
+        ) ?? Date()
+    }
+    
+    init() {
+        let repository = LancamentoRepository()
+        let mesAtual = Calendar.current.component(.month, from: Date())
+        let anoAtual = Calendar.current.component(.year, from: Date())
+        
+        _viewModel = StateObject(
+            wrappedValue: LancamentoListViewModel(
+                repository: repository,
+                mes: mesAtual,
+                ano: anoAtual
+            )
+        )
+    }
     
     var body: some View {
         NavigationStack {
@@ -92,9 +116,16 @@ struct InicioView: View {
                 }
             }
             .sheet(isPresented: $showCalendar) {
-                CalendarioZoomView(selectedDate: $selectedDate)
-                    .presentationDetents([.medium, .large])
+                CalendarioZoomView(
+                    dataInicial: selectedDate,
+                    onConfirm: { dataSelecionada in
+                        viewModel.selecionar(data: dataSelecionada)
+                    }
+                )
+                .presentationDetents([.medium, .large])
+                
             }
+
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
             NovoLancamentoView()
@@ -104,7 +135,7 @@ struct InicioView: View {
 }
 
 #Preview {
-    InicioView().environmentObject(ThemeManager())
+    //InicioView().environmentObject(ThemeManager())
 }
 
 struct FavoritosView: View{

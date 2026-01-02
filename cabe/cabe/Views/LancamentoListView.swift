@@ -18,12 +18,28 @@ struct LancamentoListView: View {
     @State private var lancamentoParaExcluir: LancamentoModel?
     @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
-    @State private var selectedDate: Date = Date()
+    
+    private var selectedDate: Date {
+        Calendar.current.date(
+            from: DateComponents(
+                year: viewModel.anoAtual,
+                month: viewModel.mesAtual,
+                day: 1
+            )
+        ) ?? Date()
+    }
     
     init() {
         let repository = LancamentoRepository()
+        let mesAtual = Calendar.current.component(.month, from: Date())
+        let anoAtual = Calendar.current.component(.year, from: Date())
+        
         _viewModel = StateObject(
-            wrappedValue: LancamentoListViewModel(repository: repository)
+            wrappedValue: LancamentoListViewModel(
+                repository: repository,
+                mes: mesAtual,
+                ano: anoAtual
+            )
         )
     }
     
@@ -137,8 +153,13 @@ struct LancamentoListView: View {
                 NovoLancamentoView()
             }
             .sheet(isPresented: $showCalendar) {
-                CalendarioZoomView(selectedDate: $selectedDate)
-                    .presentationDetents([.medium, .large])
+                CalendarioZoomView(
+                    dataInicial: selectedDate,
+                    onConfirm: { dataSelecionada in
+                        viewModel.selecionar(data: dataSelecionada)
+                    }
+                )
+                .presentationDetents([.medium, .large])
             }
         }
     }
@@ -195,7 +216,7 @@ struct LancamentoListView: View {
 
 
 struct LancamentoCartaoItem: Identifiable {
-    let id: Int64               // id do cartão
+    let id: Int64
     let cartao: CartaoModel
     let total: Decimal
     let lancamentos: [LancamentoModel]
@@ -207,8 +228,7 @@ struct LancamentoCartaoRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-
-            // Ícone do cartão
+           
             Image(systemName: "creditcard")
                 .font(.system(size: 22))
 
@@ -225,8 +245,7 @@ struct LancamentoCartaoRow: View {
 
             Text(item.total, format: .currency(code: "BRL"))
                 .font(.headline)
-
-            // Chevron manual
+           
             Image(systemName: "chevron.right")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
@@ -412,11 +431,10 @@ struct LancamentoRow: View {
 
             Spacer()
             Text(
-                lancamento.valor,
-                format:
-                        .currency(
-                            code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
-                        )
+                lancamento.valorComSinal,
+                format: .currency(
+                    code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+                )
             )
             .foregroundColor(.secondary)
         }
@@ -448,12 +466,15 @@ struct LancamentoDetalheView: View {
                     }
                     Spacer()
                     Text(
-                        lancamento.valor,
-                        format: .currency(code: lancamento.conta?.currencyCode ?? "BRL")
+                        lancamento.valorComSinal,
+                        format: .currency(
+                            code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+                        )
                     )
-                        .font(.title2.bold())
-                        .foregroundStyle(.secondary)
+                    .font(.title2.bold())
+                    .foregroundStyle(.secondary)
                 }
+                
             }
             Section(header: Text("Geral")) {
                 HStack {
@@ -569,7 +590,6 @@ struct NovoLancamentoView: View {
     @State private var mostrarCalendario = false
     @State private var mostrarZoomCategoria = false
     @State private var showCalendar = false
-    @State private var selectedFatura = Date()
    
     var body: some View {
         NavigationStack{
@@ -618,7 +638,7 @@ struct NovoLancamentoView: View {
                                     Text("Pagamento")
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text(vm.meioPagamentoSelecionado?.titulo ??  String(
+                                    Text(vm.pagamentoSelecionado?.titulo ??  String(
                                         localized: "Nenhuma")
                                     ).foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
@@ -626,24 +646,27 @@ struct NovoLancamentoView: View {
                                         .font(.footnote)
                                 }
                             }
-                            Button {
-                                sheetAtivo = .fatura
-                            } label: {
-                                HStack {
-                                    Text("Fatura")
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Text(
-                                        selectedFatura.formatted(
-                                            .dateTime
-                                                .month(.wide)
-                                                .year()
+                            if((vm.pagamentoSelecionado?.cartaoModel != nil))
+                            {
+                                Button {
+                                    sheetAtivo = .fatura
+                                } label: {
+                                    HStack {
+                                        Text("Fatura")
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        Text(
+                                            vm.dataFatura.formatted(
+                                                .dateTime
+                                                    .month(.wide)
+                                                    .year()
+                                            )
                                         )
-                                    )
-                                    .foregroundColor(.secondary)
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.gray)
-                                        .font(.footnote)
+                                        .foregroundColor(.secondary)
+                                        Image(systemName: "chevron.right")
+                                            .foregroundColor(.gray)
+                                            .font(.footnote)
+                                    }
                                 }
                             }
                             
@@ -673,7 +696,7 @@ struct NovoLancamentoView: View {
                              */
                             
                             HStack {
-                                Picker("Repete", selection: $vm.tipoRecorrente) {
+                                Picker("Repete", selection: $vm.recorrente) {
                                     ForEach(TipoRecorrente.allCases) { item in
                                         Text(item.titulo)
                                             .tag(item)
@@ -683,7 +706,7 @@ struct NovoLancamentoView: View {
                                 .tint(.secondary)
                             }
                             
-                            TextField("Valor", text: $vm.limiteTexto)
+                            TextField("Valor", text: $vm.valorTexto)
                                 .keyboardType(.decimalPad)
                             
                             Toggle(isOn: $vm.pago) {Text("Pago")}
@@ -695,7 +718,7 @@ struct NovoLancamentoView: View {
                                     Text("Data da Compra")
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text("\(vm.dataSelecionada.formatted(date: .abbreviated, time: .omitted))")
+                                    Text("\(vm.dataLancamento.formatted(date: .abbreviated, time: .omitted))")
                                         .foregroundColor(.primary)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
@@ -713,7 +736,7 @@ struct NovoLancamentoView: View {
                             if mostrarCalendario {
                                 DatePicker(
                                     "",
-                                    selection: $vm.dataSelecionada,
+                                    selection: $vm.dataLancamento,
                                     displayedComponents: [.date]
                                 )
                                 .datePickerStyle(.graphical)
@@ -748,13 +771,15 @@ struct NovoLancamentoView: View {
                             tipo: vm.tipo
                         )
                     case .pagamento:
-                        ZoomPagamentoView(selecionado: $vm.meioPagamentoSelecionado)
+                        ZoomPagamentoView(selecionado: $vm.pagamentoSelecionado)
                     case .fatura:
                         CalendarioZoomView(
-                            selectedDate: $selectedFatura
+                            dataInicial: vm.dataFatura,
+                            onConfirm: { data in
+                                vm.dataFatura = data
+                            }
                         )
                         .presentationDetents([.medium, .large])
-                        
                     }
                 }
             }
@@ -788,23 +813,213 @@ struct NovoLancamentoView: View {
             }
         }
     }
-    
 
     private func salvar() {
-        if vm.tipo == .despesa {
-            do {
-                var lancamento = try vm.construirLancamento()
-                try LancamentoRepository().salvar(&lancamento)
-                dismiss()
-            } catch let erro as LancamentoValidacaoErro {
-                erroValidacao = erro
-            } catch {
-                debugPrint("Erro inesperado ao salvar lançamento", error)
-            }
-        } else {
-            //Salvar Receita
+        switch vm.recorrente {
+        case .mensal:
+            mensal()
+            break
+        case .quinzenal:
+            porDias(intervalo: 14)
+            break
+        case .semanal:
+            porDias(intervalo: 7)
+            break
+        default:
+            nuncoParcelado()
+            break
         }
     }
+    
+    private func mensal() {
+        guard let meioPagamento = vm.pagamentoSelecionado else { return }
+
+        let calendar = Calendar.current
+        let repository = LancamentoRepository()
+
+        let dataInicial: Date
+        let diaVencimento: Int
+
+        switch meioPagamento {
+        case .cartao:
+            dataInicial = vm.dataFatura
+            diaVencimento = vm.pagamentoSelecionado?.cartaoModel?.vencimento ?? 1
+
+        case .conta:
+            dataInicial = vm.dataLancamento
+            diaVencimento = calendar.component(.day, from: vm.dataLancamento)
+        }
+
+        guard let dataFinal = calendar.date(
+            byAdding: .year,
+            value: 10,
+            to: dataInicial
+        ) else {
+            return
+        }
+
+        var dataAtual = dataInicial
+
+        do {
+            while dataAtual <= dataFinal {
+
+                var componentes = calendar.dateComponents([.year, .month], from: dataAtual)
+                componentes.day = diaVencimento
+
+                // Garante data válida (ex: fevereiro)
+                guard calendar.date(from: componentes) != nil else {
+                    dataAtual = calendar.date(byAdding: .month, value: 1, to: dataAtual)!
+                    continue
+                }
+
+                let compra = calendar.dateComponents(
+                    [.day, .month, .year],
+                    from: vm.dataLancamento
+                )
+
+                let lancamento = try vm.construirLancamento(
+                    dia: componentes.day!,
+                    mes: componentes.month!,
+                    ano: componentes.year!,
+                    diaCompra: compra.day!,
+                    mesCompra: compra.month!,
+                    anoCompra: compra.year!,
+                    parcelaMes: ""
+                )
+
+                var lancamentoVar = lancamento
+                try repository.salvar(&lancamentoVar)
+
+                dataAtual = calendar.date(
+                    byAdding: .month,
+                    value: 1,
+                    to: dataAtual
+                )!
+            }
+
+            dismiss()
+
+        } catch let erro as LancamentoValidacaoErro {
+            erroValidacao = erro
+        } catch {
+            debugPrint("Erro inesperado ao salvar lançamento", error)
+        }
+    }
+
+    
+    private func porDias(intervalo: Int) {
+        let calendar = Calendar.current
+        let repository = LancamentoRepository()
+        var dataAtual = vm.dataLancamento
+
+        guard let dataFinal = calendar.date(
+            byAdding: .year,
+            value: 10,
+            to: vm.dataLancamento
+        ) else {
+            return
+        }
+
+        do {
+            while dataAtual <= dataFinal {
+
+                let componentes = calendar.dateComponents(
+                    [.day, .month, .year],
+                    from: dataAtual
+                )
+
+                var lancamento = try vm.construirLancamento(
+                    dia: componentes.day ?? 0,
+                    mes: componentes.month ?? 0,
+                    ano: componentes.year ?? 0,
+                    diaCompra: componentes.day ?? 0,
+                    mesCompra: componentes.month ?? 0,
+                    anoCompra: componentes.year ?? 0,
+                    parcelaMes: ""
+                )
+
+                try repository.salvar(&lancamento)
+
+                dataAtual = calendar.date(
+                    byAdding: .day,
+                    value: intervalo,
+                    to: dataAtual
+                )!
+            }
+
+            dismiss()
+
+        } catch let erro as LancamentoValidacaoErro {
+            erroValidacao = erro
+        } catch {
+            debugPrint("Erro inesperado ao salvar lançamento", error)
+        }
+    }
+
+    
+    private func nuncoParcelado() {
+        guard let meio = vm.pagamentoSelecionado else { return }
+
+        let calendar = Calendar.current
+        let repository = LancamentoRepository()
+
+        let dataInicial: Date
+
+        switch meio {
+        case .cartao:
+            var componentes = calendar.dateComponents(
+                [.year, .month],
+                from: vm.dataFatura
+            )
+            componentes.day = meio.cartaoModel?.vencimento ?? 1
+
+            guard let dataCartao = calendar.date(from: componentes) else {
+                return
+            }
+            dataInicial = dataCartao
+
+        case .conta:
+            dataInicial = vm.dataLancamento
+        }
+
+        let compra = calendar.dateComponents(
+            [.day, .month, .year],
+            from: vm.dataLancamento
+        )
+
+        var dataAtual = dataInicial
+
+        do {
+            for parcela in 1...vm.parcelaInt {
+
+                var lancamento = try vm.construirLancamento(
+                    dia: calendar.component(.day, from: dataAtual),
+                    mes: calendar.component(.month, from: dataAtual),
+                    ano: calendar.component(.year, from: dataAtual),
+                    diaCompra: compra.day!,
+                    mesCompra: compra.month!,
+                    anoCompra: compra.year!,
+                    parcelaMes: "\(parcela)/\(vm.parcelaInt)"
+                )
+
+                try repository.salvar(&lancamento)
+
+                dataAtual = calendar.date(
+                    byAdding: .month,
+                    value: 1,
+                    to: dataAtual
+                )!
+            }
+
+            dismiss()
+
+        } catch let erro as LancamentoValidacaoErro {
+            erroValidacao = erro
+        } catch {
+            debugPrint("Erro inesperado ao salvar lançamento", error)
+        }
+    }
+
 }
 
 #Preview {
@@ -830,48 +1045,9 @@ struct EditarLancamentoView: View {
             Form {
                 Section{
                     TextField("Nome", text: $viewModel.descricao)
-                    Button {
-                        sheetAtivo = .categoria
-                    } label: {
-                        HStack {
-                            Text("Operadora")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text(viewModel.operadora?.nome ?? "Nenhuma")
-                                                            .foregroundColor(.secondary)
-                                .foregroundColor(.secondary)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.footnote)
-                        }
-                    }
                     
-                    Button {
-                        sheetAtivo = .categoria
-                    } label: {
-                        HStack {
-                            Text("Conta")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text(viewModel.conta?.nome ?? "Nenhuma")
-                                .foregroundColor(.secondary)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.footnote)
-                        }
-                    }
+                    
                 }
-                Section{
-                    TextField("Dia do Vencimento", text: $viewModel.vencimentoTexto)
-                        .keyboardType(.numberPad)
-
-                    TextField("Dia do Fechamento", text: $viewModel.fechamentoTexto)
-                        .keyboardType(.numberPad)
-
-                    TextField("Limite", text: $viewModel.limiteTexto)
-                                            .keyboardType(.decimalPad)
-                }
-                
             }
             .navigationTitle("Editar Cartão")
             .navigationBarTitleDisplayMode(.inline)
@@ -884,12 +1060,18 @@ struct EditarLancamentoView: View {
                             tipo: viewModel.tipo
                         )
                     case .pagamento:
-                        OperadoraZoomView(
-                            operadoraSelecionada: $viewModel.operadora
+                        CategoriaZoomView(
+                            categoriaSelecionada: $viewModel.categoria,
+                            tipo: viewModel.tipo
                         )
-                    case .fatura:
-                        CalendarioZoomView(selectedDate: $faturaData)
-                            .presentationDetents([.medium,.large])
+                    case .fatura:                           
+                        CalendarioZoomView(
+                            dataInicial: faturaData,
+                            onConfirm: { data in
+                                faturaData = data
+                            }
+                        )
+                        .presentationDetents([.medium, .large])
                     }
                 }
             }
@@ -929,6 +1111,7 @@ struct EditarLancamentoView: View {
     }
 
     private func salvar() {
+       /*
         do {
             var lancamento = try viewModel.construirLancamento()
             lancamento.id = self.lancamento.id
@@ -941,6 +1124,7 @@ struct EditarLancamentoView: View {
         } catch {
             debugPrint("Erro inesperado ao editar lançamento", error)
         }
+        */
     }
 }
 

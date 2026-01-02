@@ -25,7 +25,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var diaCompra: Int
     var mesCompra: Int
     var anoCompra: Int
-    var categoriaID: Int
+    var categoriaID: Int64
     var cartaoUuid: String
     var recorrente: Int
     var parcelas: Int
@@ -145,3 +145,12 @@ extension LancamentoModel {
         transferenciaRaw == 1
     }
 }
+
+extension LancamentoModel {
+    var valorComSinal: Double {
+        tipo == Tipo.despesa.rawValue ? -valor : valor
+    }
+}
+
+
+

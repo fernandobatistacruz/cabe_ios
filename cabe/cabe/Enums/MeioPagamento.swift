@@ -27,6 +27,7 @@ enum MeioPagamento: Identifiable, Equatable {
             return conta.nome
         }
     }
+    
 
     var subtitulo: String {
         switch self {
@@ -36,8 +37,17 @@ enum MeioPagamento: Identifiable, Equatable {
             return "Conta"
         }
     }
-
-    // 👇 Implementação manual do Equatable
+    
+    var cartaoModel: CartaoModel? {
+        guard case .cartao(let cartao) = self else { return nil }
+        return cartao
+    }
+    
+    var contaModel: ContaModel? {
+        guard case .conta(let conta) = self else { return nil }
+        return conta
+    }
+   
     static func == (lhs: MeioPagamento, rhs: MeioPagamento) -> Bool {
         switch (lhs, rhs) {
         case (.cartao(let c1), .cartao(let c2)):

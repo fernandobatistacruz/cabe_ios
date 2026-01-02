@@ -2,8 +2,20 @@ import SwiftUI
 
 struct CalendarioZoomView: View {
 
+    let dataInicial: Date
+    let onConfirm: (Date) -> Void
+
     @Environment(\.dismiss) private var dismiss
-    @Binding var selectedDate: Date
+    @State private var dataSelecionada: Date
+
+    init(
+        dataInicial: Date,
+        onConfirm: @escaping (Date) -> Void
+    ) {
+        self.dataInicial = dataInicial
+        self.onConfirm = onConfirm
+        _dataSelecionada = State(initialValue: dataInicial)
+    }
 
     private let calendar = Calendar.current
 
@@ -14,11 +26,11 @@ struct CalendarioZoomView: View {
 
     // MARK: - Computed
     private var selectedYear: Int {
-        calendar.component(.year, from: selectedDate)
+        calendar.component(.year, from: dataSelecionada)
     }
 
     private var selectedMonth: Int {
-        calendar.component(.month, from: selectedDate)
+        calendar.component(.month, from: dataSelecionada)
     }
 
     // MARK: - Body
@@ -95,17 +107,21 @@ private extension CalendarioZoomView {
     func handleMonthSelection(year: Int, month: Int) {
         let date = calendar.date(
             from: DateComponents(year: year, month: month, day: 1)
-        ) ?? selectedDate
+        ) ?? dataSelecionada
 
         withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-            selectedDate = date
+            dataSelecionada = date
         }
 
+        onConfirm(date)
         dismiss()
     }
 
     func selectToday() {
-        selectedDate = calendar.startOfDay(for: Date())
+        let today = calendar.startOfDay(for: Date())
+        dataSelecionada = today
+
+        onConfirm(today)
         dismiss()
     }
 }
@@ -170,9 +186,8 @@ struct MonthCell: View {
 }
 
 #Preview {
-    StatefulPreviewWrapper(Date()) { date in
-        CalendarioZoomView(selectedDate: date)
-    }
+   
+   
 }
 
 struct StatefulPreviewWrapper<Value, Content: View>: View {

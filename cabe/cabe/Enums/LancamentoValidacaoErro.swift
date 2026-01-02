@@ -10,11 +10,11 @@ import Foundation
 enum LancamentoValidacaoErro: LocalizedError, Identifiable {
 
     case descricaoVazio
-    case vencimentoInvalido
-    case fechamentoInvalido
-    case limiteInvalido
+    case valorInvalido
     case operadoraNaoSelecionada
     case contaNaoSelecionada
+    case pagamentoVazio
+    case categoriaVazio
 
     var id: String { localizedDescription }
 
@@ -24,20 +24,18 @@ enum LancamentoValidacaoErro: LocalizedError, Identifiable {
         case .descricaoVazio:
             return NSLocalizedString("Informe o nome do cartão.", comment: "")
 
-        case .vencimentoInvalido:
-            return NSLocalizedString("Informe um dia de vencimento entre 1 e 31.", comment: "")
-
-        case .fechamentoInvalido:
-            return NSLocalizedString("Informe um dia de fechamento entre 1 e 31.", comment: "")
-
-        case .limiteInvalido:
-            return NSLocalizedString("Informe um limite válido.", comment: "")
+        case .valorInvalido:
+            return NSLocalizedString("Informe um valor válido.", comment: "")
 
         case .operadoraNaoSelecionada:
             return NSLocalizedString("Selecione a operadora do cartão.", comment: "")
 
         case .contaNaoSelecionada:
             return NSLocalizedString("Selecione a conta vinculada ao cartão.", comment: "")
+        case .pagamentoVazio:
+            return NSLocalizedString("Selecione a forma de pagamento.", comment: "")
+        case .categoriaVazio:
+            return NSLocalizedString("Selecione uma categoria.", comment: "")
         }
     }
 }

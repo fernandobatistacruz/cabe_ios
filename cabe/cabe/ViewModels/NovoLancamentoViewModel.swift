@@ -14,49 +14,40 @@ final class NovoLancamentoViewModel: ObservableObject {
     // MARK: - Inputs da tela
     
     @Published var descricao: String = ""
-    @Published var operadora: OperadoraCartao?
-    @Published var conta: ContaModel?
     @Published var categoria: CategoriaModel?
-    @Published var tipo: Tipo = .despesa    
-    @Published var vencimentoTexto: String = ""
-    @Published var fechamentoTexto: String = ""
-    @Published var limiteTexto: String = ""
+    @Published var tipo: Tipo = .despesa
+    @Published var valorTexto: String = ""
     @Published var dividida: Bool = false
     @Published var pago: Bool = false
-    @Published var dataSelecionada: Date = Date()
+    @Published var dataLancamento: Date = Date()
+    @Published var dataFatura: Date = Date()
     @Published var anotacao: String = ""
-    @Published var tipoRecorrente: TipoRecorrente = .nunca
-    @Published var meioPagamentoSelecionado: MeioPagamento?
+    @Published var recorrente: TipoRecorrente = .nunca
+    @Published var pagamentoSelecionado: MeioPagamento?
+    @Published var parcelaTexto: String = ""
 
 
     // MARK: - Conversões (usando seu utils)
-    
-    var vencimentoInt: Int? {
-        guard let value = Int(vencimentoTexto),
-              (1...31).contains(value) else {
-            return nil
-        }
-        return value
-    }
-
-    var fechamentoInt: Int? {
-        guard let value = Int(fechamentoTexto),
-              (1...31).contains(value) else {
-            return nil
-        }
-        return value
-    }
 
     /// Converte o texto digitado para Double respeitando o Locale
-    var limiteDouble: Double? {
+    var valorDouble: Double? {
         NumberFormatter.decimalInput
-            .number(from: limiteTexto)?
+            .number(from: valorTexto)?
             .doubleValue
     }
+    
+    var parcelaInt: Int {
+        guard let value = Int(parcelaTexto),
+              (1...31).contains(value) else {
+            return 1
+        }
+        return value
+    }
+
 
     /// Usado ao carregar dados do banco (edição)
     func setLimite(_ value: Double) {
-        limiteTexto = NumberFormatter.decimalInput
+        valorTexto = NumberFormatter.decimalInput
             .string(from: NSNumber(value: value)) ?? ""
     }
 
@@ -68,24 +59,16 @@ final class NovoLancamentoViewModel: ObservableObject {
             return .descricaoVazio
         }
 
-        guard let limite = limiteDouble, limite > 0 else {
-            return .limiteInvalido
-        }
-
-        guard operadora != nil else {
-            return .operadoraNaoSelecionada
-        }
-
-        guard conta != nil else {
-            return .contaNaoSelecionada
+        guard let limite = valorDouble, limite > 0 else {
+            return .valorInvalido
         }
         
-        guard vencimentoInt != nil else {
-            return .vencimentoInvalido
+        if(pagamentoSelecionado == nil) {
+            return .pagamentoVazio
         }
-
-        guard fechamentoInt != nil else {
-            return .fechamentoInvalido
+        
+        if(categoria == nil) {
+            return .pagamentoVazio
         }
 
         return nil
@@ -98,7 +81,7 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     // MARK: - Construção segura do Model
 
-    func construirLancamento() throws -> LancamentoModel {
+    func construirLancamento(dia: Int, mes: Int, ano: Int, diaCompra: Int, mesCompra: Int, anoCompra: Int, parcelaMes: String) throws -> LancamentoModel {
 
         if let erro = validar() {
             throw erro
@@ -106,25 +89,25 @@ final class NovoLancamentoViewModel: ObservableObject {
 
         return LancamentoModel(
             uuid: UUID().uuidString,
-            descricao: "",
-            anotacao: "",
-            tipo: 2,
+            descricao: descricao,
+            anotacao: anotacao,
+            tipo: tipo.rawValue,
             transferenciaRaw: 0,
-            dia: 1,
-            mes: 1,
-            ano: 2025,
-            diaCompra: 1,
-            mesCompra: 1,
-            anoCompra: 2025,
-            categoriaID: 1,
-            cartaoUuid: "",
-            recorrente: 1,
-            parcelas: 1,
-            parcelaMes: "",
-            valor: 100.00,
+            dia: dia,
+            mes: mes,
+            ano: ano,
+            diaCompra: diaCompra,
+            mesCompra: mesCompra,
+            anoCompra: anoCompra,
+            categoriaID: categoria!.id!,
+            cartaoUuid: pagamentoSelecionado?.cartaoModel?.uuid ?? "",
+            recorrente: recorrente.rawValue,
+            parcelas: parcelaInt,
+            parcelaMes: parcelaMes,
+            valor: valorDouble ?? 0.0,
             pagoRaw: 0,
-            divididoRaw: 0,
-            contaUuid: "",
+            divididoRaw: dividida ? 1 : 0,
+            contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
             notificadoRaw: 0,
             dataCriacao: Date()
         )
