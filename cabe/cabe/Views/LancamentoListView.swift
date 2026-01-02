@@ -606,6 +606,11 @@ struct NovoLancamentoView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
                     .padding(.top)
+                    .onChange(of: vm.tipo) { novoTipo in
+                        vm.reset()
+                        mostrarCalendario = false
+                    }
+
                     
                     Form {
                         Section{

@@ -78,6 +78,22 @@ final class NovoLancamentoViewModel: ObservableObject {
     var formValido: Bool {
         validar() == nil
     }
+    
+    func reset() {
+        valorTexto = ""
+        descricao = ""
+        anotacao = ""
+        categoria = nil
+        pagamentoSelecionado = nil
+        pagamentoSelecionado = nil
+        dividida = false
+        pago = false
+        dataLancamento = Date()
+        dataFatura = Date()
+        recorrente = .nunca
+        parcelaTexto = ""
+    }
+
 
     // MARK: - Construção segura do Model
 
