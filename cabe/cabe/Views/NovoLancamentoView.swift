@@ -291,6 +291,7 @@ struct NovoLancamentoView: View {
         }
 
         var dataAtual = dataInicial
+        let uuid = UUID().uuidString
 
         do {
             while dataAtual <= dataFinal {
@@ -310,6 +311,7 @@ struct NovoLancamentoView: View {
                 )
 
                 let lancamento = try vm.construirLancamento(
+                    uuid: uuid,
                     dia: componentes.day!,
                     mes: componentes.month!,
                     ano: componentes.year!,
@@ -350,6 +352,8 @@ struct NovoLancamentoView: View {
         ) else {
             return
         }
+        
+        let uuid = UUID().uuidString
 
         do {
             while dataAtual <= dataFinal {
@@ -360,6 +364,7 @@ struct NovoLancamentoView: View {
                 )
 
                 let lancamento = try vm.construirLancamento(
+                    uuid: uuid,
                     dia: componentes.day ?? 0,
                     mes: componentes.month ?? 0,
                     ano: componentes.year ?? 0,
@@ -419,11 +424,14 @@ struct NovoLancamentoView: View {
         )
 
         var dataAtual = dataInicial
+        
+        let uuid = UUID().uuidString
 
         do {
             for parcela in 1...vm.parcelaInt {
 
                 let lancamento = try vm.construirLancamento(
+                    uuid: uuid,
                     dia: calendar.component(.day, from: dataAtual),
                     mes: calendar.component(.month, from: dataAtual),
                     ano: calendar.component(.year, from: dataAtual),

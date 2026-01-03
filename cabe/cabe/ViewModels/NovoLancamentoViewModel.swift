@@ -99,14 +99,14 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     // MARK: - Construção segura do Model
 
-    func construirLancamento(dia: Int, mes: Int, ano: Int, diaCompra: Int, mesCompra: Int, anoCompra: Int, parcelaMes: String) throws -> LancamentoModel {
+    func construirLancamento(uuid: String, dia: Int, mes: Int, ano: Int, diaCompra: Int, mesCompra: Int, anoCompra: Int, parcelaMes: String) throws -> LancamentoModel {
 
         if let erro = validar() {
             throw erro
         }
 
         return LancamentoModel(
-            uuid: UUID().uuidString,
+            uuid: uuid,
             descricao: descricao,
             anotacao: anotacao,
             tipo: tipo.rawValue,

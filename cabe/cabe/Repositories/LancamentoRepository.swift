@@ -55,6 +55,33 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
+    func removerRecorrentes(uuid: String) async throws {
+       _ = try await db.dbQueue.write { db in
+            try LancamentoModel
+                .filter(LancamentoModel.Columns.uuid == uuid)
+                .deleteAll(db)
+        }
+    }
+    
+    func removerEsteEProximos(
+        uuid: String,
+        mes: Int,
+        ano: Int
+    ) async throws {
+        _ = try await db.dbQueue.write { db in
+            try LancamentoModel
+                .filter(
+                    LancamentoModel.Columns.uuid == uuid &&
+                    (
+                        LancamentoModel.Columns.ano > ano ||
+                        (LancamentoModel.Columns.ano == ano &&
+                         LancamentoModel.Columns.mes >= mes)
+                    )
+                )
+                .deleteAll(db)
+        }
+    }
+    
     func togglePago(_ lancamentos: [LancamentoModel]) async throws {
         try await db.dbQueue.write { db in
             for var lancamento in lancamentos {
@@ -63,7 +90,6 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             }
         }
     }
-
     
     func limparDados() async throws {
         _ =  try await db.dbQueue.write { db in
@@ -194,6 +220,7 @@ protocol LancamentoRepositoryProtocol {
     func salvar(_ lancamento: LancamentoModel) async throws
     func editar(_ lancamento: LancamentoModel) async throws
     func remover(id: Int64, uuid: String) async throws
+    func removerRecorrentes(uuid: String) async throws
     func limparDados() async throws
     func consultarPorUuid(_ uuid: String) async throws -> [LancamentoModel]
 }

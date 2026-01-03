@@ -68,6 +68,24 @@ final class LancamentoListViewModel: ObservableObject {
         catch { print("Erro ao remover lançamento:", error) }
     }
     
+    func removerSomenteEste(_ lancamento: LancamentoModel) async {
+        guard let id = lancamento.id else { return }
+        await remover(id: id, uuid: lancamento.uuid)
+    }
+
+    func removerTodosRecorrentes(_ lancamento: LancamentoModel) async {
+        do { try await repository.removerRecorrentes(uuid: lancamento.uuid) }
+        catch { print("Erro ao remover lançamento:", error) }
+    }
+    
+    func removerEsteEProximos(_ lancamento: LancamentoModel) async {
+        do {
+            try await repository
+                .removerEsteEProximos(uuid: lancamento.uuid, mes: lancamento.mes, ano: lancamento.ano)
+        }
+        catch { print("Erro ao remover lançamento:", error) }
+    }
+    
     func limparDados() async {
         do { try await repository.limparDados() }
         catch { print("Erro ao limpar dados:", error) }

@@ -11,10 +11,10 @@ struct LancamentoListView: View {
     
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
-    @State private var mostrarConfirmacao = false
     @State private var lancamentoParaExcluir: LancamentoModel?
     @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
+    @State private var mostrarDialogExclusao = false
     
     private var selectedDate: Date {
         Calendar.current.date(
@@ -66,7 +66,7 @@ struct LancamentoListView: View {
                                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                                 Button(role: .destructive) {
                                                     lancamentoParaExcluir = lancamento
-                                                    mostrarConfirmacao = true
+                                                    mostrarDialogExclusao = true
                                                 } label: {
                                                     Label("Excluir", systemImage: "trash")
                                                 }
@@ -174,16 +174,36 @@ struct LancamentoListView: View {
                     }
                 }
             }
-            .alert("Excluir Lançamento?", isPresented: $mostrarConfirmacao) {
-                Button("Excluir", role: .destructive) {
-                    Task{
-                        if let lancamento = lancamentoParaExcluir { await excluir(lancamento) }
+            .confirmationDialog(
+                "Excluir lançamento?",
+                isPresented: $mostrarDialogExclusao,
+                titleVisibility: .visible
+            ) {
+                if let lancamento = lancamentoParaExcluir {
+
+                    if lancamento.tipoRecorrente == .nunca {
+                        Button("Confirmar exclusão", role: .destructive) {
+                            Task { await excluirTodos(lancamento) }
+                        }
+                    } else {
+                        Button("Excluir somente este", role: .destructive) {
+                            Task { await excluirSomenteEste(lancamento) }
+                        }
+
+                        Button("Excluir este e os próximos", role: .destructive) {
+                            Task { await excluirEsteEProximos(lancamento) }
+                        }
+
+                        Button("Excluir todos", role: .destructive) {
+                            Task { await excluirTodos(lancamento) }
+                        }
                     }
                 }
-                Button("Cancelar", role: .cancel) { }
-            } message: {
+            }
+            message: {
                 Text("Essa ação não poderá ser desfeita.")
             }
+
             .sheet(isPresented: $mostrarNovoLancamento) {
                 NovoLancamentoView()
             }
@@ -198,6 +218,19 @@ struct LancamentoListView: View {
             }
         }
     }
+    
+    private func excluirSomenteEste(_ lancamento: LancamentoModel) async {
+        await viewModel.removerSomenteEste(lancamento)
+    }
+
+    private func excluirEsteEProximos(_ lancamento: LancamentoModel) async {
+        await viewModel.removerEsteEProximos(lancamento)
+    }
+    
+    private func excluirTodos(_ lancamento: LancamentoModel) async {
+        await viewModel.removerTodosRecorrentes(lancamento)
+    }
+
     
     var lancamentosAgrupados: [(date: Date, items: [LancamentoItem])] {
         
@@ -320,4 +353,44 @@ struct LancamentoRow: View {
         }
     }
 }
+
+struct DialogoExclusaoLancamento: View {
+
+    let lancamento: LancamentoModel?
+    let removerSomenteEste: (LancamentoModel) -> Void
+    let removerEsteEProximos: (LancamentoModel) -> Void
+    let removerTodos: (LancamentoModel) -> Void
+
+    var body: some View {
+
+        if let lancamento {
+
+            if lancamento.tipoRecorrente == .nunca {
+
+                Button("Confirmar exclusão", role: .destructive) {
+                    removerTodos(lancamento)
+                }
+
+            } else {
+
+                Button("Remover somente este", role: .destructive) {
+                    removerSomenteEste(lancamento)
+                }
+
+                Button("Remover este e os próximos", role: .destructive) {
+                    removerEsteEProximos(lancamento)
+                }
+
+                Button("Remover todos", role: .destructive) {
+                    removerTodos(lancamento)
+                }
+            }
+        }
+        
+        Button("Cancelar", role: .cancel) { }
+    }
+}
+
+
+
 
