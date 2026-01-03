@@ -117,12 +117,12 @@ extension LancamentoModel {
         get { pagoRaw == 1 }
         set { pagoRaw = newValue ? 1 : 0 }
     }
-
 }
 
 extension LancamentoModel {
-    var dividido: Bool{
-        divididoRaw == 1
+    var dividido: Bool {
+        get { divididoRaw == 1 }
+        set { divididoRaw = newValue ? 1 : 0 }
     }
 }
 

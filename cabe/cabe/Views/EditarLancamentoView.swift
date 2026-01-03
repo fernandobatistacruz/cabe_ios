@@ -4,50 +4,181 @@
 //
 //  Created by Fernando Batista da Cruz on 03/01/26.
 //
+//
+//  EditarLancamentoView.swift
+//  cabe
+//
 
 import SwiftUI
 
 struct EditarLancamentoView: View {
-    
-    @State var lancamento: LancamentoModel
+
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = NovoLancamentoViewModel()
+
+    @StateObject private var vm: NovoLancamentoViewModel
+
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
-    @State public var selectedYear = Calendar.current.component(.year, from: Date())
-    @State public var selectedMonth = Calendar.current.component(.month, from: Date())
-    @State private var faturaData = Date()
+    @State private var mostrarCalendario = false
+
+    // 🔹 Lançamento que será editado
+    private let lancamento: LancamentoModel
+
+    // MARK: - Init
+    init(lancamento: LancamentoModel) {
+        self.lancamento = lancamento
+        _vm = StateObject(
+            wrappedValue: NovoLancamentoViewModel(lancamento: lancamento)
+        )
+    }
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section{
-                    TextField("Nome", text: $viewModel.descricao)
-                    
-                    
+            ZStack {
+                Color(uiColor: .systemGroupedBackground)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    Form {
+
+                        // MARK: - Dados básicos
+                        Section {
+                            TextField("Descrição", text: $vm.descricao)
+
+                            Button {
+                                sheetAtivo = .categoria
+                            } label: {
+                                HStack {
+                                    Text("Categoria")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(vm.categoria?.nome ?? "Nenhuma")
+                                        .foregroundColor(.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
+                            }
+                        }
+
+                        // MARK: - Pagamento
+                        Section {
+                            Button {
+                                sheetAtivo = .pagamento
+                            } label: {
+                                HStack {
+                                    Text("Pagamento")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(vm.pagamentoSelecionado?.titulo ?? "Nenhuma")
+                                        .foregroundColor(.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
+                            }
+
+                            if vm.pagamentoSelecionado?.cartaoModel != nil {
+                                Button {
+                                    sheetAtivo = .fatura
+                                } label: {
+                                    HStack {
+                                        Text("Fatura")
+                                        Spacer()
+                                        Text(
+                                            vm.dataFatura.formatted(
+                                                .dateTime.month(.wide).year()
+                                            )
+                                        )
+                                        .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+
+                            if vm.tipo == .despesa {
+                                Toggle("Dividida", isOn: $vm.dividida)
+                            }
+
+                            // 🔒 Recorrência NÃO editável
+                            HStack {
+                                Text("Recorrência")
+                                Spacer()
+                                Text(vm.recorrente.titulo)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            TextField("Valor", text: $vm.valorTexto)
+                                .keyboardType(.decimalPad)
+
+                            Toggle("Pago", isOn: $vm.pago)
+
+                            Button {
+                                mostrarCalendario.toggle()
+                            } label: {
+                                HStack {
+                                    Text("Data da Compra")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text("\(vm.dataLancamento.formatted(date: .abbreviated, time: .omitted))")
+                                        .foregroundColor(.primary)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 22)
+                                                .fill(
+                                                    Color(
+                                                        uiColor: .secondarySystemFill
+                                                    )
+                                                )
+                                        )
+                                }
+                            }
+                            
+                            if mostrarCalendario {
+                                DatePicker(
+                                    "",
+                                    selection: $vm.dataLancamento,
+                                    displayedComponents: [.date]
+                                )
+                                .datePickerStyle(.graphical)
+                            }
+                        }
+
+                        // MARK: - Anotação
+                        Section {
+                            ZStack(alignment: .topLeading) {
+                                if vm.anotacao.isEmpty {
+                                    Text("Anotação")
+                                        .foregroundColor(.secondary)
+                                        .padding(.top, 8)
+                                }
+                                TextEditor(text: $vm.anotacao)
+                                    .frame(minHeight: 80)
+                            }
+                        }
+                    }
                 }
             }
-            .navigationTitle("Editar Cartão")
+            .navigationTitle("Editar")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $sheetAtivo) { sheet in
                 NavigationStack {
                     switch sheet {
                     case .categoria:
                         CategoriaZoomView(
-                            categoriaSelecionada: $viewModel.categoria,
-                            tipo: viewModel.tipo
+                            categoriaSelecionada: $vm.categoria,
+                            tipo: vm.tipo
                         )
+
                     case .pagamento:
-                        CategoriaZoomView(
-                            categoriaSelecionada: $viewModel.categoria,
-                            tipo: viewModel.tipo
+                        ZoomPagamentoView(
+                            selecionado: $vm.pagamentoSelecionado
                         )
-                    case .fatura:                           
+
+                    case .fatura:
                         CalendarioZoomView(
-                            dataInicial: faturaData,
-                            onConfirm: { data in
-                                faturaData = data
-                            }
+                            dataInicial: vm.dataFatura,
+                            onConfirm: { vm.dataFatura = $0 }
                         )
                         .presentationDetents([.medium, .large])
                     }
@@ -61,17 +192,15 @@ struct EditarLancamentoView: View {
                         Image(systemName: "xmark")
                     }
                 }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        salvar()
+                        Task { await salvarEdicao() }
                     } label: {
                         Image(systemName: "checkmark")
-                            .foregroundColor(.white)
-                            
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
-                    .disabled(!viewModel.formValido)
+                    .disabled(!vm.formValido)
                 }
             }
             .alert(item: $erroValidacao) { erro in
@@ -81,27 +210,31 @@ struct EditarLancamentoView: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
-            .onAppear(){
-                viewModel.descricao = lancamento.descricao
-                viewModel.setLimite(lancamento.valor)
-            }
         }
     }
 
-    private func salvar() {
-       /*
+    // MARK: - Salvar edição
+    private func salvarEdicao() async {
         do {
-            var lancamento = try viewModel.construirLancamento()
-            lancamento.id = self.lancamento.id
-            lancamento.uuid = self.lancamento.uuid
-            
-            try LancamentoRepository().editar(lancamento)
+            let repository = LancamentoRepository()
+
+            var editado = lancamento
+            editado.descricao = vm.descricao
+            editado.anotacao = vm.anotacao
+            editado.valor = vm.valorDecimal ?? editado.valor
+            editado.pago = vm.pago
+            editado.dividido = vm.dividida
+            editado.categoriaID = vm.categoria?.id ?? editado.categoriaID
+            editado.cartaoUuid = vm.pagamentoSelecionado?.cartaoModel?.uuid ?? ""
+            editado.contaUuid = vm.pagamentoSelecionado?.contaModel?.uuid ?? ""
+
+            try await repository.editar(editado)
             dismiss()
+
         } catch let erro as LancamentoValidacaoErro {
             erroValidacao = erro
         } catch {
-            debugPrint("Erro inesperado ao editar lançamento", error)
+            debugPrint("Erro ao editar lançamento", error)
         }
-        */
     }
 }
