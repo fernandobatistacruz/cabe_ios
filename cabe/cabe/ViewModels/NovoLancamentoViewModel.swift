@@ -30,11 +30,13 @@ final class NovoLancamentoViewModel: ObservableObject {
     // MARK: - Conversões (usando seu utils)
 
     /// Converte o texto digitado para Double respeitando o Locale
-    var valorDouble: Double? {
+       
+    var valorDecimal: Decimal? {
         NumberFormatter.decimalInput
             .number(from: valorTexto)?
-            .doubleValue
+            .decimalValue
     }
+
     
     var parcelaInt: Int {
         guard let value = Int(parcelaTexto),
@@ -44,12 +46,12 @@ final class NovoLancamentoViewModel: ObservableObject {
         return value
     }
 
-
     /// Usado ao carregar dados do banco (edição)
-    func setLimite(_ value: Double) {
+    func setLimite(_ value: Decimal) {
         valorTexto = NumberFormatter.decimalInput
-            .string(from: NSNumber(value: value)) ?? ""
+            .string(from: value as NSDecimalNumber) ?? ""
     }
+
 
     // MARK: - Validação
 
@@ -59,7 +61,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             return .descricaoVazio
         }
 
-        guard let limite = valorDouble, limite > 0 else {
+        guard let limite = valorDecimal, limite > 0 else {
             return .valorInvalido
         }
         
@@ -120,7 +122,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             recorrente: recorrente.rawValue,
             parcelas: parcelaInt,
             parcelaMes: parcelaMes,
-            valor: valorDouble ?? 0.0,
+            valor: valorDecimal ?? 0.0,
             pagoRaw: 0,
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",

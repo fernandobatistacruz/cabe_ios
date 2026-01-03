@@ -30,7 +30,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var recorrente: Int
     var parcelas: Int
     var parcelaMes: String
-    var valor: Double
+    var valor: Decimal
     var pagoRaw: Int
     var divididoRaw: Int
     var contaUuid: String
@@ -96,16 +96,6 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
 }
 
 extension LancamentoModel {
-    var dataCompleta: Date {
-        var components = DateComponents()
-        components.day = dia
-        components.month = mes
-        components.year = ano
-        return Calendar.current.date(from: components) ?? .now
-    }
-}
-
-extension LancamentoModel {
     var dataAgrupamento: Date {
         var components = DateComponents()
 
@@ -124,8 +114,10 @@ extension LancamentoModel {
 
 extension LancamentoModel {
     var pago: Bool {
-        pagoRaw == 1
+        get { pagoRaw == 1 }
+        set { pagoRaw = newValue ? 1 : 0 }
     }
+
 }
 
 extension LancamentoModel {
@@ -147,10 +139,77 @@ extension LancamentoModel {
 }
 
 extension LancamentoModel {
-    var valorComSinal: Double {
+    var valorComSinal: Decimal {
         tipo == Tipo.despesa.rawValue ? -valor : valor
     }
 }
+
+extension LancamentoModel {
+    var tipoRecorrente: TipoRecorrente {
+        TipoRecorrente(rawValue: recorrente) ?? .nunca
+    }
+}
+
+extension LancamentoModel {
+    var dataFaturaFormatada: String {
+        guard let dia = cartao?.vencimento,
+              let data = Calendar.current.date(from: DateComponents(
+                  year: ano,
+                  month: mes,
+                  day: dia
+              )) else {
+            return "—"
+        }
+        
+        return data.formatted(
+            .dateTime
+                .day(.twoDigits)
+                .month(.twoDigits)
+                .year()
+        )
+    }
+}
+extension LancamentoModel {
+
+    var dataCompraFormatada: String {
+        guard let data = Calendar.current.date(from: DateComponents(
+            year: anoCompra,
+            month: mesCompra,
+            day: diaCompra
+        )) else {
+            return "—" // placeholder caso algum valor esteja ausente
+        }
+
+        return data.formatted(
+            .dateTime
+                .day(.twoDigits)
+                .month(.twoDigits)
+                .year()
+        )
+    }
+}
+
+extension LancamentoModel {
+
+    var dataVencimentoFormatada: String {
+        guard let data = Calendar.current.date(from: DateComponents(
+            year: ano,
+            month: mes,
+            day: dia
+        )) else {
+            return "—" // placeholder caso algum valor esteja ausente
+        }
+
+        return data.formatted(
+            .dateTime
+                .day(.twoDigits)
+                .month(.twoDigits)
+                .year()
+        )
+    }
+}
+
+
 
 
 

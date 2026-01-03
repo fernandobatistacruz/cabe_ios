@@ -53,34 +53,34 @@ final class LancamentoListViewModel: ObservableObject {
         observarLancamentos()
     }
    
-    func salvar(_ lancamento: inout LancamentoModel) {
-        do { try repository.salvar(&lancamento) }
+    func salvar(_ lancamento: LancamentoModel) async {
+        do { try await repository.salvar(lancamento) }
         catch { print("Erro ao salvar lançamento:", error) }
     }
     
-    func editar(_ lancamento: LancamentoModel) {
-        do { try repository.editar(lancamento) }
+    func editar(_ lancamento: LancamentoModel) async {
+        do { try await repository.editar(lancamento) }
         catch { print("Erro ao editar lançamento:", error) }
     }
     
-    func remover(id: Int64, uuid: String) {
-        do { try repository.remover(id: id, uuid: uuid) }
+    func remover(id: Int64, uuid: String) async{
+        do { try await repository.remover(id: id, uuid: uuid) }
         catch { print("Erro ao remover lançamento:", error) }
     }
     
-    func limparDados() {
-        do { try repository.limparDados() }
+    func limparDados() async {
+        do { try await repository.limparDados() }
         catch { print("Erro ao limpar dados:", error) }
     }
-   
-    func listar() -> [LancamentoModel] {
-        do { return try repository.listar() }
-        catch { print("Erro ao listar lançamentos:", error); return [] }
+    
+    func consultarPorUuid (_ uuid: String) async -> [LancamentoModel] {
+        do { return try await repository.consultarPorUuid(uuid) }
+        catch { print("Erro ao consultar por UUID:", error); return [] }
     }
     
-    func consultarPorUuid(_ uuid: String) -> [LancamentoModel] {
-        do { return try repository.consultarPorUuid(uuid) }
-        catch { print("Erro ao consultar por UUID:", error); return [] }
+    func togglePago(_ lancamentos: [LancamentoModel]) async {
+        do { try await repository.togglePago(lancamentos) }
+        catch { print("Erro ao alternar pagamento:", error) }
     }
     
     deinit {

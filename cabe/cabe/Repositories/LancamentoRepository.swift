@@ -32,20 +32,20 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         )
     }
 
-    func salvar(_ lancamento: inout LancamentoModel) throws {
-        try db.dbQueue.write { db in
+    func salvar(_ lancamento: LancamentoModel) async throws {
+        try await db.dbQueue.write { db in
             try lancamento.insert(db)
         }
     }
     
-    func editar(_ lancamento: LancamentoModel) throws {
-        try db.dbQueue.write { db in
+    func editar(_ lancamento: LancamentoModel) async throws {
+        try await db.dbQueue.write { db in
             try lancamento.update(db)
         }
     }
     
-    func remover(id: Int64, uuid: String) throws {
-       _ =  try db.dbQueue.write { db in
+    func remover(id: Int64, uuid: String) async throws {
+        _ =  try await db.dbQueue.write { db in
             try LancamentoModel
                 .filter(
                     LancamentoModel.Columns.id == id &&
@@ -55,36 +55,20 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    func limparDados() throws {
-       _ =  try db.dbQueue.write { db in
+    func togglePago(_ lancamentos: [LancamentoModel]) async throws {
+        try await db.dbQueue.write { db in
+            for var lancamento in lancamentos {
+                lancamento.pago.toggle()
+                try lancamento.update(db)
+            }
+        }
+    }
+
+    
+    func limparDados() async throws {
+        _ =  try await db.dbQueue.write { db in
             try LancamentoModel.deleteAll(db)
         }
-    }
-    
-    func listar() throws -> [LancamentoModel] {
-        try db.dbQueue.read { db in
-            try listar(db: db)
-        }
-    }
-    
-    private func listar(db: Database) throws -> [LancamentoModel] {
-        let rows = try Row.fetchAll(db, sql: """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-            FROM lancamento l
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
-            ORDER BY l.ano DESC, l.mes DESC, l.dia DESC
-        """)
-
-        return mapRows(rows)
     }
     
     private func listar(
@@ -191,8 +175,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    func consultarPorUuid(_ uuid: String) throws -> [LancamentoModel] {
-        try db.dbQueue.read { db in
+    func consultarPorUuid(_ uuid: String) async throws -> [LancamentoModel] {
+        try await db.dbQueue.read { db in
             try LancamentoModel
                 .filter(LancamentoModel.Columns.uuid == uuid)
                 .fetchAll(db)
@@ -207,10 +191,11 @@ protocol LancamentoRepositoryProtocol {
         ano: Int?,
         onChange: @escaping ([LancamentoModel]) -> Void
     ) -> AnyDatabaseCancellable
-    func salvar(_ lancamento: inout LancamentoModel) throws
-    func editar(_ lancamento: LancamentoModel) throws
-    func remover(id: Int64, uuid: String) throws
-    func limparDados() throws
-    func listar() throws -> [LancamentoModel]
-    func consultarPorUuid(_ uuid: String) throws -> [LancamentoModel]
+    func salvar(_ lancamento: LancamentoModel) async throws
+    func editar(_ lancamento: LancamentoModel) async throws
+    func remover(id: Int64, uuid: String) async throws
+    func limparDados() async throws
+    func consultarPorUuid(_ uuid: String) async throws -> [LancamentoModel]
 }
+
+

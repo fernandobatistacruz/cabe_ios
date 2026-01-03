@@ -55,7 +55,9 @@ struct CartaoListView: View {
                 List {
                     Section {
                         ForEach(cartoesFiltrados) { cartao in
-                            NavigationLink(destination: CartaoDetalheView(cartao: cartao)) {
+                            NavigationLink(
+                                destination: CartaoDetalheView(cartao: cartao)
+                            ) {
                                 CartaoRow(cartao: cartao)
                                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
@@ -65,7 +67,7 @@ struct CartaoListView: View {
                                             Label("Excluir", systemImage: "trash")
                                         }
                                     }
-                            }
+                            }                            
                             .listRowInsets(
                                 EdgeInsets(
                                     top: 8,
