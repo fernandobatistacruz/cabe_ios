@@ -52,7 +52,21 @@ struct InicioView: View {
                             cartao: viewModel.totalCartao,
                             despesas: viewModel.totalDespesas,
                         )
-                        ConsumoResumoView()
+                        
+                        NavigationLink {
+                            ConsumoDetalhadoView(
+                                vm: viewModel,
+                                items: viewModel.gastosPorCategoriaDetalhado
+                            )
+                        } label: {
+                            ConsumoResumoView(
+                                dados: viewModel.gastosPorCategoriaResumo
+                            )
+                        }
+                        .buttonStyle(.plain)
+
+                        
+                        
                         RecentesListView()
                     }
                     .padding(.bottom, 10)
@@ -250,10 +264,20 @@ struct ConsumoItem: Identifiable {
     let cor: Color
 }
 
+
 struct DonutChartView: View {
 
-    let items: [ConsumoItem]
-    let lineWidth: CGFloat = 18
+    let items: [CategoriaResumo]
+    var lineWidth: CGFloat
+    var size: CGFloat
+    let detalhar: Bool
+
+    init(items: [CategoriaResumo], lineWidth: CGFloat, size: CGFloat, detalhar: Bool = false) {
+        self.items = items
+        self.lineWidth = lineWidth
+        self.size = size
+        self.detalhar = detalhar
+    }
 
     private var total: Double {
         items.map(\.valor).reduce(0, +)
@@ -275,27 +299,39 @@ struct DonutChartView: View {
                         )
                     )
                     .rotationEffect(.degrees(-90))
-                    .padding()
+            }
+            if(detalhar) {
+                VStack(spacing: -2) {
+                    Text(total, format: .currency(code: "BRL"))
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .minimumScaleFactor(0.5) // Para não quebrar se o valor for alto
+                }
             }
         }
-        .frame(width: 100, height: 100)
-       
+        .frame(width: size, height: size)
     }
 
     private func startAngle(for index: Int) -> CGFloat {
-        let sum = items.prefix(index).map(\.valor).reduce(0, +)
-        return CGFloat(sum / total)
+        let sum = items.prefix(index).map(\.percentual).reduce(0, +)
+        return CGFloat(sum / 100)
     }
 
     private func endAngle(for index: Int) -> CGFloat {
+        guard total > 0 else { return 0 }
         let sum = items.prefix(index + 1).map(\.valor).reduce(0, +)
         return CGFloat(sum / total)
     }
 }
 
+
 struct ConsumoListView: View {
 
-    let items: [ConsumoItem]
+    let items: [CategoriaResumo]
+
+    private var total: Double {
+        items.reduce(0) { $0 + $1.valor }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -309,22 +345,26 @@ struct ConsumoListView: View {
 
                     Spacer()
 
-                    Text("\(Int(item.valor))%")
+                    Text(percentualTexto(item))
                         .font(.body)
                         .foregroundStyle(.gray)
                 }
             }
         }
     }
+
+    private func percentualTexto(_ item: CategoriaResumo) -> String {
+        guard total > 0 else { return "0%" }
+
+        let percentual = (item.valor / total) * 100
+        return "\(Int(percentual.rounded()))%"
+    }
 }
 
-struct ConsumoResumoView: View {
 
-    let dados: [ConsumoItem] = [
-        .init(nome: "Alimentação", valor: 40, cor: .purple.opacity(0.8)),
-        .init(nome: "Transporte", valor: 30, cor: .blue.opacity(0.8)),
-        .init(nome: "Lazer", valor: 20, cor: .green.opacity(0.8))
-    ]
+struct ConsumoResumoView: View {
+    
+    let dados: [CategoriaResumo]
 
     var body: some View {
         
@@ -337,9 +377,8 @@ struct ConsumoResumoView: View {
             HStack(spacing: 24) {
                 ConsumoListView(items: dados)
                     .padding()
-                DonutChartView(items: dados)
-                    .padding(.horizontal)
-                
+                DonutChartView(items: dados, lineWidth: 18 , size: 70)
+                    .padding(.trailing, 30)
             }
             .background(
                 RoundedRectangle(cornerRadius: 22)
@@ -457,7 +496,156 @@ struct RecentesListView: View {
     }
 }
 
+struct ConsumoDetalhadoView: View {
+
+    @ObservedObject var vm: LancamentoListViewModel
+    let items: [CategoriaResumo]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+
+                // MARK: - Card do Gráfico
+                VStack {
+                    DonutChartView(
+                        items: items,
+                        lineWidth: 22,
+                        size: 180,
+                        detalhar: true,
+                    )
+                }
+                .frame(maxWidth: .infinity)
+                .padding(24)
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                )
+
+                // MARK: - Legenda / Detalhamento
+                VStack(alignment: .leading, spacing: 12) {
+
+                    Text("Detalhamento")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 0) {
+                        ForEach(items.indices, id: \.self) { index in
+                            let item = items[index]
+
+                            if item.categoriaID >= 0 {
+                                NavigationLink {
+                                    LancamentosPorCategoriaView(
+                                        vm: vm,
+                                        categoriaID: item.categoriaID,
+                                        categoriaNome: item.nome
+                                    )
+                                } label: {
+                                    CategoriaRow(item: item, mostraChevron: true)
+                                }
+                                .buttonStyle(.plain)
+                            } else {
+                                CategoriaRow(item: item, mostraChevron: false)
+                            }
+
+                            // Separador (não mostra no último)
+                            if index < items.count - 1 {
+                                Divider()
+                                    .padding(.leading, 24)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .fill(Color(.secondarySystemGroupedBackground))
+                    )
+                }
+            }
+            .padding()
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Consumo")
+        .toolbar(.hidden, for: .tabBar)
+    }
+}
+
+
+struct CategoriaRow: View {
+
+    let item: CategoriaResumo
+    let mostraChevron: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+
+            Circle()
+                .fill(item.cor)
+                .frame(width: 10, height: 10)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.nome)
+                    .foregroundStyle(.primary) // ✅ cor correta
+
+                Text(item.valorFormatado)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Text(String(format: "%.0f%%", item.percentual))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            if mostraChevron {
+                Image(systemName: "chevron.right")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 8)
+        .contentShape(Rectangle()) // melhora o toque
+    }
+}
+
 #Preview {
     RecentesListView().environmentObject(ThemeManager())
 }
+
+struct LancamentosPorCategoriaView: View {
+
+    @ObservedObject var vm: LancamentoListViewModel
+    let categoriaID: Int64
+    let categoriaNome: String
+
+    private var lancamentosFiltrados: [LancamentoModel] {
+        vm.lancamentos.filter {
+            $0.categoriaID == categoriaID &&
+            $0.tipo == Tipo.despesa.rawValue
+        }
+    }
+
+    var body: some View {
+        List {
+            ForEach(lancamentosFiltrados) { lancamento in
+                HStack(spacing: 4) {
+                    Text(lancamento.descricao)
+                    
+                    Spacer()
+
+                    Text(
+                        lancamento.valor,
+                        format: .currency(
+                            code: lancamento.conta?.currencyCode ?? Locale.current.currency?.identifier ?? "BRL"
+                        )
+                    )
+                    .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .navigationTitle(categoriaNome)
+    }
+}
+
+
 

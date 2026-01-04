@@ -46,6 +46,108 @@ final class LancamentoListViewModel: ObservableObject {
         }
     }
     
+    var gastosPorCategoriaResumo: [CategoriaResumo] {
+
+        let despesas = lancamentos.filter {
+            $0.tipo == Tipo.despesa.rawValue
+        }
+
+        let agrupado = Dictionary(grouping: despesas, by: \.categoriaID)
+
+        var totais: [(categoriaID: Int64, nome: String, valor: Double, cor: Color)] =
+        agrupado.compactMap { (categoriaID, lancamentos) in
+            guard let primeiro = lancamentos.first else { return nil }
+            
+            let total = lancamentos.reduce(0.0) {
+                $0 + ($1.valor as NSDecimalNumber).doubleValue
+            }
+            
+            return (
+                categoriaID: categoriaID,
+                nome: primeiro.categoria?.nome ?? "Sem categoria",
+                valor: total,
+                cor: primeiro.categoria?.getCor().cor ?? .gray
+            )
+        }
+
+        totais.sort { $0.valor > $1.valor }
+
+        let totalGeral = totais.reduce(0) { $0 + $1.valor }
+        guard totalGeral > 0 else { return [] }
+
+        // Top 2
+        let top2 = totais.prefix(2).map {
+            CategoriaResumo(
+                categoriaID: $0.categoriaID,
+                nome: $0.nome,
+                valor: $0.valor,
+                percentual: ($0.valor / totalGeral) * 100,
+                cor: $0.cor
+            )
+        }
+
+        // Outros
+        if totais.count > 2 {
+            let outrosValor = totais.dropFirst(2).reduce(0) { $0 + $1.valor }
+
+            let outros = CategoriaResumo(
+                categoriaID: -1, // ⚠️ marcador especial
+                nome: "Outros",
+                valor: outrosValor,
+                percentual: (outrosValor / totalGeral) * 100,
+                cor: .secondary
+            )
+
+            return top2 + [outros]
+        }
+
+        return top2
+
+    }
+    
+    var gastosPorCategoriaDetalhado: [CategoriaResumo] {
+
+        let despesas = lancamentos.filter {
+            $0.tipo == Tipo.despesa.rawValue
+        }
+
+        let agrupado = Dictionary(grouping: despesas, by: \.categoriaID)
+
+        let totaisBase = agrupado.compactMap { (categoriaID, lancamentos)
+            -> (categoriaID: Int64, nome: String, valor: Double, cor: Color)? in
+
+            guard let primeiro = lancamentos.first else { return nil }
+
+            let valor = lancamentos.reduce(0.0) {
+                $0 + ($1.valor as NSDecimalNumber).doubleValue
+            }
+
+            return (
+                categoriaID: categoriaID,
+                nome: primeiro.categoria?.nome ?? "Sem categoria",
+                valor: valor,
+                cor: primeiro.categoria?.getCor().cor ?? .gray
+            )
+        }
+
+
+        let totalGeral = totaisBase.reduce(0) { $0 + $1.valor }
+        guard totalGeral > 0 else { return [] }
+
+        return totaisBase
+            .sorted { $0.valor > $1.valor }
+            .map {
+                CategoriaResumo(
+                    categoriaID: $0.categoriaID,
+                    nome: $0.nome,
+                    valor: $0.valor,
+                    percentual: ($0.valor / totalGeral) * 100,
+                    cor: $0.cor
+                )
+            }
+
+    }
+    
     func selecionar(data: Date) {
         let calendar = Calendar.current
         mesAtual = calendar.component(.month, from: data)
@@ -144,5 +246,28 @@ extension LancamentoListViewModel {
         lancamentos.filter { $0.tipo == Tipo.receita.rawValue }
     }
 }
+
+struct CategoriaResumo: Identifiable {
+    let id = UUID()
+    let categoriaID: Int64
+    let nome: String
+    let valor: Double
+    let percentual: Double
+    let cor: Color
+
+    var valorFormatado: String {
+        valor.formatted(
+            .currency(code: Locale.current.currency?.identifier ?? "BRL")
+        )
+    }
+}
+
+
+
+
+
+
+
+
 
 

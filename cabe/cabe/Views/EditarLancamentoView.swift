@@ -84,6 +84,7 @@ struct EditarLancamentoView: View {
                                 } label: {
                                     HStack {
                                         Text("Fatura")
+                                            .foregroundColor(.primary)
                                         Spacer()
                                         Text(
                                             vm.dataFatura.formatted(
