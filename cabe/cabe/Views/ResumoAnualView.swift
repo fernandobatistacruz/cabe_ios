@@ -20,7 +20,7 @@ struct ResumoAnualView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground)
+            Color(uiColor: .systemGroupedBackground)
                 .ignoresSafeArea()
             
             ScrollView {
@@ -39,7 +39,7 @@ struct ResumoAnualView: View {
         .navigationTitle("Resumo")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .navigationBarLeading) {
                 Menu {
                     ForEach((2020...Calendar.current.component(.year, from: .now)).reversed(), id: \.self) { ano in
                         Button(String(ano)) {
@@ -105,7 +105,8 @@ struct ResumoAnualView: View {
             Text("Análises")
                 .font(.headline)
 
-            ForEach(vm.insights, id: \.self) { texto in
+            ForEach(vm.insights.indices, id: \.self) { index in
+                let texto = vm.insights[index]
                 InsightRowView(texto: texto)
             }
         }
@@ -167,9 +168,10 @@ struct ResumoAnualView: View {
         var body: some View {
             content
                 .padding()
-                .background(Color(.systemBackground)) // branco
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 22)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                )
         }
     }
 }
@@ -196,12 +198,12 @@ extension Decimal {
 
 // MARK: - Card Resumo
 struct CardResumoView: View {
-    let titulo: String
+    let titulo: LocalizedStringKey
     let valor: Decimal
     let cor: Color
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(titulo)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -214,13 +216,9 @@ struct CardResumoView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 22))
-        .shadow(
-            color: Color.black.opacity(0.08),
-            radius: 4,
-            x: 0,
-            y: 2
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color(.secondarySystemGroupedBackground))
         )
     }
 }
@@ -229,37 +227,35 @@ struct CardResumoView: View {
 
 // MARK: - Insight Row
 struct InsightRowView: View {
-    let texto: String
+    let texto: LocalizedStringKey
 
     var body: some View {
         Text(texto)
             .font(.subheadline)
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .background(
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color(.secondarySystemGroupedBackground))
+            )
     }
 }
 
 struct ChartCard<Content: View>: View {
-    let titulo: String
+    let titulo: LocalizedStringKey
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(titulo)
                 .font(.headline)
-
             content
         }
         .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 22))
-        .shadow(
-            color: Color.black.opacity(0.08),
-            radius: 4,
-            x: 0,
-            y: 2
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color(.secondarySystemGroupedBackground))
         )
     }
 }
+

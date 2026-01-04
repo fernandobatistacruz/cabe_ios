@@ -18,7 +18,7 @@ final class ResumoAnualViewModel: ObservableObject {
     @Published var resumoAnual: ResumoAnualModel?
     @Published var resumoMensal: [ResumoMensalModel] = []
     @Published var despesasPorCategoria: [DespesaPorCategoriaModel] = []
-    @Published var insights: [String] = []
+    @Published var insights: [LocalizedStringKey] = []
 
     init(
         ano: Int,
@@ -110,7 +110,7 @@ private extension ResumoAnualViewModel {
     }
 
     func gerarInsights(_ lancamentos: [LancamentoModel]) {
-        var frases: [String] = []
+        var frases: [LocalizedStringKey] = []
 
         // Meses negativos
         let mesesNegativos = resumoMensal.filter { $0.saldo < 0 }.count
@@ -135,7 +135,7 @@ private extension ResumoAnualViewModel {
         }
         
         insights = frases
-    }    
+    }
 
 }
 
