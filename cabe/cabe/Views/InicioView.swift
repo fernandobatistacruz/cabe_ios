@@ -47,7 +47,11 @@ struct InicioView: View {
                 
                 ScrollView {
                     LazyVStack(spacing: 24) {
-                        FavoritosView()
+                        FavoritosView(
+                            balanco: viewModel.balanco,
+                            cartao: viewModel.totalCartao,
+                            despesas: viewModel.totalDespesas,
+                        )
                         ConsumoResumoView()
                         RecentesListView()
                     }
@@ -82,7 +86,7 @@ struct InicioView: View {
                     Button {
                         showCalendar = true
                     } label: {
-                        Image(systemName: "chevron.left")
+                        //Image(systemName: "chevron.left")
                         Text(selectedDate, format: .dateTime.year())
                     }
                 }
@@ -139,6 +143,10 @@ struct InicioView: View {
 }
 
 struct FavoritosView: View{
+    let balanco: Decimal
+    let cartao: Decimal
+    let despesas: Decimal
+    
     var body: some View {
         VStack(alignment: .leading){
             
@@ -150,7 +158,7 @@ struct FavoritosView: View{
             HStack() {
                 CardItem(
                     title: String(localized: "Balanço"),
-                    value: "2.500,00",
+                    value: balanco,
                     color: .purple,
                     icone:  "chart.bar.fill",
                 )
@@ -159,7 +167,7 @@ struct FavoritosView: View{
                 } label: {
                     CardItem(
                         title: String(localized: "Cartões"),
-                        value: "3.500,00",
+                        value: cartao,
                         color: .orange,
                         icone: "creditcard.fill"
                     )
@@ -172,14 +180,14 @@ struct FavoritosView: View{
                 } label: {
                     CardItem(
                         title: String(localized: "Contas"),
-                        value: "2.500,00",
+                        value: 2500,
                         color: .blue,
                         icone:  "wallet.bifold.fill",
                     )
                 }.buttonStyle(.plain)                
                 CardItem(
                     title: String(localized: "Despesas"),
-                    value: "3.500,00",
+                    value: despesas,
                     color: .red,
                     icone: "barcode"
                     
@@ -192,7 +200,7 @@ struct FavoritosView: View{
 struct CardItem: View {
 
     let title: String
-    let value: String
+    let value: Decimal
     let color: Color
     let icone: String
     
@@ -216,7 +224,7 @@ struct CardItem: View {
                     .font(.body)
                     .foregroundStyle(.primary)
                 
-                Text(value)
+                Text(value, format: .currency(code: "BRL"))
                     .font(.headline)
                     .fontWeight(.bold)
                     .foregroundStyle(color)

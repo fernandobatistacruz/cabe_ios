@@ -51,6 +51,13 @@ struct ResumoAnualView: View {
                         .font(.subheadline)
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    print("Exportar")
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
         }
         .task {
             await vm.carregarDados()

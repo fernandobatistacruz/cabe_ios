@@ -161,7 +161,7 @@ struct LancamentoListView: View {
                     Button {
                         showCalendar = true
                     } label: {
-                        Image(systemName: "chevron.left")
+                        //Image(systemName: "chevron.left")
                         Text(selectedDate, format: .dateTime.year())
                     }
                 }

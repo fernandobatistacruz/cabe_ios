@@ -104,4 +104,45 @@ final class LancamentoListViewModel: ObservableObject {
     deinit {
         dbCancellable?.cancel()
     }
+    
+    var totalCartao: Decimal {
+        lancamentosCartao.reduce(0) { $0 + $1.valor }
+    }
+    
+    var totalDespesasCartao: Decimal {
+        lancamentosCartao
+            .filter { $0.tipo == Tipo.despesa.rawValue }
+            .reduce(0) { $0 + $1.valor }
+    }
+    
+    var totalDespesas: Decimal {
+        despesas.reduce(0) { $0 + $1.valor }
+    }
+    
+    var totalReceitas: Decimal {
+        receitas.reduce(0) { $0 + $1.valor }
+    }
+    
+    var balanco: Decimal {
+        lancamentos.reduce(0) { $0 + $1.valorComSinal }
+    }
+
 }
+
+extension LancamentoListViewModel {
+    // MARK: - Filtros base
+
+    private var lancamentosCartao: [LancamentoModel] {
+        lancamentos.filter { !$0.cartaoUuid.isEmpty }
+    }
+
+    private var despesas: [LancamentoModel] {
+        lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
+    }
+
+    private var receitas: [LancamentoModel] {
+        lancamentos.filter { $0.tipo == Tipo.receita.rawValue }
+    }
+}
+
+
