@@ -176,5 +176,20 @@ extension Array {
     }
 }
 
+extension CategoriaModel {
+    static var outros: CategoriaModel {
+        CategoriaModel(
+            id: nil,                     // não vem do banco
+            nome: "Outros",
+            nomeSubcategoria: nil,
+            tipo: Tipo.despesa.rawValue, // importante
+            icone: IconeModel.default.id,
+            cor: CorModel.default.id,
+            pai: nil
+        )
+    }
+}
+
+
 
 

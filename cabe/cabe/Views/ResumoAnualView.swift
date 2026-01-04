@@ -19,19 +19,24 @@ struct ResumoAnualView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                if let resumo = vm.resumoAnual {
-                    cardsResumo(resumo)
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    if let resumo = vm.resumoAnual {
+                        cardsResumo(resumo)
+                    }
+                    
+                    graficoReceitaDespesa
+                    graficoCategorias
+                    insightsView
                 }
-
-                graficoReceitaDespesa
-                graficoCategoria
-                insightsView
+                .padding()
             }
-            .padding()
         }
-        .navigationTitle("Resumo Anual")
+        .navigationTitle("Resumo")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -75,20 +80,17 @@ struct ResumoAnualView: View {
 
     // MARK: - Evolução Mensal
     var graficoReceitaDespesa: some View {
-        VStack(alignment: .leading) {
-            Text("Evolução Mensal")
-                .font(.headline)
-
+        ChartCard(titulo: "Evolução Mensal") {
             Chart(vm.resumoMensal) { item in
                 BarMark(
                     x: .value("Mês", item.mes),
-                    y: .value("Receita", NSDecimalNumber(decimal: item.receita).doubleValue)
+                    y: .value("Receita", item.receita.doubleValue)
                 )
                 .foregroundStyle(.green)
 
                 BarMark(
                     x: .value("Mês", item.mes),
-                    y: .value("Despesa", NSDecimalNumber(decimal: item.despesa).doubleValue)
+                    y: .value("Despesa", item.despesa.doubleValue)
                 )
                 .foregroundStyle(.red)
             }
@@ -96,10 +98,11 @@ struct ResumoAnualView: View {
         }
     }
 
+
     // MARK: - Insights
     var insightsView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Insights")
+            Text("Análises")
                 .font(.headline)
 
             ForEach(vm.insights, id: \.self) { texto in
@@ -107,77 +110,87 @@ struct ResumoAnualView: View {
             }
         }
     }
-}
-
-private extension ResumoAnualView {
-
-    var graficoCategoria: some View {
-        VStack(alignment: .leading) {
-            Text("Despesas por Categoria")
-                .font(.headline)
-
-            if #available(iOS 17.0, *) {
-                graficoPizzaCategoria
-            } else {
-                graficoBarrasCategoria
+    
+    func graficoCategoriasHorizontal(_ categorias: [DespesaPorCategoriaModel]) -> some View {
+        Chart(categorias) { item in
+            BarMark(
+                x: .value("Total", item.total.doubleValue),
+                y: .value("Categoria", item.categoria.nome)
+            )
+            .foregroundStyle(.blue)
+            .annotation(position: .trailing) {
+                Text(item.total.abreviado())
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .frame(
+            height: min(CGFloat(categorias.count * 36), 320)
+        )
+        .chartYAxis {
+            AxisMarks { _ in
+                AxisValueLabel()
+                    .font(.caption)
             }
         }
     }
-
-    @available(iOS 17.0, *)
-    var graficoPizzaCategoria: some View {
-        let categoriasValidas = vm.despesasPorCategoria.prefix(6)
+    
+    var graficoCategorias: some View {
+        let categoriasValidas = vm.despesasPorCategoria
             .filter { $0.total > 0 && !$0.categoria.nome.isEmpty }
 
-        if categoriasValidas.isEmpty {
-            return AnyView(
-                Text("Nenhuma despesa registrada")
-                    .foregroundColor(.secondary)
-                    .frame(height: 220)
-                    .frame(maxWidth: .infinity)
-            )
-        }
+        return VStack(spacing: 16) {
 
-        return AnyView(
-            Chart(categoriasValidas) { item in
-                SectorMark(
-                    angle: .value("Total", NSDecimalNumber(decimal: item.total).doubleValue)
-                )
-                .foregroundStyle(by: .value("Categoria", item.categoria.nome))
-                .annotation(position: .overlay) {
-                    Text(item.categoria.nome)
-                        .font(.caption2)
+            if categoriasValidas.isEmpty {
+                CardContainer {
+                    Text("Nenhuma despesa registrada")
+                        .foregroundColor(.secondary)
+                        .frame(height: 120)
+                        .frame(maxWidth: .infinity)
+                }
+            } else {
+                CardContainer {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Despesas por Categoria")
+                            .font(.headline)
+
+                        graficoCategoriasHorizontal(categoriasValidas)
+                    }
                 }
             }
-            .frame(height: 220)
-            .frame(maxWidth: .infinity)
-        )
-    }
-
-    var graficoBarrasCategoria: some View {
-        let categoriasValidas = vm.despesasPorCategoria.prefix(6)
-            .filter { $0.total > 0 && !$0.categoria.nome.isEmpty }
-
-        if categoriasValidas.isEmpty {
-            return AnyView(
-                Text("Nenhuma despesa registrada")
-                    .foregroundColor(.secondary)
-                    .frame(height: 220)
-            )
         }
-
-        return AnyView(
-            Chart(categoriasValidas) { item in
-                BarMark(
-                    x: .value("Categoria", item.categoria.nome),
-                    y: .value("Total", NSDecimalNumber(decimal: item.total).doubleValue)
-                )
-                .foregroundStyle(.red)
-            }
-            .frame(height: 220)
-        )
     }
+    
+    struct CardContainer<Content: View>: View {
+        @ViewBuilder let content: Content
 
+        var body: some View {
+            content
+                .padding()
+                .background(Color(.systemBackground)) // branco
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+        }
+    }
+}
+
+private extension Decimal {
+    var doubleValue: Double { NSDecimalNumber(decimal: self).doubleValue }
+}
+   
+extension Decimal {
+    func abreviado() -> String {
+        let value = NSDecimalNumber(decimal: self).doubleValue
+
+        switch abs(value) {
+        case 1_000_000...:
+            return String(format: "R$ %.1f mi", value / 1_000_000)
+        case 1_000...:
+            return String(format: "R$ %.1f mil", value / 1_000)
+        default:
+            return String(format: "R$ %.0f", value)
+        }
+    }
 }
 
 
@@ -188,21 +201,31 @@ struct CardResumoView: View {
     let cor: Color
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Text(titulo)
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            Text(valor, format: .currency(code: "BRL").precision(.fractionLength(0)))
+            Text(valor.abreviado())
                 .font(.headline)
                 .foregroundColor(cor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 22))
+        .shadow(
+            color: Color.black.opacity(0.08),
+            radius: 4,
+            x: 0,
+            y: 2
+        )
     }
 }
+
+
 
 // MARK: - Insight Row
 struct InsightRowView: View {
@@ -213,8 +236,30 @@ struct InsightRowView: View {
             .font(.subheadline)
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 22))
     }
 }
 
+struct ChartCard<Content: View>: View {
+    let titulo: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(titulo)
+                .font(.headline)
+
+            content
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 22))
+        .shadow(
+            color: Color.black.opacity(0.08),
+            radius: 4,
+            x: 0,
+            y: 2
+        )
+    }
+}

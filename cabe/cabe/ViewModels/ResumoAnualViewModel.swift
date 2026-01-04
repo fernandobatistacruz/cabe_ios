@@ -128,12 +128,15 @@ private extension ResumoAnualViewModel {
         let recorrentes = despesas.filter { $0.tipoRecorrente != .nunca }
 
         if !despesas.isEmpty {
-            let percentual = Decimal(recorrentes.count) / Decimal(despesas.count) * 100
-            frases.append("🔁 \(NSDecimalNumber(decimal: percentual).intValue)% das despesas foram recorrentes.")
+            let totalDespesas = despesas.map(\.valor).reduce(0, +)
+            let totalRecorrentes = recorrentes.map(\.valor).reduce(0, +)
+            let percentual = totalDespesas > 0 ? (totalRecorrentes / totalDespesas) * 100 : 0
+            frases.append("🔁 \(String(format: "%.0f", NSDecimalNumber(decimal: percentual).doubleValue))% das despesas foram recorrentes.")
         }
-
+        
         insights = frases
-    }
+    }    
+
 }
 
 // MARK: - Models
