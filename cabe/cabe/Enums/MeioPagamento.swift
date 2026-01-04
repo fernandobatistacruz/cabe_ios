@@ -5,6 +5,8 @@
 //  Created by Fernando Batista da Cruz on 24/12/25.
 //
 
+import SwiftUI
+
 enum MeioPagamento: Identifiable, Equatable {
 
     case cartao(CartaoModel)
@@ -29,7 +31,7 @@ enum MeioPagamento: Identifiable, Equatable {
     }
     
 
-    var subtitulo: String {
+    var subtitulo: LocalizedStringKey {
         switch self {
         case .cartao:
             return "Cartão"

@@ -97,47 +97,61 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    private func listar(
-        db: Database,
-        mes: Int? = nil,
-        ano: Int? = nil
+    // MARK: - Nova função pública para ViewModel
+    func listarLancamentosDoAno(ano: Int) async throws -> [LancamentoModel] {
+        do {
+            return try await db.dbQueue.read { db in
+                try self.listar(db: db, mes: nil, ano: ano)
+            }
+        } catch {
+            print("Erro ao listar lançamentos:", error)
+            return []
+        }
+    }
+    
+    private nonisolated func listar(
+            db: Database,
+            mes: Int? = nil,
+            ano: Int? = nil
     ) throws -> [LancamentoModel] {
-
+        
         var sql = """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-            FROM lancamento l
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
-        """
-
+                SELECT
+                    l.*,
+                    c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
+                    ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
+                    ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
+                    ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
+                    cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                    cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+                FROM lancamento l
+                LEFT JOIN conta c ON l.conta_uuid = c.uuid
+                LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
+                LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+            """
+        
         var arguments: [DatabaseValueConvertible] = []
-
+        
         if let mes, let ano {
             sql += " WHERE l.mes = ? AND l.ano = ?"
             arguments.append(contentsOf: [mes, ano])
+        } else if let ano {
+            sql += " WHERE l.ano = ?"
+            arguments.append(ano)
         }
-
+        
         sql += " ORDER BY l.ano DESC, l.mes DESC, l.dia DESC"
-
+        
         let rows = try Row.fetchAll(
             db,
             sql: sql,
             arguments: StatementArguments(arguments)
         )
-
+        
         return mapRows(rows)
     }
-
     
-    private func mapRows(_ rows: [Row]) -> [LancamentoModel] {
+    private nonisolated func mapRows(_ rows: [Row]) -> [LancamentoModel] {
         rows.map { row in
             let conta = row["c.id"] != nil ? ContaModel(
                 id: row["c.id"],

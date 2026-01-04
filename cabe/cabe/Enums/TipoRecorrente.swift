@@ -5,6 +5,8 @@
 //  Created by Fernando Batista da Cruz on 24/12/25.
 //
 
+import SwiftUI
+
 
 enum TipoRecorrente: Int, CaseIterable, Identifiable {
     case nunca      = 0
@@ -15,7 +17,7 @@ enum TipoRecorrente: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var titulo: String {
+    var titulo: LocalizedStringKey {
         switch self {
         case .nunca:      return "Nunca"
         case .mensal:     return "Mensal"

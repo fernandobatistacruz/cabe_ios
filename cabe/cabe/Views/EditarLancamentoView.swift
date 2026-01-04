@@ -101,7 +101,7 @@ struct EditarLancamentoView: View {
 
                             // 🔒 Recorrência NÃO editável
                             HStack {
-                                Text("Recorrência")
+                                Text("Repete")
                                 Spacer()
                                 Text(vm.recorrente.titulo)
                                     .foregroundColor(.secondary)
@@ -116,7 +116,7 @@ struct EditarLancamentoView: View {
                                 mostrarCalendario.toggle()
                             } label: {
                                 HStack {
-                                    Text("Data da Compra")
+                                    Text("Data")
                                         .foregroundColor(.primary)
                                     Spacer()
                                     Text("\(vm.dataLancamento.formatted(date: .abbreviated, time: .omitted))")

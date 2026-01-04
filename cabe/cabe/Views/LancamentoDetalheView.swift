@@ -118,7 +118,7 @@ struct LancamentoDetalheView: View {
             }
             
         }
-        .navigationTitle("Detalhar Lançamento")
+        .navigationTitle("Detalhar")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .toolbar {

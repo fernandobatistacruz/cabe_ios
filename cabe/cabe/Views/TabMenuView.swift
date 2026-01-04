@@ -3,6 +3,7 @@ import SwiftUI
 struct TabMenuView: View {
     var body: some View {
         TabView {
+            //TODO: Retirar o NavigationStack das View e adicionar no TabView
             InicioView()
                 .tabItem {
                     Label("Início", systemImage: "doc.text.image")
@@ -13,10 +14,11 @@ struct TabMenuView: View {
                     Label("Lançamentos", systemImage: "square.stack.fill")
                 }
 
-            ResumoView()
-                .tabItem {
-                    Label("Resumo", systemImage: "chart.bar.xaxis")
-                }
+            NavigationStack{
+                ResumoAnualView()
+            }.tabItem {
+                Label("Resumo", systemImage: "chart.bar.xaxis")
+            }
             
             AjustesView()
                 .tabItem {

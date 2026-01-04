@@ -146,7 +146,7 @@ struct NovoLancamentoView: View {
                                 mostrarCalendario.toggle()
                             } label: {
                                 HStack {
-                                    Text("Data da Compra")
+                                    Text("Data")
                                         .foregroundColor(.primary)
                                     Spacer()
                                     Text("\(vm.dataLancamento.formatted(date: .abbreviated, time: .omitted))")
