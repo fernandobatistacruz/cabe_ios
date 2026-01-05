@@ -408,8 +408,7 @@ struct NotificacoesView: View {
     @ObservedObject var vm: NotificacaoViewModel
 
     var body: some View {
-        List {
-
+        List {            
             // MARK: - Lançamentos simples
             if !vm.vencidos.isEmpty || !vm.vencemHoje.isEmpty {
                 Section("Vencidos") {
@@ -419,34 +418,39 @@ struct NotificacoesView: View {
                             mostrarPagamento: false,
                             mostrarValores: true
                         )
-                        .swipeActions(edge: .trailing) {
-                            Button("Marcar lido") {
+                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                            Button() {
                                 Task {
                                     await vm.marcarLancamentosComoLidos([lancamento])
                                 }
+                            } label: {
+                                Label ("Lido", systemImage: "checklist")
+                                
                             }
-                            .tint(.blue)
+                            .tint(.accentColor)
                         }
                     }
-
+                    
                     ForEach(vm.vencemHoje) { lancamento in
                         LancamentoRow(
                             lancamento: lancamento,
                             mostrarPagamento: false,
                             mostrarValores: true
                         )
-                        .swipeActions(edge: .trailing) {
-                            Button("Marcar lido") {
+                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                            Button() {
                                 Task {
                                     await vm.marcarLancamentosComoLidos([lancamento])
                                 }
+                            } label: {
+                                Label ("Lido", systemImage: "checklist")
                             }
-                            .tint(.blue)
+                            .tint(.accentColor)
                         }
                     }
                 }
             }
-
+            
             // MARK: - Cartões agrupados
             if !vm.cartoesVencidos.isEmpty || !vm.cartoesHoje.isEmpty {
                 Section("Cartões") {
@@ -454,39 +458,41 @@ struct NotificacoesView: View {
                         LancamentoRow(lancamento: lancamento,
                                       mostrarPagamento: false,
                                       mostrarValores: true)
-                            .swipeActions(edge: .trailing) {
-                                Button("Marcar lido") {
-                                    Task {
-                                        await vm.marcarLancamentosComoLidos([lancamento])
-                                    }
+                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                            Button() {
+                                Task {
+                                    await vm.marcarLancamentosComoLidos([lancamento])
                                 }
-                                .tint(.blue)
+                            } label: {
+                                Label ("Lido", systemImage: "checklist")
+                                
                             }
+                            .tint(.accentColor)
+                        }
                     }
-
+                    
                     ForEach(vm.cartoesHoje) { cartao in
                         CartaoRowNotification(cartaoNotificacao: cartao)
-                            .swipeActions(edge: .trailing) {
-                                Button("Marcar lido") {
+                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                Button() {
                                     Task {
                                         await vm.marcarLancamentosComoLidos(cartao.lancamentos)
                                     }
+                                } label: {
+                                    Label ("Lido", systemImage: "checklist")
+                                    
                                 }
-                                .tint(.blue)
+                                .tint(.accentColor)
                             }
                     }
-
                 }
             }
-
         }
         .navigationTitle("Notificações")
         .listStyle(.insetGrouped)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
-
-
-
 
 struct CartaoRowNotification: View {
     let cartaoNotificacao: CartaoNotificacao
