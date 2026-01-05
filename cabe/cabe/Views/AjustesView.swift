@@ -7,6 +7,7 @@
 
 import SwiftUI
 internal import Combine
+import UserNotifications
 
 struct AjustesView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -208,24 +209,85 @@ struct AppearanceSettingsView: View {
 
 struct NotificacoesSettingsView: View {
 
-    @State private var notificacaoAtivo = false
+    @AppStorage(AppSettings.notificacoesAtivas)
+    private var notificacoesAtivas: Bool = false
+    @State private var sistemaBloqueado = false
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    Toggle(isOn: $notificacaoAtivo) {
-                        Text("Notificações")
+        List {
+            Section {
+                Toggle("Notificações", isOn: $notificacoesAtivas)
+                    .onChange(of: notificacoesAtivas) { ativo in
+                        if ativo {
+                            solicitarPermissaoSeNecessario()
+                        } else {
+                            cancelarNotificacoes()
+                        }
                     }
-                } footer: {
-                    Text("Quando ativo, você será notificado quando houver um lançamento vencendo no dia.")
+            } footer: {
+                Text("Quando ativo, você será notificado quando houver um lançamento vencendo no dia.")
+            }
+        }
+        .navigationTitle("Notificações")
+        .navigationBarTitleDisplayMode(.inline)
+        .listStyle(.insetGrouped)
+    }
+
+    // MARK: - Permissão
+
+    private func solicitarPermissaoSeNecessario() {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                DispatchQueue.main.async {
+                    switch settings.authorizationStatus {
+
+                    case .notDetermined:
+                        UNUserNotificationCenter.current()
+                            .requestAuthorization(
+                                options: [.alert, .badge, .sound]
+                            ) { granted, _ in
+                                DispatchQueue.main.async {
+                                    if !granted {
+                                        // usuário recusou → volta o toggle
+                                        notificacoesAtivas = false
+                                    }
+                                }
+                            }
+
+                    case .denied:
+                        // NÃO muda o AppStorage
+                        sistemaBloqueado = true
+                        abrirAjustesDoSistema()
+
+                    case .authorized, .provisional:
+                        sistemaBloqueado = false
+
+                    default:
+                        break
+                    }
                 }
             }
-            .navigationTitle("Notificações")
-            .navigationBarTitleDisplayMode(.inline)
-            .listStyle(.insetGrouped)
-        }
     }
+
+
+    private func cancelarNotificacoes() {
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(
+                withIdentifiers: ["lancamentos-dia"]
+            )
+    }
+
+    private func abrirAjustesDoSistema() {
+        guard let url = URL(string: UIApplication.openSettingsURLString)
+        else { return }
+
+        UIApplication.shared.open(url)
+    }
+}
+
+
+enum AppSettings {
+    static let notificacoesAtivas = "notificacoesAtivas"
 }
 
 struct BackupSettingsView: View {

@@ -41,6 +41,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var cartao: CartaoModel?
     var conta: ContaModel?
     var conferido: Int?
+    var notificacaoLida: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -169,6 +170,25 @@ extension LancamentoModel {
         )
     }
 }
+
+extension LancamentoModel {
+
+    var dataVencimentoCartao: Date? {
+        guard
+            let cartao = cartao,
+            cartao.vencimento > 0
+        else { return nil }
+
+        return Calendar.current.date(
+            from: DateComponents(
+                year: ano,
+                month: mes,
+                day: cartao.vencimento
+            )
+        )
+    }
+}
+
 extension LancamentoModel {
 
     var dataCompraFormatada: String {

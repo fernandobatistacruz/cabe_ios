@@ -1,34 +1,72 @@
 import SwiftUI
 
 struct TabMenuView: View {
+    
+    @EnvironmentObject var deepLinkManager: DeepLinkManager
+        
+    @StateObject private var vmLancamentos =
+        LancamentoListViewModel(
+            repository: LancamentoRepository(),
+            mes: Calendar.current.component(.month, from: Date()),
+            ano: Calendar.current.component(.year, from: Date())
+        )
+    
     var body: some View {
         TabView {
-            //TODO: Retirar o NavigationStack das View e adicionar no TabView
-            InicioView()
-                .tabItem {
-                    Label("Início", systemImage: "doc.text.image")
-                }
+          
+            NavigationStack(path: $deepLinkManager.path) {
+                            InicioView(vmLancamentos: vmLancamentos) // ⬅️ usa o mesmo VM
+                                .navigationDestination(for: DeepLink.self) { destination in
+                                    switch destination {
+                                    case .notificacoes:
+                                        NotificacoesView(
+                                            vm: vmLancamentos.notificacaoVM // ✅ O MESMO
+                                        )
+                                    }
+                                }
+                        }
+            .tabItem {
+                Label("Início", systemImage: "square.stack.fill")
+            }
 
-            LancamentoListView()
-                .tabItem {
-                    Label("Lançamentos", systemImage: "square.stack.fill")
-                }
+            /*
+            NavigationStack {
+                InicioView()
+                    .navigationDestination(for: DeepLink.self) { destination in
+                        switch destination {
+                        case .notificacoes:
+                            NotificacoesView(
+                                vm: NotificacaoViewModel()
+                            )
+                        }
+                    }
+            }
+            .tabItem {
+                Label("Início", systemImage: "square.stack.fill")
+            }
+             */
+            
+            NavigationStack {
+                LancamentoListView()
+            }
+            .tabItem {
+                Label("Lançamentos", systemImage: "square.stack.fill")
+            }
 
-            NavigationStack{
+            NavigationStack {
                 ResumoAnualView()
-            }.tabItem {
+            }
+            .tabItem {
                 Label("Resumo", systemImage: "chart.bar.xaxis")
             }
-            
-            AjustesView()
-                .tabItem {
-                    Label("Ajustes", systemImage: "gear")
-                }
+
+            NavigationStack {
+                AjustesView()
+            }
+            .tabItem {
+                Label("Ajustes", systemImage: "gear")
+            }
         }
+        .environmentObject(deepLinkManager)
     }
 }
-
-#Preview {
-    TabMenuView()
-}
-

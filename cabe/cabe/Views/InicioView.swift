@@ -12,9 +12,11 @@ import GRDB
 struct InicioView: View {
     @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
-    @StateObject private var vmNotificacoes = NotificacoesViewModel()
     @StateObject private var vmLancamentos: LancamentoListViewModel
     @StateObject private var vmContas: ContaListViewModel
+    @EnvironmentObject var deepLinkManager: DeepLinkManager
+    
+    
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     
     private var selectedDate: Date {
@@ -26,144 +28,129 @@ struct InicioView: View {
             )
         ) ?? Date()
     }
-    
    
-    
-    init() {
-        let repository = LancamentoRepository()
-        let mesAtual = Calendar.current.component(.month, from: Date())
-        let anoAtual = Calendar.current.component(.year, from: Date())
-        
-        _vmLancamentos = StateObject(
-            wrappedValue: LancamentoListViewModel(
-                repository: repository,
-                mes: mesAtual,
-                ano: anoAtual
-            )
-        )
+    init(vmLancamentos: LancamentoListViewModel) {
+        _vmLancamentos = StateObject(wrappedValue: vmLancamentos)
         
         let repositoryConta = ContaRepository()
-            _vmContas = StateObject(
-                wrappedValue: ContaListViewModel(repository: repositoryConta)
-            )
+        _vmContas = StateObject(
+            wrappedValue: ContaListViewModel(repository: repositoryConta)
+        )
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                ScrollView {
-                    LazyVStack(spacing: 24) {
-                        FavoritosView(
-                            balanco: vmLancamentos.balanco,
-                            cartao: vmLancamentos.totalCartao,
-                            constas: vmContas.saldoTotal,
-                            despesas: vmLancamentos.totalDespesas,
-                            mostrarValores: mostrarValores,
-                            moeda: vmContas.contas.first?.currencyCode ?? "BRL"
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            ScrollView {
+                LazyVStack(spacing: 24) {
+                    FavoritosView(
+                        balanco: vmLancamentos.balanco,
+                        cartao: vmLancamentos.totalCartao,
+                        constas: vmContas.saldoTotal,
+                        despesas: vmLancamentos.totalDespesas,
+                        mostrarValores: mostrarValores,
+                        moeda: vmContas.contas.first?.currencyCode ?? "BRL"
+                    )
+                    
+                    NavigationLink {
+                        ConsumoDetalhadoView(
+                            vm: vmLancamentos,
+                            items: vmLancamentos.gastosPorCategoriaDetalhado
                         )
-                        
-                        NavigationLink {
-                            ConsumoDetalhadoView(
-                                vm: vmLancamentos,
-                                items: vmLancamentos.gastosPorCategoriaDetalhado
-                            )
-                        } label: {
-                            ConsumoCardView(
-                                dados: vmLancamentos.gastosPorCategoriaResumo,
-                                mostrarValores: mostrarValores
-                            )
-                        }
-                        .buttonStyle(.plain)
-                                                
-                        RecentesListView(
-                            viewModel: vmLancamentos,
-                            mosttrarValores: mostrarValores
+                    } label: {
+                        ConsumoCardView(
+                            dados: vmLancamentos.gastosPorCategoriaResumo,
+                            mostrarValores: mostrarValores
                         )
                     }
-                    .padding(.bottom, 10)
+                    .buttonStyle(.plain)
+                    
+                    RecentesListView(
+                        viewModel: vmLancamentos,
+                        mosttrarValores: mostrarValores
+                    )
                 }
-                
-                VStack {
+                .padding(.bottom, 10)
+            }
+            
+            VStack {
+                Spacer()
+                HStack {
                     Spacer()
-                    HStack {
-                        Spacer()
-                        Button {
-                            mostrarNovaDespesa = true
-                        } label: {
-                            Image(systemName: "plus")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 48, height: 48)
-                                .background(Color.accentColor)
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 20)
+                    Button {
+                        mostrarNovaDespesa = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 48, height: 48)
+                            .background(Color.accentColor)
+                            .clipShape(Circle())
                     }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 20)
                 }
             }
-            .navigationTitle(
-                Text(selectedDate, format: .dateTime.month(.wide))
-            )
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        showCalendar = true
-                    } label: {
-                        //Image(systemName: "chevron.left")
-                        Text(selectedDate, format: .dateTime.year())
-                    }
+        }
+        .navigationTitle(
+            Text(selectedDate, format: .dateTime.month(.wide))
+        )
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showCalendar = true
+                } label: {
+                    //Image(systemName: "chevron.left")
+                    Text(selectedDate, format: .dateTime.year())
                 }
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    NavigationLink(
-                        destination: NotificacoesView(vm: vmNotificacoes)
-                    ) {
-                        ZStack(alignment: .topTrailing) {
-                            Image(systemName: "bell")
-                                .font(.system(size: 20))
-                            
-                            if vmNotificacoes.totalNotificacoes > 0 {
-                                Text("\(vmNotificacoes.totalNotificacoes)")
-                                    .font(.caption2)
-                                    .foregroundColor(.white)
-                                    .padding(5)
-                                    .background(Color.red)
-                                    .clipShape(Circle())
-                                    .offset(x: 8, y: -6)
-                            }
-                        }
-                        .frame(minWidth: 36, minHeight: 36)
+            }
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    deepLinkManager.path.append(DeepLink.notificacoes)
+                } label: {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "bell")
                         
-                    }
-                    Button {
-                        mostrarValores.toggle()
-                    } label: {
-                        Image(systemName: mostrarValores ? "eye.slash" : "eye" )
+                        if vmLancamentos.notificacaoVM.total > 0 {
+                            Text("\(vmLancamentos.notificacaoVM.total)")
+                                .font(.caption2)
+                                .foregroundColor(.white)
+                                .padding(5)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 6, y: -6)
+                        }
                     }
                 }
+                Button {
+                    mostrarValores.toggle()
+                } label: {
+                    Image(systemName: mostrarValores ? "eye.slash" : "eye" )
+                }
             }
-            .sheet(isPresented: $showCalendar) {
-                CalendarioZoomView(
-                    dataInicial: selectedDate,
-                    onConfirm: { dataSelecionada in
-                        vmLancamentos.selecionar(data: dataSelecionada)
-                    }
-                )
-                .presentationDetents([.medium, .large])
-                
-            }
-
+        }
+        .sheet(isPresented: $showCalendar) {
+            CalendarioZoomView(
+                dataInicial: selectedDate,
+                onConfirm: { dataSelecionada in
+                    vmLancamentos.selecionar(data: dataSelecionada)
+                }
+            )
+            .presentationDetents([.medium, .large])
+            
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
             NovoLancamentoView()
         }
     }
-
+       
 }
+    
+
+
 
 #Preview {
     //InicioView().environmentObject(ThemeManager())
@@ -349,73 +336,173 @@ struct ConsumoCardView: View {
 }
 
 struct RecentesListView: View {
-
+    
     @ObservedObject var viewModel: LancamentoListViewModel
     let mosttrarValores: Bool
     
     @State private var mostrarDetalhe = false
     @State private var selectedLancamento: LancamentoModel?
-
+    
     var body: some View {
-        NavigationStack {
-            LazyVStack(alignment: .leading, spacing: 12) {
-                Text("Recentes")
-                    .font(.title3)
-                    .fontWeight(.semibold)
+        LazyVStack(alignment: .leading, spacing: 12) {
+            Text("Recentes")
+                .font(.title3)
+                .fontWeight(.semibold)
+            
+            ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
                 
-                ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
-                    
-                    Text(grupo.date, format: .dateTime.day().month(.wide))
-                        .foregroundStyle(.secondary)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 6)
-                        .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
-                    
-                    VStack(spacing: 0) {
-                        ForEach(grupo.items.indices, id: \.self) { index in
-                            
-                            Button {
-                                selectedLancamento = grupo.items[index]
-                                mostrarDetalhe = true
-                            } label: {
-                                HStack {
-                                    LancamentoRow(
-                                        lancamento: grupo.items[index],
-                                        mostrarPagamento: false,
-                                        mostrarValores: mosttrarValores,
-                                    )
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.gray)
-                                        .font(.footnote)
-                                }
-                                .padding(.vertical, 8)
-                                .background(Color(uiColor: .secondarySystemGroupedBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                Text(grupo.date, format: .dateTime.day().month(.wide))
+                    .foregroundStyle(.secondary)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 6)
+                    .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                
+                VStack(spacing: 0) {
+                    ForEach(grupo.items.indices, id: \.self) { index in
+                        
+                        Button {
+                            selectedLancamento = grupo.items[index]
+                            mostrarDetalhe = true
+                        } label: {
+                            HStack {
+                                LancamentoRow(
+                                    lancamento: grupo.items[index],
+                                    mostrarPagamento: false,
+                                    mostrarValores: mosttrarValores,
+                                )
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
                             }
-                            .buttonStyle(.plain)
-                            
-                            if index != grupo.items.count - 1 {
-                                Divider()
-                                    .padding(.leading, 35)
-                            }
+                            .padding(.vertical, 8)
+                            .background(Color(uiColor: .secondarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        
+                        if index != grupo.items.count - 1 {
+                            Divider()
+                                .padding(.leading, 35)
                         }
                     }
-                    .padding(.horizontal, 12)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 }
+                .padding(.horizontal, 12)
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             }
-            .padding(.horizontal)
-            .navigationDestination(isPresented: $mostrarDetalhe) {
-                if let lancamento = selectedLancamento {
-                    LancamentoDetalheView(lancamento: lancamento)
-                }
+        }
+        .padding(.horizontal)
+        .navigationDestination(isPresented: $mostrarDetalhe) {
+            if let lancamento = selectedLancamento {
+                LancamentoDetalheView(lancamento: lancamento)
             }
         }
     }
 }
+    
 
 
+struct NotificacoesView: View {
+
+    @ObservedObject var vm: NotificacaoViewModel
+
+    var body: some View {
+        List {
+
+            // Lançamentos simples
+            if !vm.vencidos.isEmpty || !vm.vencemHoje.isEmpty {
+                Section("Vencidos") {
+                    ForEach(vm.vencidos) { lancamento in
+                        LancamentoRow(lancamento: lancamento,
+                                      mostrarPagamento: false,
+                                      mostrarValores: true)
+                    }
+
+                    ForEach(vm.vencemHoje) { lancamento in
+                        LancamentoRow(lancamento: lancamento,
+                                      mostrarPagamento: false,
+                                      mostrarValores: true)
+                    }
+                }
+            }
+
+            // Cartões agrupados
+            if !vm.cartoesVencidos.isEmpty || !vm.cartoesHoje.isEmpty {
+                Section("Cartões") {
+                    ForEach(vm.cartoesVencidos) { cartao in
+                        CartaoRowNotification(cartaoNotificacao: cartao)
+                    }
+
+                    ForEach(vm.cartoesHoje) { cartao in
+                        CartaoRowNotification(cartaoNotificacao: cartao)
+                    }
+                }
+            }
+
+        }
+        .navigationTitle("Notificações")
+    }
+}
 
 
+struct CartaoRowNotification: View {
+    let cartaoNotificacao: CartaoNotificacao
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(cartaoNotificacao.nomeCartao)
+                    .font(.body)
+                    .fontWeight(.semibold)
+                
+                Text("\(cartaoNotificacao.quantidade) lançamento(s)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Text(cartaoNotificacao.dataVencimento, format: .dateTime.day().month(.wide))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+
+enum DeepLink: Hashable {
+    case notificacoes
+}
+
+final class DeepLinkManager: ObservableObject {
+    @Published var path = NavigationPath()
+}
+
+import UserNotifications
+
+final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+
+    var deepLinkManager: DeepLinkManager?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+
+        let userInfo = response.notification.request.content.userInfo
+
+        if userInfo["destino"] as? String == "notificacoes" {
+            DispatchQueue.main.async {
+                self.deepLinkManager?.path.append(DeepLink.notificacoes)
+            }
+        }
+    }
+}

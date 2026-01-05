@@ -265,7 +265,6 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 .fetchAll(db)
         }
     }
-
 }
 
 protocol LancamentoRepositoryProtocol {

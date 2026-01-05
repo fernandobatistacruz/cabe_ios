@@ -18,6 +18,10 @@ final class LancamentoListViewModel: ObservableObject {
     @Published var lancamentosRecentes: [LancamentoModel] = []
     private var dbCancellableRecentes: AnyDatabaseCancellable?
     
+    @Published var notificacaoVM = NotificacaoViewModel()
+    
+    var notificacoesAtivas: Bool = UserDefaults.standard.bool(forKey: AppSettings.notificacoesAtivas)
+    
     @Published private(set) var mesAtual: Int
     @Published private(set) var anoAtual: Int
     
@@ -42,7 +46,7 @@ final class LancamentoListViewModel: ObservableObject {
         dbCancellableLancamentos?.cancel()
         dbCancellableLancamentos?.cancel()
     }
-
+    
     private func observarLancamentos() {
         dbCancellableLancamentos?.cancel()
 
@@ -50,15 +54,103 @@ final class LancamentoListViewModel: ObservableObject {
             mes: mesAtual,
             ano: anoAtual
         ) { [weak self] lancamentos in
-            self?.lancamentos = lancamentos
+            guard let self = self else { return }
+
+            self.lancamentos = lancamentos
+            self.notificacaoVM.atualizar(lancamentos: lancamentos)
+            
+            if self.notificacoesAtivas {
+                self.agendarNotificacaoSeNecessario()
+            }
         }
     }
+
     
     private func observarLancamentosRecentes() {
         dbCancellableRecentes?.cancel()
         
         dbCancellableRecentes = repository.observeLancamentosRecentes { [weak self] lancamentos in
             self?.lancamentosRecentes = lancamentos
+        }
+    }
+    
+    func agendarNotificacaoSeNecessario() {
+        guard notificacoesAtivas else { return }
+
+        // Remove notificações antigas
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: ["lancamentos-dia"])
+
+        var notificacoes: [UNNotificationRequest] = []
+
+        // 3.1 Notificações de vencimentos de lançamentos
+        if !notificacaoVM.vencidos.isEmpty || !notificacaoVM.vencemHoje.isEmpty {
+            let content = UNMutableNotificationContent()
+            content.title = "Atenção aos seus lançamentos"
+            content.body = notificacaoVM.mensagemNotificacao()
+            content.sound = .default
+            content.userInfo = ["destino": "notificacoes"]
+
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+
+            let request = UNNotificationRequest(
+                identifier: "lancamentos-dia",
+                content: content,
+                trigger: trigger
+            )
+            notificacoes.append(request)
+        }
+
+        // 3.2 Notificações únicas por cartão
+        let cartoesNotificacao = gerarNotificacoesPorCartao(lancamentos: lancamentos)
+        for cartao in cartoesNotificacao {
+            let content = UNMutableNotificationContent()
+            content.title = "Vencimento do cartão"
+            content.body = "\(cartao.nomeCartao) possui \(cartao.quantidade) lançamento(s) próximo(s) do vencimento."
+            content.sound = .default
+            content.userInfo = ["destino": "notificacoes"]
+
+            let triggerDate = Calendar.current.dateComponents(
+                [.year, .month, .day, .hour, .minute],
+                from: cartao.dataVencimento
+            )
+            let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+
+            let request = UNNotificationRequest(
+                identifier: "cartao-\(cartao.cartaoId)",
+                content: content,
+                trigger: trigger
+            )
+            notificacoes.append(request)
+        }
+
+        // 3.3 Agenda todas
+        for request in notificacoes {
+            UNUserNotificationCenter.current().add(request)
+        }
+    }
+
+    
+    private func gerarNotificacoesPorCartao(
+        lancamentos: [LancamentoModel]
+    ) -> [CartaoNotificacao] {
+
+        let agrupados = Dictionary(grouping: lancamentos) {
+            $0.cartaoUuid
+        }
+
+        return agrupados.compactMap { (_, itens) in
+            guard
+                let primeiro = itens.first,
+                let dataVencimento = primeiro.dataVencimentoCartao
+            else { return nil }
+
+            return CartaoNotificacao(
+                cartaoId: primeiro.cartaoUuid,
+                nomeCartao: primeiro.cartao?.nome ?? "Cartão",
+                quantidade: itens.count,
+                dataVencimento: dataVencimento
+            )
         }
     }
 
@@ -304,15 +396,11 @@ extension LancamentoListViewModel {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
+enum AppStorageWrapper {
+    static var notificacoesAtivas: Bool {
+        UserDefaults.standard.bool(
+            forKey: AppSettings.notificacoesAtivas
+        )
+    }
+}
 
