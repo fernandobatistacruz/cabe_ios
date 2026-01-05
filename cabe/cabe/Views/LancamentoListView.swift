@@ -317,7 +317,7 @@ struct LancamentoCartaoRow: View {
 }
 
 struct LancamentoRow: View {
-    let lancamento: LancamentoModel
+    let lancamento: LancamentoModel   
     let mostrarPagamento: Bool
 
     var body: some View {

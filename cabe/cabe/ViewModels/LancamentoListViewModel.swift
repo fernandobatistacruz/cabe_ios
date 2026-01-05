@@ -13,12 +13,15 @@ internal import Combine
 final class LancamentoListViewModel: ObservableObject {
     
     @Published var lancamentos: [LancamentoModel] = []
+    private var dbCancellableLancamentos: AnyDatabaseCancellable?
+    
+    @Published var lancamentosRecentes: [LancamentoModel] = []
+    private var dbCancellableRecentes: AnyDatabaseCancellable?
+    
     @Published private(set) var mesAtual: Int
     @Published private(set) var anoAtual: Int
-
     
     private let repository: LancamentoRepository
-    private var dbCancellable: AnyDatabaseCancellable?
     
     init(
         repository: LancamentoRepository,
@@ -32,19 +35,33 @@ final class LancamentoListViewModel: ObservableObject {
         self.anoAtual = ano ?? Calendar.current.component(.year, from: hoje)
 
         observarLancamentos()
+        observarLancamentosRecentes()
+    }
+    
+    deinit {
+        dbCancellableLancamentos?.cancel()
+        dbCancellableLancamentos?.cancel()
     }
 
-
     private func observarLancamentos() {
-        dbCancellable?.cancel()
+        dbCancellableLancamentos?.cancel()
 
-        dbCancellable = repository.observeLancamentos(
+        dbCancellableLancamentos = repository.observeLancamentos(
             mes: mesAtual,
             ano: anoAtual
         ) { [weak self] lancamentos in
             self?.lancamentos = lancamentos
         }
     }
+    
+    private func observarLancamentosRecentes() {
+        dbCancellableRecentes?.cancel()
+        
+        dbCancellableRecentes = repository.observeLancamentosRecentes { [weak self] lancamentos in
+            self?.lancamentosRecentes = lancamentos
+        }
+    }
+
     
     var gastosPorCategoriaResumo: [CategoriaResumo] {
 
@@ -203,10 +220,6 @@ final class LancamentoListViewModel: ObservableObject {
         catch { print("Erro ao alternar pagamento:", error) }
     }
     
-    deinit {
-        dbCancellable?.cancel()
-    }
-    
     var totalCartao: Decimal {
         lancamentosCartao.reduce(0) { $0 + $1.valor }
     }
@@ -261,6 +274,38 @@ struct CategoriaResumo: Identifiable {
         )
     }
 }
+
+extension LancamentoListViewModel {
+  
+    var lancamentosRecentesAgrupadosSimples: [(date: Date, items: [LancamentoModel])] {
+
+        // Evita duplicidade de UUID, pega os 10 mais recentes
+        var vistos: Set<String> = []
+
+        let recentes = lancamentosRecentes
+            .sorted { $0.dataCriacao > $1.dataCriacao }
+            .filter { lancamento in
+                guard !vistos.contains(lancamento.uuid) else { return false }
+                vistos.insert(lancamento.uuid)
+                return true
+            }
+            .prefix(10)
+
+        // Agrupa por dia
+        let porData = Dictionary(grouping: recentes) { lancamento in
+            Calendar.current.startOfDay(for: lancamento.dataAgrupamentoRecentes)
+        }
+
+        // Retorna já como [LancamentoModel]
+        return porData.map { (date, lancamentosDoDia) in
+            (date: date, items: lancamentosDoDia)
+        }
+        .sorted { $0.date > $1.date }
+    }
+}
+
+
+
 
 
 

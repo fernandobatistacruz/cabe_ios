@@ -65,7 +65,7 @@ struct InicioView: View {
                         }
                         .buttonStyle(.plain)
                         
-                        RecentesListView()
+                        RecentesListView(viewModel: viewModel)
                     }
                     .padding(.bottom, 10)
                 }
@@ -290,6 +290,7 @@ struct RecenteItem: Identifiable {
     let icone: String
 }
 
+/*
 final class RecentesViewModel: ObservableObject {
   
     @Published var grupos: [(data: Date, itens: [RecenteItem])] = []
@@ -326,7 +327,8 @@ final class RecentesViewModel: ObservableObject {
             .sorted { $0.0 > $1.0 }
     }
 }
-
+*/
+ 
 struct RecenteRow: View {
 
     let item: RecenteItem
@@ -357,38 +359,63 @@ struct RecenteRow: View {
 
 struct RecentesListView: View {
 
-    @StateObject private var viewModel = RecentesViewModel()
+    @ObservedObject var viewModel: LancamentoListViewModel
+    
+    @State private var mostrarDetalhe = false
+    @State private var selectedLancamento: LancamentoModel?
 
     var body: some View {
-        LazyVStack(alignment: .leading) {
-
-            ForEach(viewModel.grupos, id: \.data) { grupo in
-               
-                Text(grupo.data, format: .dateTime.day().month().year())
-                    .foregroundStyle(.secondary)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 6)
-                    .padding(.top, viewModel.grupos.first?.data == grupo.data ? 0 : 10)
-              
-                VStack() {
-                    ForEach(grupo.itens) { item in
-                        
-                        RecenteRow(item: item)
-
-                        if item.id != grupo.itens.last?.id {
-                            Divider()
-                                .padding(.leading, 40)
+        NavigationStack {
+            LazyVStack(alignment: .leading, spacing: 12) {
+                ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
+                    
+                    Text(grupo.date, format: .dateTime.day().month(.wide))
+                        .foregroundStyle(.secondary)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 6)
+                        .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                    
+                    VStack(spacing: 0) {
+                        ForEach(grupo.items.indices, id: \.self) { index in
+                            
+                            Button {
+                                selectedLancamento = grupo.items[index]
+                                mostrarDetalhe = true
+                            } label: {
+                                HStack {
+                                    LancamentoRow(lancamento: grupo.items[index], mostrarPagamento: false)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
+                                .padding(.vertical, 8)
+                                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                            }
+                            .buttonStyle(.plain)
+                            
+                            if index != grupo.items.count - 1 {
+                                Divider()
+                                    .padding(.leading, 35)
+                            }
                         }
                     }
+                    .padding(.horizontal, 12)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 }
-                .padding(10)
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             }
-        }.padding(.horizontal)
+            .padding(.horizontal)
+            .navigationDestination(isPresented: $mostrarDetalhe) {
+                if let lancamento = selectedLancamento {
+                    LancamentoDetalheView(lancamento: lancamento)
+                }
+            }
+        }
     }
 }
 
-#Preview {
-    RecentesListView().environmentObject(ThemeManager())
-}
+
+
+

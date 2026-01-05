@@ -209,6 +209,14 @@ extension LancamentoModel {
     }
 }
 
+extension LancamentoModel {
+    /// Agrupamento para lançamentos recentes (não considera cartão)
+    var dataAgrupamentoRecentes: Date {
+        Calendar.current.startOfDay(for: dataCriacao)
+    }
+}
+
+
 
 
 
