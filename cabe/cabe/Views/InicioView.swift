@@ -7,7 +7,7 @@
 
 import SwiftUI
 internal import Combine
-import GRDB
+import UserNotifications
 
 struct InicioView: View {
     @State private var mostrarNovaDespesa = false
@@ -45,6 +45,7 @@ struct InicioView: View {
             
             ScrollView {
                 LazyVStack(spacing: 24) {
+                    
                     FavoritosView(
                         balanco: vmLancamentos.balanco,
                         cartao: vmLancamentos.totalCartao,
@@ -402,7 +403,6 @@ struct RecentesListView: View {
 }
     
 
-
 struct NotificacoesView: View {
 
     @ObservedObject var vm: NotificacaoViewModel
@@ -410,40 +410,82 @@ struct NotificacoesView: View {
     var body: some View {
         List {
 
-            // Lançamentos simples
+            // MARK: - Lançamentos simples
             if !vm.vencidos.isEmpty || !vm.vencemHoje.isEmpty {
                 Section("Vencidos") {
                     ForEach(vm.vencidos) { lancamento in
-                        LancamentoRow(lancamento: lancamento,
-                                      mostrarPagamento: false,
-                                      mostrarValores: true)
+                        LancamentoRow(
+                            lancamento: lancamento,
+                            mostrarPagamento: false,
+                            mostrarValores: true
+                        )
+                        .swipeActions(edge: .trailing) {
+                            Button("Marcar lido") {
+                                Task {
+                                    await vm.marcarLancamentosComoLidos([lancamento])
+                                }
+                            }
+                            .tint(.blue)
+                        }
                     }
 
                     ForEach(vm.vencemHoje) { lancamento in
-                        LancamentoRow(lancamento: lancamento,
-                                      mostrarPagamento: false,
-                                      mostrarValores: true)
+                        LancamentoRow(
+                            lancamento: lancamento,
+                            mostrarPagamento: false,
+                            mostrarValores: true
+                        )
+                        .swipeActions(edge: .trailing) {
+                            Button("Marcar lido") {
+                                Task {
+                                    await vm.marcarLancamentosComoLidos([lancamento])
+                                }
+                            }
+                            .tint(.blue)
+                        }
                     }
                 }
             }
 
-            // Cartões agrupados
+            // MARK: - Cartões agrupados
             if !vm.cartoesVencidos.isEmpty || !vm.cartoesHoje.isEmpty {
                 Section("Cartões") {
-                    ForEach(vm.cartoesVencidos) { cartao in
-                        CartaoRowNotification(cartaoNotificacao: cartao)
+                    ForEach(vm.vencidos) { lancamento in
+                        LancamentoRow(lancamento: lancamento,
+                                      mostrarPagamento: false,
+                                      mostrarValores: true)
+                            .swipeActions(edge: .trailing) {
+                                Button("Marcar lido") {
+                                    Task {
+                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                    }
+                                }
+                                .tint(.blue)
+                            }
                     }
 
                     ForEach(vm.cartoesHoje) { cartao in
                         CartaoRowNotification(cartaoNotificacao: cartao)
+                            .swipeActions(edge: .trailing) {
+                                Button("Marcar lido") {
+                                    Task {
+                                        await vm.marcarLancamentosComoLidos(cartao.lancamentos)
+                                    }
+                                }
+                                .tint(.blue)
+                            }
                     }
+
                 }
             }
 
         }
         .navigationTitle("Notificações")
+        .listStyle(.insetGrouped)
     }
 }
+
+
 
 
 struct CartaoRowNotification: View {
@@ -478,8 +520,6 @@ final class DeepLinkManager: ObservableObject {
     @Published var path = NavigationPath()
 }
 
-import UserNotifications
-
 final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var deepLinkManager: DeepLinkManager?
@@ -496,11 +536,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {
-
         let userInfo = response.notification.request.content.userInfo
 
         if userInfo["destino"] as? String == "notificacoes" {
-            DispatchQueue.main.async {
+            await MainActor.run {
                 self.deepLinkManager?.path.append(DeepLink.notificacoes)
             }
         }

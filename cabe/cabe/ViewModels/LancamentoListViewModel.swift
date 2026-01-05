@@ -76,10 +76,15 @@ final class LancamentoListViewModel: ObservableObject {
     
     func agendarNotificacaoSeNecessario() {
         guard notificacoesAtivas else { return }
+        
+        let cartoesNotificacao = gerarNotificacoesPorCartao(lancamentos: lancamentos)
 
-        // Remove notificações antigas
-        UNUserNotificationCenter.current()
-            .removePendingNotificationRequests(withIdentifiers: ["lancamentos-dia"])
+        // 1️⃣ Cria lista de identificadores a remover
+        var idsParaRemover: [String] = ["lancamentos-dia"]
+        idsParaRemover.append(contentsOf: cartoesNotificacao.map { "cartao-\($0.cartaoId)" })
+
+        // 2️⃣ Remove notificações antigas
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: idsParaRemover)
 
         var notificacoes: [UNNotificationRequest] = []
 
@@ -102,7 +107,6 @@ final class LancamentoListViewModel: ObservableObject {
         }
 
         // 3.2 Notificações únicas por cartão
-        let cartoesNotificacao = gerarNotificacoesPorCartao(lancamentos: lancamentos)
         for cartao in cartoesNotificacao {
             let content = UNMutableNotificationContent()
             content.title = "Vencimento do cartão"
@@ -126,7 +130,11 @@ final class LancamentoListViewModel: ObservableObject {
 
         // 3.3 Agenda todas
         for request in notificacoes {
-            UNUserNotificationCenter.current().add(request)
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    print("Erro ao agendar notificação:", error)
+                }
+            }
         }
     }
 
@@ -135,11 +143,9 @@ final class LancamentoListViewModel: ObservableObject {
         lancamentos: [LancamentoModel]
     ) -> [CartaoNotificacao] {
 
-        let agrupados = Dictionary(grouping: lancamentos) {
-            $0.cartaoUuid
-        }
+        let agrupados = Dictionary(grouping: lancamentos) { $0.cartaoUuid }
 
-        return agrupados.compactMap { (_, itens) in
+        return agrupados.compactMap { (_, itens) -> CartaoNotificacao? in
             guard
                 let primeiro = itens.first,
                 let dataVencimento = primeiro.dataVencimentoCartao
@@ -149,7 +155,8 @@ final class LancamentoListViewModel: ObservableObject {
                 cartaoId: primeiro.cartaoUuid,
                 nomeCartao: primeiro.cartao?.nome ?? "Cartão",
                 quantidade: itens.count,
-                dataVencimento: dataVencimento
+                dataVencimento: dataVencimento,
+                lancamentos: lancamentos
             )
         }
     }

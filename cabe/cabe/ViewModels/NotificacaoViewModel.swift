@@ -2,8 +2,6 @@
 //  NotificacaoViewModel.swift
 //  cabe
 //
-//  Created by Fernando Batista da Cruz on 05/01/26.
-//
 
 import Foundation
 internal import Combine
@@ -11,23 +9,28 @@ internal import Combine
 @MainActor
 final class NotificacaoViewModel: ObservableObject {
 
-    // Lançamentos simples
+    // MARK: - Lançamentos simples
     @Published private(set) var vencidos: [LancamentoModel] = []
     @Published private(set) var vencemHoje: [LancamentoModel] = []
 
-    // Cartões agrupados
+    // MARK: - Cartões agrupados
     @Published private(set) var cartoesVencidos: [CartaoNotificacao] = []
     @Published private(set) var cartoesHoje: [CartaoNotificacao] = []
 
+    // MARK: - Total de notificações não lidas
     var total: Int {
         vencidos.count + vencemHoje.count + cartoesVencidos.count + cartoesHoje.count
     }
 
+    // MARK: - Atualiza a ViewModel com lançamentos
     func atualizar(lancamentos: [LancamentoModel]) {
         let hoje = Calendar.current.startOfDay(for: Date())
 
-        // 1. Lançamentos simples
-        let lancamentosSimples = lancamentos.filter { $0.cartaoUuid.isEmpty }
+        // 1️⃣ Filtra apenas não lidos
+        let naoLidos = lancamentos.filter { !$0.notificacaoLida }
+
+        // 2️⃣ Lançamentos simples (sem cartão)
+        let lancamentosSimples = naoLidos.filter { $0.cartaoUuid.isEmpty }
 
         vencidos = lancamentosSimples.filter {
             !$0.pago && $0.dataAgrupamento < hoje
@@ -37,8 +40,8 @@ final class NotificacaoViewModel: ObservableObject {
             !$0.pago && Calendar.current.isDate($0.dataAgrupamento, inSameDayAs: hoje)
         }
 
-        // 2. Lançamentos de cartão, agrupados por cartão
-        let lancamentosCartao = lancamentos.filter { !$0.cartaoUuid.isEmpty }
+        // 3️⃣ Lançamentos de cartão, agrupados por cartão
+        let lancamentosCartao = naoLidos.filter { !$0.cartaoUuid.isEmpty }
 
         cartoesVencidos = gerarNotificacoesPorCartao(
             lancamentos: lancamentosCartao.filter { $0.dataAgrupamento < hoje && !$0.pago }
@@ -49,6 +52,7 @@ final class NotificacaoViewModel: ObservableObject {
         )
     }
 
+    // MARK: - Mensagem para notificação do sistema
     func mensagemNotificacao() -> String {
         let simples = "\(vencidos.count) vencidos • \(vencemHoje.count) hoje"
         let cartoes = "\(cartoesVencidos.count) cartões vencidos • \(cartoesHoje.count) hoje"
@@ -57,9 +61,33 @@ final class NotificacaoViewModel: ObservableObject {
         return partes.joined(separator: " • ")
     }
 
-    // MARK: - Cartões
-    private func gerarNotificacoesPorCartao(lancamentos: [LancamentoModel]) -> [CartaoNotificacao] {
+    // MARK: - Marcar notificação como lida
+    func marcarLancamentosComoLidos(_ lancamentos: [LancamentoModel]) async {
+        let naoLidos = lancamentos.filter { !$0.notificacaoLida }
+        guard !naoLidos.isEmpty else { return }
 
+        let atualizados = naoLidos.map { lancamento -> LancamentoModel in
+            var l = lancamento
+            l.notificacaoLida = true
+            return l
+        }
+
+        do {
+            let repository = LancamentoRepository()
+            for lancamento in atualizados {
+                try await repository.editar(lancamento)
+            }
+
+            // Atualiza a UI
+            let todos = vencidos + vencemHoje + cartoesVencidos.flatMap { $0.lancamentos } + cartoesHoje.flatMap { $0.lancamentos }
+            atualizar(lancamentos: todos)
+        } catch {
+            print("Erro ao marcar notificações como lidas:", error)
+        }
+    }
+
+    // MARK: - Gerar notificações agrupadas por cartão
+    private func gerarNotificacoesPorCartao(lancamentos: [LancamentoModel]) -> [CartaoNotificacao] {
         let agrupados = Dictionary(grouping: lancamentos) { $0.cartaoUuid }
 
         return agrupados.compactMap { (_, itens) in
@@ -71,7 +99,8 @@ final class NotificacaoViewModel: ObservableObject {
                 cartaoId: primeiro.cartaoUuid,
                 nomeCartao: primeiro.cartao?.nome ?? "Cartão",
                 quantidade: itens.count,
-                dataVencimento: dataVencimento
+                dataVencimento: dataVencimento,
+                lancamentos: itens
             )
         }
     }

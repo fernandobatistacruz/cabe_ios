@@ -67,10 +67,12 @@ final class NotificationScheduler {
 }
 
 struct CartaoNotificacao: Identifiable {
-    let id = UUID()
+    var id: String { cartaoId }
     let cartaoId: String
     let nomeCartao: String
     let quantidade: Int
     let dataVencimento: Date
+    let lancamentos: [LancamentoModel] // NOVO: todos os lançamentos agrupados
 }
+
 

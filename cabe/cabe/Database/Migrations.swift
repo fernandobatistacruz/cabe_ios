@@ -68,6 +68,13 @@ extension AppDatabase {
                         ADD COLUMN currency_code TEXT NOT NULL DEFAULT 'BRL';
                     """)
         }
+        
+        migrator.registerMigration("addNotificacaoLida") { db in
+            try db.execute(sql: """
+                ALTER TABLE lancamento
+                ADD COLUMN notificacao_lida BOOLEAN NOT NULL DEFAULT 0;
+            """)
+        }
 
         return migrator
     }

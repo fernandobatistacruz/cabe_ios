@@ -253,7 +253,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 dataCriacao: row["dataCriacao"],
                 categoria: categoria,
                 cartao: cartao,
-                conta: conta
+                conta: conta,
+                notificacaoLida: row["notificacao_lida"],
             )
         }
     }
