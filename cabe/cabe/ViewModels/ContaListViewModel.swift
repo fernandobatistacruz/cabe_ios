@@ -6,13 +6,16 @@ internal import Combine
 final class ContaListViewModel: ObservableObject {
     
     @Published var contas: [ContaModel] = []
+    @Published private(set) var saldoTotal: Decimal = 0.0 // <- saldo em Decimal
     
     private let repository: ContaRepository
     private var dbCancellable: AnyDatabaseCancellable?
+    private var cancellables: Set<AnyCancellable> = []
     
     init(repository: ContaRepository) {
         self.repository = repository
         observarContas()
+        observarSaldoTotal()
     }
   
     private func observarContas() {
@@ -20,7 +23,19 @@ final class ContaListViewModel: ObservableObject {
             self?.contas = contas
         }
     }
+    
+    private func observarSaldoTotal() {
+        // Converte cada saldo Double em Decimal e soma
+        $contas
+            .map { contas in
+                contas.reduce(Decimal(0)) { $0 + Decimal($1.saldo) }
+            }
+            .assign(to: \.saldoTotal, on: self)
+            .store(in: &cancellables)
+    }
    
+    // --- Métodos existentes mantidos ---
+    
     func salvar(_ conta: inout ContaModel) {
         do { try repository.salvar(&conta) }
         catch { print("Erro ao salvar conta:", error) }
@@ -55,3 +70,5 @@ final class ContaListViewModel: ObservableObject {
         dbCancellable?.cancel()
     }
 }
+
+

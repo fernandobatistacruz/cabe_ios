@@ -328,8 +328,10 @@ struct LancamentoRow: View {
                     .fill(lancamento.pago ? Color.clear : .accentColor)
                     .frame(width: 12, height: 12)
             }
-        
             Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
                 .foregroundColor(lancamento.categoria?.getCor().cor)
             
             VStack(alignment: .leading) {

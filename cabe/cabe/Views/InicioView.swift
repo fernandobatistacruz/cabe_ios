@@ -12,32 +12,40 @@ import GRDB
 struct InicioView: View {
     @State private var mostrarNovaDespesa = false
     @State private var showCalendar = false
-    @StateObject private var vm = NotificacoesViewModel()
-    @StateObject private var viewModel: LancamentoListViewModel
+    @StateObject private var vmNotificacoes = NotificacoesViewModel()
+    @StateObject private var vmLancamentos: LancamentoListViewModel
+    @StateObject private var vmContas: ContaListViewModel
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     
     private var selectedDate: Date {
         Calendar.current.date(
             from: DateComponents(
-                year: viewModel.anoAtual,
-                month: viewModel.mesAtual,
+                year: vmLancamentos.anoAtual,
+                month: vmLancamentos.mesAtual,
                 day: 1
             )
         ) ?? Date()
     }
+    
+   
     
     init() {
         let repository = LancamentoRepository()
         let mesAtual = Calendar.current.component(.month, from: Date())
         let anoAtual = Calendar.current.component(.year, from: Date())
         
-        _viewModel = StateObject(
+        _vmLancamentos = StateObject(
             wrappedValue: LancamentoListViewModel(
                 repository: repository,
                 mes: mesAtual,
                 ano: anoAtual
             )
         )
+        
+        let repositoryConta = ContaRepository()
+            _vmContas = StateObject(
+                wrappedValue: ContaListViewModel(repository: repositoryConta)
+            )
     }
     
     var body: some View {
@@ -49,27 +57,29 @@ struct InicioView: View {
                 ScrollView {
                     LazyVStack(spacing: 24) {
                         FavoritosView(
-                            balanco: viewModel.balanco,
-                            cartao: viewModel.totalCartao,
-                            despesas: viewModel.totalDespesas,
-                            mostrarValores: mostrarValores
+                            balanco: vmLancamentos.balanco,
+                            cartao: vmLancamentos.totalCartao,
+                            constas: vmContas.saldoTotal,
+                            despesas: vmLancamentos.totalDespesas,
+                            mostrarValores: mostrarValores,
+                            moeda: vmContas.contas.first?.currencyCode ?? "BRL"
                         )
                         
                         NavigationLink {
                             ConsumoDetalhadoView(
-                                vm: viewModel,
-                                items: viewModel.gastosPorCategoriaDetalhado
+                                vm: vmLancamentos,
+                                items: vmLancamentos.gastosPorCategoriaDetalhado
                             )
                         } label: {
                             ConsumoCardView(
-                                dados: viewModel.gastosPorCategoriaResumo,
+                                dados: vmLancamentos.gastosPorCategoriaResumo,
                                 mostrarValores: mostrarValores
                             )
                         }
                         .buttonStyle(.plain)
                                                 
                         RecentesListView(
-                            viewModel: viewModel,
+                            viewModel: vmLancamentos,
                             mosttrarValores: mostrarValores
                         )
                     }
@@ -110,14 +120,14 @@ struct InicioView: View {
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     NavigationLink(
-                        destination: NotificacoesView(vm: vm)
+                        destination: NotificacoesView(vm: vmNotificacoes)
                     ) {
                         ZStack(alignment: .topTrailing) {
                             Image(systemName: "bell")
                                 .font(.system(size: 20))
                             
-                            if vm.totalNotificacoes > 0 {
-                                Text("\(vm.totalNotificacoes)")
+                            if vmNotificacoes.totalNotificacoes > 0 {
+                                Text("\(vmNotificacoes.totalNotificacoes)")
                                     .font(.caption2)
                                     .foregroundColor(.white)
                                     .padding(5)
@@ -140,7 +150,7 @@ struct InicioView: View {
                 CalendarioZoomView(
                     dataInicial: selectedDate,
                     onConfirm: { dataSelecionada in
-                        viewModel.selecionar(data: dataSelecionada)
+                        vmLancamentos.selecionar(data: dataSelecionada)
                     }
                 )
                 .presentationDetents([.medium, .large])
@@ -162,8 +172,10 @@ struct InicioView: View {
 struct FavoritosView: View{
     let balanco: Decimal
     let cartao: Decimal
+    let constas: Decimal
     let despesas: Decimal
     let mostrarValores: Bool
+    let moeda: String
     
     var body: some View {
         VStack(alignment: .leading){
@@ -179,7 +191,8 @@ struct FavoritosView: View{
                     value: balanco,
                     color: .purple,
                     icone:  "chart.bar.fill",
-                    mostrarValores: mostrarValores
+                    mostrarValores: mostrarValores,
+                    moeda: moeda
                 )
                 NavigationLink {
                     CartaoListView()
@@ -189,7 +202,8 @@ struct FavoritosView: View{
                         value: cartao,
                         color: .orange,
                         icone: "creditcard.fill",
-                        mostrarValores: mostrarValores
+                        mostrarValores: mostrarValores,
+                        moeda: moeda
                     )
                 }
                 .buttonStyle(.plain)
@@ -200,10 +214,11 @@ struct FavoritosView: View{
                 } label: {
                     CardItem(
                         title: String(localized: "Contas"),
-                        value: 2500,
+                        value: constas,
                         color: .blue,
                         icone:  "wallet.bifold.fill",
-                        mostrarValores: mostrarValores
+                        mostrarValores: mostrarValores,
+                        moeda: moeda
                     )
                 }.buttonStyle(.plain)                
                 CardItem(
@@ -211,7 +226,8 @@ struct FavoritosView: View{
                     value: despesas,
                     color: .red,
                     icone: "barcode",
-                    mostrarValores: mostrarValores
+                    mostrarValores: mostrarValores,
+                    moeda: moeda
                     
                 )
             }.padding(.horizontal)
@@ -226,6 +242,7 @@ struct CardItem: View {
     let color: Color
     let icone: String
     let mostrarValores: Bool
+    let moeda: String
     
     // Generates a subtle vertical gradient derived from the base color
     // Keeps good contrast in light/dark mode and avoids fully opaque blocks
@@ -247,7 +264,7 @@ struct CardItem: View {
                     .font(.body)
                     .foregroundStyle(.primary)
                 if(mostrarValores){
-                    Text(value, format: .currency(code: "BRL"))
+                    Text(formatarValor(value, moeda: moeda))
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundStyle(color)
@@ -269,6 +286,37 @@ struct CardItem: View {
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+    }
+    
+    func formatarValor(_ valor: Decimal, moeda: String) -> String {
+        let locale = Locale.current
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = moeda
+        formatter.locale = locale
+        formatter.maximumFractionDigits = 2
+
+        let absValor = (valor as NSDecimalNumber).doubleValue
+        let numero: Decimal
+        let sufixo: String
+
+        switch absValor {
+        case 1_000_000_000...:
+            numero = valor / 1_000_000_000
+            sufixo = NSLocalizedString("suffix_billion", comment: "")
+        case 1_000_000...:
+            numero = valor / 1_000_000
+            sufixo = NSLocalizedString("suffix_million", comment: "")
+        case 100_000...:
+            numero = valor / 1_000
+            sufixo = NSLocalizedString("suffix_thousand", comment: "")
+        default:
+            return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
+        }
+
+        let valorFormatado = formatter.string(from: numero as NSDecimalNumber) ?? "\(numero)"
+        return "\(valorFormatado) \(sufixo)"
     }
 }
 
