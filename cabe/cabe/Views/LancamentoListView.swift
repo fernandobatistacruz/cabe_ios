@@ -62,7 +62,7 @@ struct LancamentoListView: View {
                                     NavigationLink {
                                         LancamentoDetalheView(lancamento: lancamento)
                                     } label: {
-                                        LancamentoRow(lancamento: lancamento, mostrarPagamento: true)
+                                        LancamentoRow(lancamento: lancamento, mostrarPagamento: true, mostrarValores: true)
                                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                                 Button(role: .destructive) {
                                                     lancamentoParaExcluir = lancamento
@@ -319,6 +319,7 @@ struct LancamentoCartaoRow: View {
 struct LancamentoRow: View {
     let lancamento: LancamentoModel   
     let mostrarPagamento: Bool
+    let mostrarValores: Bool
 
     var body: some View {
         HStack(spacing: 12) {
@@ -342,14 +343,19 @@ struct LancamentoRow: View {
             }
 
             Spacer()
-                      
-            Text(
-                lancamento.valorComSinal,
-                format: .currency(
-                    code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+            
+            if(mostrarValores) {
+                Text(
+                    lancamento.valorComSinal,
+                    format: .currency(
+                        code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+                    )
                 )
-            )
-            .foregroundColor(.secondary)
+                .foregroundColor(.secondary)
+            } else {
+                Text("•••")
+                    .foregroundColor(.secondary)
+            }
         }
     }
 }

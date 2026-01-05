@@ -102,8 +102,7 @@ struct ConsumoRow: View {
 
             Spacer()
 
-            Text(String(format: "%.0f%%", item.percentual))
-                .font(.subheadline)
+            Text(String(format: "%.0f%%", item.percentual))               
                 .foregroundStyle(.secondary)
 
             if mostraChevron {
@@ -216,6 +215,7 @@ struct DonutChartView: View {
 struct ConsumoListView: View {
 
     let items: [CategoriaResumo]
+    let mostrarValores: Bool
 
     private var total: Double {
         items.reduce(0) { $0 + $1.valor }
@@ -232,10 +232,17 @@ struct ConsumoListView: View {
                     Text(item.nome)
 
                     Spacer()
-
-                    Text(percentualTexto(item))
-                        .font(.body)
-                        .foregroundStyle(.gray)
+                    if(mostrarValores) {
+                        
+                        Text(percentualTexto(item))
+                            .font(.body)
+                            .foregroundStyle(.gray)
+                    } else{
+                        Text("•••")
+                            .font(.body)
+                            .foregroundStyle(.gray)
+                        
+                    }
                 }
             }
         }

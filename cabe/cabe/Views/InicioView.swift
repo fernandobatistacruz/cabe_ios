@@ -14,6 +14,7 @@ struct InicioView: View {
     @State private var showCalendar = false
     @StateObject private var vm = NotificacoesViewModel()
     @StateObject private var viewModel: LancamentoListViewModel
+    @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     
     private var selectedDate: Date {
         Calendar.current.date(
@@ -51,6 +52,7 @@ struct InicioView: View {
                             balanco: viewModel.balanco,
                             cartao: viewModel.totalCartao,
                             despesas: viewModel.totalDespesas,
+                            mostrarValores: mostrarValores
                         )
                         
                         NavigationLink {
@@ -60,12 +62,16 @@ struct InicioView: View {
                             )
                         } label: {
                             ConsumoCardView(
-                                dados: viewModel.gastosPorCategoriaResumo
+                                dados: viewModel.gastosPorCategoriaResumo,
+                                mostrarValores: mostrarValores
                             )
                         }
                         .buttonStyle(.plain)
-                        
-                        RecentesListView(viewModel: viewModel)
+                                                
+                        RecentesListView(
+                            viewModel: viewModel,
+                            mosttrarValores: mostrarValores
+                        )
                     }
                     .padding(.bottom, 10)
                 }
@@ -124,11 +130,10 @@ struct InicioView: View {
                         
                     }
                     Button {
-                        print("Mais")
+                        mostrarValores.toggle()
                     } label: {
-                        Image(systemName: "ellipsis")
+                        Image(systemName: mostrarValores ? "eye.slash" : "eye" )
                     }
-                    
                 }
             }
             .sheet(isPresented: $showCalendar) {
@@ -158,6 +163,7 @@ struct FavoritosView: View{
     let balanco: Decimal
     let cartao: Decimal
     let despesas: Decimal
+    let mostrarValores: Bool
     
     var body: some View {
         VStack(alignment: .leading){
@@ -173,6 +179,7 @@ struct FavoritosView: View{
                     value: balanco,
                     color: .purple,
                     icone:  "chart.bar.fill",
+                    mostrarValores: mostrarValores
                 )
                 NavigationLink {
                     CartaoListView()
@@ -181,7 +188,8 @@ struct FavoritosView: View{
                         title: String(localized: "Cartões"),
                         value: cartao,
                         color: .orange,
-                        icone: "creditcard.fill"
+                        icone: "creditcard.fill",
+                        mostrarValores: mostrarValores
                     )
                 }
                 .buttonStyle(.plain)
@@ -195,13 +203,15 @@ struct FavoritosView: View{
                         value: 2500,
                         color: .blue,
                         icone:  "wallet.bifold.fill",
+                        mostrarValores: mostrarValores
                     )
                 }.buttonStyle(.plain)                
                 CardItem(
                     title: String(localized: "Despesas"),
                     value: despesas,
                     color: .red,
-                    icone: "barcode"
+                    icone: "barcode",
+                    mostrarValores: mostrarValores
                     
                 )
             }.padding(.horizontal)
@@ -215,6 +225,7 @@ struct CardItem: View {
     let value: Decimal
     let color: Color
     let icone: String
+    let mostrarValores: Bool
     
     // Generates a subtle vertical gradient derived from the base color
     // Keeps good contrast in light/dark mode and avoids fully opaque blocks
@@ -235,11 +246,17 @@ struct CardItem: View {
                 Text(title)
                     .font(.body)
                     .foregroundStyle(.primary)
-                
-                Text(value, format: .currency(code: "BRL"))
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .foregroundStyle(color)
+                if(mostrarValores){
+                    Text(value, format: .currency(code: "BRL"))
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundStyle(color)
+                }else{
+                    Text("•••") // placeholder ou valor oculto
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundStyle(color)
+                }
             }
         }
         .padding()
@@ -258,6 +275,7 @@ struct CardItem: View {
 struct ConsumoCardView: View {
     
     let dados: [CategoriaResumo]
+    let mostrarValores: Bool
 
     var body: some View {
         
@@ -268,7 +286,7 @@ struct ConsumoCardView: View {
                 .padding(.horizontal)
             
             HStack(spacing: 24) {
-                ConsumoListView(items: dados)
+                ConsumoListView(items: dados, mostrarValores: mostrarValores)
                     .padding()
                 DonutChartView(items: dados, lineWidth: 18 , size: 70)
                     .padding(.trailing, 30)
@@ -282,84 +300,10 @@ struct ConsumoCardView: View {
     }
 }
 
-struct RecenteItem: Identifiable {
-    let id = UUID()
-    let descricao: String
-    let valor: Double
-    let data: Date
-    let icone: String
-}
-
-/*
-final class RecentesViewModel: ObservableObject {
-  
-    @Published var grupos: [(data: Date, itens: [RecenteItem])] = []
-
-    init() {
-        carregarDados()
-    }
-
-    private func carregarDados() {
-        let lista = [
-            RecenteItem(descricao: "Supermercado", valor: -120, data: Date(), icone: "cart"),
-            RecenteItem(descricao: "Uber", valor: -25, data: Date(), icone: "car"),
-            RecenteItem(descricao: "Salário", valor: 3500, data: Date().addingTimeInterval(-86400), icone: "banknote"),
-            RecenteItem(
-                descricao: "Cinema",
-                valor: -120,
-                data: Date().addingTimeInterval(-10110000),
-                icone: "star"
-            ),
-            RecenteItem(
-                descricao: "Viagem",
-                valor: -120,
-                data: Date().addingTimeInterval(-10110000),
-                icone: "airplane"
-            ),
-        ]
-
-        let agrupado = Dictionary(grouping: lista) {
-            Calendar.current.startOfDay(for: $0.data)
-        }
-
-        grupos = agrupado
-            .map { ($0.key, $0.value) }
-            .sorted { $0.0 > $1.0 }
-    }
-}
-*/
- 
-struct RecenteRow: View {
-
-    let item: RecenteItem
-
-    var body: some View {
-        HStack(spacing: 12) {
-
-            Image(systemName: item.icone)
-                .font(.title3)
-                .foregroundStyle(.tint)
-
-            VStack(alignment: .leading) {
-                Text(item.descricao)
-                Text(item.data, style: .time)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Text(item.valor, format: .currency(code: "BRL"))
-                .foregroundStyle(.gray)
-            Image(systemName: "chevron.right")
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
 struct RecentesListView: View {
 
     @ObservedObject var viewModel: LancamentoListViewModel
+    let mosttrarValores: Bool
     
     @State private var mostrarDetalhe = false
     @State private var selectedLancamento: LancamentoModel?
@@ -367,6 +311,10 @@ struct RecentesListView: View {
     var body: some View {
         NavigationStack {
             LazyVStack(alignment: .leading, spacing: 12) {
+                Text("Recentes")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                
                 ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
                     
                     Text(grupo.date, format: .dateTime.day().month(.wide))
@@ -383,7 +331,11 @@ struct RecentesListView: View {
                                 mostrarDetalhe = true
                             } label: {
                                 HStack {
-                                    LancamentoRow(lancamento: grupo.items[index], mostrarPagamento: false)
+                                    LancamentoRow(
+                                        lancamento: grupo.items[index],
+                                        mostrarPagamento: false,
+                                        mostrarValores: mosttrarValores,
+                                    )
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)

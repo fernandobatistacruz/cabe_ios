@@ -53,7 +53,11 @@ struct CartaoFaturaView: View {
                         NavigationLink {
                             LancamentoDetalheView(lancamento: lancamento)
                         } label: {
-                            LancamentoRow(lancamento: lancamento, mostrarPagamento: false)
+                            LancamentoRow(
+                                lancamento: lancamento,
+                                mostrarPagamento: false,
+                                mostrarValores: true
+                            )
                         }
                     }
                     .listRowInsets(
