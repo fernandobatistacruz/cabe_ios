@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED5430F82F0DACB600F97E38 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430F72F0DACB600F97E38 /* FirebaseAnalytics */; };
+		ED5430FA2F0DACB600F97E38 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430F92F0DACB600F97E38 /* FirebaseAuth */; };
+		ED5430FC2F0DACB600F97E38 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430FB2F0DACB600F97E38 /* FirebaseCore */; };
+		ED5430FF2F0DADBA00F97E38 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430FE2F0DADBA00F97E38 /* GoogleSignIn */; };
 		ED90AFE62EF418BA00042EDC /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = ED90AFE52EF418BA00042EDC /* GRDB */; };
 /* End PBXBuildFile section */
 
@@ -14,9 +18,22 @@
 		EDE9CC392EECD36E0009645B /* cabe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cabe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		ED54310C2F0DBE5400F97E38 /* Exceptions for "cabe" folder in "cabe" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EDE9CC382EECD36E0009645B /* cabe */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		EDE9CC3B2EECD36E0009645B /* cabe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				ED54310C2F0DBE5400F97E38 /* Exceptions for "cabe" folder in "cabe" target */,
+			);
 			path = cabe;
 			sourceTree = "<group>";
 		};
@@ -27,6 +44,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED5430FF2F0DADBA00F97E38 /* GoogleSignIn in Frameworks */,
+				ED5430F82F0DACB600F97E38 /* FirebaseAnalytics in Frameworks */,
+				ED5430FA2F0DACB600F97E38 /* FirebaseAuth in Frameworks */,
+				ED5430FC2F0DACB600F97E38 /* FirebaseCore in Frameworks */,
 				ED90AFE62EF418BA00042EDC /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +92,10 @@
 			name = cabe;
 			packageProductDependencies = (
 				ED90AFE52EF418BA00042EDC /* GRDB */,
+				ED5430F72F0DACB600F97E38 /* FirebaseAnalytics */,
+				ED5430F92F0DACB600F97E38 /* FirebaseAuth */,
+				ED5430FB2F0DACB600F97E38 /* FirebaseCore */,
+				ED5430FE2F0DADBA00F97E38 /* GoogleSignIn */,
 			);
 			productName = cabe;
 			productReference = EDE9CC392EECD36E0009645B /* cabe.app */;
@@ -104,6 +129,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				ED90AFE42EF418BA00042EDC /* XCRemoteSwiftPackageReference "GRDB" */,
+				ED5430F62F0DACB600F97E38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				ED5430FD2F0DADBA00F97E38 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EDE9CC3A2EECD36E0009645B /* Products */;
@@ -264,12 +291,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = cabe/cabe.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4VXLW273Q4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = cabe/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cabe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -298,12 +328,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = cabe/cabe.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4VXLW273Q4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = cabe/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cabe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -351,6 +384,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		ED5430F62F0DACB600F97E38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+		ED5430FD2F0DADBA00F97E38 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 		ED90AFE42EF418BA00042EDC /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
@@ -362,6 +411,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		ED5430F72F0DACB600F97E38 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5430F62F0DACB600F97E38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ED5430F92F0DACB600F97E38 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5430F62F0DACB600F97E38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		ED5430FB2F0DACB600F97E38 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5430F62F0DACB600F97E38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		ED5430FE2F0DADBA00F97E38 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5430FD2F0DADBA00F97E38 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
 		ED90AFE52EF418BA00042EDC /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ED90AFE42EF418BA00042EDC /* XCRemoteSwiftPackageReference "GRDB" */;

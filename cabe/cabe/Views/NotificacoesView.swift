@@ -6,6 +6,7 @@
 //
 import SwiftUI
 internal import Combine
+import FirebaseCore
 
 struct NotificacoesView: View {
 
@@ -172,6 +173,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        FirebaseApp.configure()
         return true
     }
 

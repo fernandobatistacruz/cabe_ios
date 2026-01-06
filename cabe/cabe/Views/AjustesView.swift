@@ -11,21 +11,63 @@ import UserNotifications
 
 struct AjustesView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var auth: AuthViewModel
     
     var body: some View {
         NavigationStack {
             VStack {
                 List {
+                    Section {
+                        NavigationLink {
+                            PerfilUsuarioView()
+                        } label: {
+                            HStack {
+                                AsyncImage(url: auth.user?.photoURL) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 45))
+                                        .foregroundStyle(.blue)
+                                        .padding(.horizontal, 6)
+                                }
+                                .frame(width: 56, height: 56)
+                                .clipShape(Circle())
+
+                                VStack(alignment: .leading) {
+                                    Text(auth.user?.name ?? "Conta")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                    Text(auth.user?.email ?? "")
+                                        .font(.subheadline)
+                                        .tint(.secondary)
+                                }
+                            }
+                            .padding(5)
+                        }
+                        .buttonStyle(.plain) // evita efeito de botão azul
+                    }
+
+                    /*
                     Section() {
                         HStack{
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 45))
-                                .foregroundStyle(.blue).padding(.horizontal,6)
+                            AsyncImage(url: auth.user?.photoURL) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            } placeholder: {
+                                Image(systemName: "person.fill")
+                                    .font(.system(size: 45))
+                                    .foregroundStyle(.blue).padding(.horizontal,6)
+                            }
+                            .frame(width: 56, height: 56)
+                            .clipShape(Circle())
                             VStack(alignment: .leading){
-                                Text("Conta")
+                                Text(auth.user?.name ?? "Conta")
                                     .font(.title3)
                                     .fontWeight(.bold)
-                                Text("fernandobatistacruz@gmail.com")
+                                Text(auth.user?.email ?? "")
                                     .font(.subheadline)
                                     .tint(.secondary)
                             }
@@ -35,6 +77,7 @@ struct AjustesView: View {
                         }.padding(5)
                         
                     }
+                     */
                     Section() {
                         HStack {
                             Image(systemName: "sun.max.fill")
