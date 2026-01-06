@@ -46,38 +46,8 @@ struct AjustesView: View {
                             }
                             .padding(5)
                         }
-                        .buttonStyle(.plain) // evita efeito de botão azul
+                        .buttonStyle(.plain)
                     }
-
-                    /*
-                    Section() {
-                        HStack{
-                            AsyncImage(url: auth.user?.photoURL) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } placeholder: {
-                                Image(systemName: "person.fill")
-                                    .font(.system(size: 45))
-                                    .foregroundStyle(.blue).padding(.horizontal,6)
-                            }
-                            .frame(width: 56, height: 56)
-                            .clipShape(Circle())
-                            VStack(alignment: .leading){
-                                Text(auth.user?.name ?? "Conta")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                Text(auth.user?.email ?? "")
-                                    .font(.subheadline)
-                                    .tint(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }.padding(5)
-                        
-                    }
-                     */
                     Section() {
                         HStack {
                             Image(systemName: "sun.max.fill")
