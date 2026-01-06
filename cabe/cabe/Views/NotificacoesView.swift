@@ -136,7 +136,7 @@ struct CartaoRowNotification: View {
             VStack(alignment: .leading) {
                 Text(cartaoNotificacao.nomeCartao)
                     .font(.body)
-                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
                 Text("\(cartaoNotificacao.quantidade) lançamento(s)")
                     .font(.caption)
                     .foregroundColor(.secondary)
