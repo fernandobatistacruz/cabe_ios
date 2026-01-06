@@ -62,7 +62,11 @@ struct LancamentoListView: View {
                                     NavigationLink {
                                         LancamentoDetalheView(lancamento: lancamento)
                                     } label: {
-                                        LancamentoRow(lancamento: lancamento, mostrarPagamento: true, mostrarValores: true)
+                                        LancamentoRow(
+                                            lancamento: lancamento,
+                                            mostrarPagamento: true,
+                                            mostrarValores: true                                           
+                                        )
                                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                                 Button(role: .destructive) {
                                                     lancamentoParaExcluir = lancamento
@@ -323,7 +327,7 @@ struct LancamentoRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            if(mostrarPagamento) {
+            if (mostrarPagamento)  {
                 Circle()
                     .fill(lancamento.pago ? Color.clear : .accentColor)
                     .frame(width: 12, height: 12)

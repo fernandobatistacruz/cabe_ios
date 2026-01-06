@@ -1,0 +1,162 @@
+//
+//  NotificacoesView.swift
+//  cabe
+//
+//  Created by Fernando Batista da Cruz on 06/01/26.
+//
+import SwiftUI
+internal import Combine
+
+struct NotificacoesView: View {
+
+    @ObservedObject var vm: NotificacaoViewModel
+
+    var body: some View {
+        List {
+            if !vm.vencemHoje.isEmpty || !vm.cartoesHoje.isEmpty {
+                Section("Vence Hoje") {
+                    ForEach(vm.vencemHoje) { lancamento in
+                        LancamentoRow(
+                            lancamento: lancamento,
+                            mostrarPagamento: false,
+                            mostrarValores: true
+                        )
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                            Button() {
+                                Task {
+                                    await vm.marcarLancamentosComoLidos([lancamento])
+                                }
+                            } label: {
+                                Label ("Lido", systemImage: "checklist")
+                            }
+                            .tint(.accentColor)
+                        }
+                    }
+                    ForEach(vm.cartoesHoje) { cartao in
+                        CartaoRowNotification(cartaoNotificacao: cartao)
+                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                Button() {
+                                    Task {
+                                        await vm.marcarLancamentosComoLidos(cartao.lancamentos)
+                                    }
+                                } label: {
+                                    Label ("Lido", systemImage: "checklist")
+                                    
+                                }
+                                .tint(.accentColor)
+                            }
+                    }
+                }
+            
+                if !vm.vencidos.isEmpty || !vm.cartoesVencidos.isEmpty {
+                    Section("Vencidos") {
+                        ForEach(vm.vencidos) { lancamento in
+                            LancamentoRow(
+                                lancamento: lancamento,
+                                mostrarPagamento: false,
+                                mostrarValores: true
+                            )
+                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                Button() {
+                                    Task {
+                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                    }
+                                } label: {
+                                    Label ("Lido", systemImage: "checklist")
+                                    
+                                }
+                                .tint(.accentColor)
+                            }
+                        }
+                        ForEach(vm.cartoesVencidos) { cartao in
+                            CartaoRowNotification(cartaoNotificacao: cartao)
+                                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                    Button() {
+                                        Task {
+                                            await vm.marcarLancamentosComoLidos(cartao.lancamentos)
+                                        }
+                                    } label: {
+                                        Label ("Lido", systemImage: "checklist")
+                                        
+                                    }
+                                    .tint(.accentColor)
+                                }
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Notificações")
+        .listStyle(.insetGrouped)
+        .toolbar(.hidden, for: .tabBar)
+    }
+}
+
+struct CartaoRowNotification: View {
+    let cartaoNotificacao: CartaoNotificacao
+
+    var body: some View {
+        HStack (spacing: 12) {
+            Image(
+                cartaoNotificacao.lancamentos.first?.cartao?.operadoraEnum.imageName ?? ""
+            )
+            .resizable()
+            .scaledToFit()
+            .frame(width: 24, height: 24)
+            
+            VStack(alignment: .leading) {
+                Text(cartaoNotificacao.nomeCartao)
+                    .font(.body)
+                    .fontWeight(.semibold)
+                
+                Text("\(cartaoNotificacao.quantidade) lançamento(s)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Text(cartaoNotificacao.dataVencimento, format: .dateTime.day().month(.wide))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+enum DeepLink: Hashable {
+    case notificacoes
+}
+
+final class DeepLinkManager: ObservableObject {
+    @Published var path = NavigationPath()
+}
+
+final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+
+    var deepLinkManager: DeepLinkManager?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        let userInfo = response.notification.request.content.userInfo
+
+        if userInfo["destino"] as? String == "notificacoes" {
+            await MainActor.run {
+                self.deepLinkManager?.path.append(DeepLink.notificacoes)
+            }
+        }
+    }
+}
+
+

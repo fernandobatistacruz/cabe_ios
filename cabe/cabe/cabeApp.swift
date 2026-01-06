@@ -29,8 +29,7 @@ struct cabeApp: App {
                 .onAppear {
                     appDelegate.deepLinkManager = deepLinkManager
                 }
-            
-        }
+        }        
     }
 
     private var colorScheme: ColorScheme? {
