@@ -15,6 +15,8 @@ struct InicioView: View {
     @StateObject private var vmContas: ContaListViewModel
     @EnvironmentObject var deepLinkManager: DeepLinkManager
     
+    @State private var mostrarDetalheRecente = false
+    @State private var selectedLancamentoRecente: LancamentoModel?
     
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     
@@ -44,7 +46,6 @@ struct InicioView: View {
             
             ScrollView {
                 LazyVStack(spacing: 24) {
-                    
                     FavoritosView(
                         balanco: vmLancamentos.balanco,
                         cartao: vmLancamentos.totalCartao,
@@ -69,12 +70,14 @@ struct InicioView: View {
                     
                     RecentesListView(
                         viewModel: vmLancamentos,
-                        mosttrarValores: mostrarValores
+                        mosttrarValores: mostrarValores,
+                        mostrarDetalhe: $mostrarDetalheRecente,
+                        selectedLancamento: $selectedLancamentoRecente
                     )
+
                 }
                 .padding(.bottom, 10)
             }
-            
             VStack {
                 Spacer()
                 HStack {
@@ -97,6 +100,11 @@ struct InicioView: View {
         .navigationTitle(
             Text(selectedDate, format: .dateTime.month(.wide))
         )
+        .navigationDestination(isPresented: $mostrarDetalheRecente) {
+            if let lancamento = selectedLancamentoRecente {
+                LancamentoDetalheView(lancamento: lancamento)
+            }
+        }
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -333,14 +341,17 @@ struct RecentesListView: View {
     @ObservedObject var viewModel: LancamentoListViewModel
     let mosttrarValores: Bool
     
-    @State private var mostrarDetalhe = false
-    @State private var selectedLancamento: LancamentoModel?
+    @Binding var mostrarDetalhe: Bool
+    @Binding var selectedLancamento: LancamentoModel?
     
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 12) {
+            //TODO: Avaliar se faz sentido mostrar o titulo recentes
+            /*
             Text("Recentes")
                 .font(.title3)
                 .fontWeight(.semibold)
+             */
             
             ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
                 
@@ -386,11 +397,6 @@ struct RecentesListView: View {
             }
         }
         .padding(.horizontal)
-        .navigationDestination(isPresented: $mostrarDetalhe) {
-            if let lancamento = selectedLancamento {
-                LancamentoDetalheView(lancamento: lancamento)
-            }
-        }
     }
 }
     

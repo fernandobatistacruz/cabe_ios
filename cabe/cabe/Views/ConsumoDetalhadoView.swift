@@ -172,31 +172,29 @@ struct DonutChartView: View {
 
     var body: some View {
         ZStack {
-            ForEach(items.indices, id: \.self) { index in
-                Circle()
-                    .trim(
-                        from: startAngle(for: index),
-                        to: endAngle(for: index)
-                    )
-                    .stroke(
-                        items[index].cor,
-                        style: StrokeStyle(
-                            lineWidth: lineWidth,
-                            lineCap: .round
-                        )
-                    )
-                    .rotationEffect(.degrees(-90))
+            if total > 0 {
+                ForEach(items.indices, id: \.self) { index in
+                    let start = startAngle(for: index)
+                    let end = endAngle(for: index)
+                    if end - start > 0.0001 { // desenha apenas se visível
+                        Circle()
+                            .trim(from: start, to: end)
+                            .stroke(items[index].cor,
+                                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                    }
+                }
             }
-            if(detalhar) {
+            
+            if detalhar && total > 0 {
                 VStack(spacing: -2) {
                     Text(total, format: .currency(code: "BRL"))
                         .font(.headline)
                         .fontWeight(.bold)
-                        .minimumScaleFactor(0.5) // Para não quebrar se o valor for alto
                 }
             }
         }
-        .frame(width: size, height: size)
+        .frame(width: max(size, 10), height: max(size, 10))        
     }
 
     private func startAngle(for index: Int) -> CGFloat {

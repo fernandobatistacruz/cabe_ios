@@ -88,16 +88,41 @@ struct NotificacoesView: View {
                         }
                     }
                 }
+
             }
         }
         .navigationTitle("Notificações")
         .listStyle(.insetGrouped)
         .toolbar(.hidden, for: .tabBar)
+        .navigationTitle("Notificações")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task {
+                        await vm.marcarLancamentosComoLidos(
+                            vm.vencidos +
+                            vm.vencemHoje +
+                            vm.cartoesVencidos.flatMap(\.lancamentos) +
+                            vm.cartoesHoje.flatMap( \.lancamentos)
+                        )
+                    }
+                } label: {
+                    Image(systemName: "checklist")
+                }
+            }
+        }
+
     }
 }
 
 struct CartaoRowNotification: View {
     let cartaoNotificacao: CartaoNotificacao
+   
+    private var totalDoCartao: Decimal {
+        cartaoNotificacao.lancamentos.reduce(0) { partialResult, lancamento in
+            partialResult + lancamento.valor
+        }
+    }
 
     var body: some View {
         HStack (spacing: 12) {
@@ -112,16 +137,21 @@ struct CartaoRowNotification: View {
                 Text(cartaoNotificacao.nomeCartao)
                     .font(.body)
                     .fontWeight(.semibold)
-                
                 Text("\(cartaoNotificacao.quantidade) lançamento(s)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             Spacer()
-            Text(cartaoNotificacao.dataVencimento, format: .dateTime.day().month(.wide))
-                .font(.caption)
+            Text("\(formatarValor(totalDoCartao))")
                 .foregroundColor(.secondary)
         }
+    }
+    
+    private func formatarValor(_ valor: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = cartaoNotificacao.lancamentos.first?.cartao?.conta?.currencyCode ?? "BRL"
+        return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
     }
 }
 
