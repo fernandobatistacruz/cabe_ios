@@ -14,136 +14,135 @@ struct AjustesView: View {
     @EnvironmentObject var auth: AuthViewModel
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    Section {
-                        NavigationLink {
-                            PerfilUsuarioView()
-                        } label: {
-                            HStack {
-                                AsyncImage(url: auth.user?.photoURL) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                } placeholder: {
-                                    Image(systemName: "person.fill")
-                                        .font(.system(size: 45))
-                                        .foregroundStyle(.blue)
-                                        .padding(.horizontal, 6)
-                                }
-                                .frame(width: 56, height: 56)
-                                .clipShape(Circle())
-
-                                VStack(alignment: .leading) {
-                                    Text(auth.user?.name ?? "Conta")
-                                        .font(.title3)
-                                        .fontWeight(.bold)
-                                    Text(auth.user?.email ?? "")
-                                        .font(.subheadline)
-                                        .tint(.secondary)
-                                }
+        VStack {
+            List {
+                Section {
+                    NavigationLink {
+                        PerfilUsuarioView()
+                    } label: {
+                        HStack {
+                            AsyncImage(url: auth.user?.photoURL) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            } placeholder: {
+                                Image(systemName: "person.fill")
+                                    .font(.system(size: 45))
+                                    .foregroundStyle(.blue)
+                                    .padding(.horizontal, 6)
                             }
-                            .padding(5)
+                            .frame(width: 56, height: 56)
+                            .clipShape(Circle())
+                            
+                            VStack(alignment: .leading) {
+                                Text(auth.user?.name ?? "Conta")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                Text(auth.user?.email ?? "")
+                                    .font(.subheadline)
+                                    .tint(.secondary)
+                            }
                         }
-                        .buttonStyle(.plain)
+                        .padding(5)
                     }
-                    Section() {
-                        HStack {
-                            Image(systemName: "sun.max.fill")
-                                .foregroundStyle(.blue)
-                            Text("Aparência")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .contentShape(Rectangle())
-                        .background(
-                            NavigationLink("", destination: AppearanceSettingsView())
-                                .opacity(0)
-                        )
-                        
-                        HStack {
-                            Image(systemName: "bell.fill")
-                                .foregroundStyle(.red)
-                            Text("Notificações")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .contentShape(Rectangle())
-                        .background(
-                            NavigationLink("", destination: NotificacoesSettingsView())
-                                .opacity(0)
-                        )
-                        
-                        HStack {
-                            Image(systemName: "cloud.fill")
-                                .foregroundStyle(.cyan)
-                            Text("Backup")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .contentShape(Rectangle())
-                        .background(
-                            NavigationLink("", destination: BackupSettingsView())
-                                .opacity(0)
-                        )
-                        
-                        
-                        HStack {
-                            Image(systemName: "purchased")
-                                .foregroundStyle(.pink)
-                            Text("Assinatura")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Image(systemName: "iphone")
-                                .foregroundStyle(.gray)
-                            Text("Sobre")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Section() {
-                        HStack {
-                            Image(systemName: "switch.2")
-                                .foregroundStyle(.green)
-                            Text("Controle de Pagamento")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Image(systemName: "wallet.bifold.fill")
-                                .foregroundStyle(.orange)
-                            Text("Carteira Padrão")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Image(systemName: "square.split.2x2.fill")
-                                .foregroundStyle(.purple)
-                            Text("Categorias")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    
+                    .buttonStyle(.plain)
                 }
-                .listStyle(.insetGrouped)
+                Section() {
+                    HStack {
+                        Image(systemName: "sun.max.fill")
+                            .foregroundStyle(.blue)
+                        Text("Aparência")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                    .background(
+                        NavigationLink("", destination: AppearanceSettingsView())
+                            .opacity(0)
+                    )
+                    
+                    HStack {
+                        Image(systemName: "bell.fill")
+                            .foregroundStyle(.red)
+                        Text("Notificações")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                    .background(
+                        NavigationLink("", destination: NotificacoesSettingsView())
+                            .opacity(0)
+                    )
+                    
+                    HStack {
+                        Image(systemName: "cloud.fill")
+                            .foregroundStyle(.cyan)
+                        Text("Backup")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                    .background(
+                        NavigationLink("", destination: BackupSettingsView())
+                            .opacity(0)
+                    )
+                    
+                    
+                    HStack {
+                        Image(systemName: "purchased")
+                            .foregroundStyle(.pink)
+                        Text("Assinatura")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Image(systemName: "iphone")
+                            .foregroundStyle(.gray)
+                        Text("Sobre")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Section() {
+                    HStack {
+                        Image(systemName: "switch.2")
+                            .foregroundStyle(.green)
+                        Text("Controle de Pagamento")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Image(systemName: "wallet.bifold.fill")
+                            .foregroundStyle(.orange)
+                        Text("Carteira Padrão")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Image(systemName: "square.split.2x2.fill")
+                            .foregroundStyle(.purple)
+                        Text("Categorias")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
             }
-            .navigationTitle("Ajustes")
-            .navigationBarTitleDisplayMode(.large)
-        }        
-    }
+            .listStyle(.insetGrouped)
+        }
+        .navigationTitle("Ajustes")
+        .navigationBarTitleDisplayMode(.large)
+    }        
 }
+
 #Preview {
     AjustesView().environmentObject(ThemeManager())
 }

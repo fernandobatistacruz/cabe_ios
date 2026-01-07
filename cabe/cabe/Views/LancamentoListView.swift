@@ -50,178 +50,177 @@ struct LancamentoListView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                List {
-                    ForEach(lancamentosAgrupados, id: \.date) { section in
-                        
-                        Section {
-                            ForEach(section.items) { item in
-                                switch item {
-                                case .simples(let lancamento):
-                                    NavigationLink {
-                                        LancamentoDetalheView(lancamento: lancamento)
-                                    } label: {
-                                        LancamentoRow(
-                                            lancamento: lancamento,
-                                            mostrarPagamento: true,
-                                            mostrarValores: true                                           
-                                        )
-                                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                                Button(role: .destructive) {
-                                                    lancamentoParaExcluir = lancamento
-                                                    mostrarDialogExclusao = true
-                                                } label: {
-                                                    Label("Excluir", systemImage: "trash")
-                                                }
-                                            }
-                                            .swipeActions(edge: .leading,allowsFullSwipe: false) {
-                                                Button() {
-                                                    Task{
-                                                        await viewModel.togglePago([lancamento])
-                                                    }
-                                                } label: {
-                                                    Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
-                                                }.tint(.accentColor)
-                                            }
-                                    }
-                                    
-                                case .cartaoAgrupado(let cartao, let total, let lancamentos):
-                                    NavigationLink {
-                                        CartaoFaturaView(
-                                            cartao: cartao,
-                                            lancamentos: lancamentos,
-                                            total: total,
-                                            vencimento: section.date
-                                        )
-                                    } label: {
-                                        LancamentoCartaoRow(
-                                            cartao: cartao,
-                                            lancamentos: lancamentos,
-                                            total: total
-                                        )
-                                        .swipeActions(edge: .leading,allowsFullSwipe: false) {
-                                            Button() {
-                                                Task{
-                                                    await viewModel.togglePago(lancamentos)
-                                                }
-                                            } label: {
-                                                var temPendentes: Bool {
-                                                    lancamentos.contains { !$0.pago }
-                                                }
-                                                Label(
-                                                    temPendentes ? String(
-                                                        localized: "Pago"
-                                                    ): String(localized: "Não Pago"),
-                                                    systemImage: temPendentes ?
-                                                    "checklist.checked" : "checklist.unchecked"
-                                                )
-                                            }.tint(.accentColor)
+        ZStack {
+            List {
+                ForEach(lancamentosAgrupados, id: \.date) { section in
+                    
+                    Section {
+                        ForEach(section.items) { item in
+                            switch item {
+                            case .simples(let lancamento):
+                                NavigationLink {
+                                    LancamentoDetalheView(lancamento: lancamento)
+                                } label: {
+                                    LancamentoRow(
+                                        lancamento: lancamento,
+                                        mostrarPagamento: true,
+                                        mostrarValores: true                                           
+                                    )
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            lancamentoParaExcluir = lancamento
+                                            mostrarDialogExclusao = true
+                                        } label: {
+                                            Label("Excluir", systemImage: "trash")
                                         }
+                                    }
+                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
+                                        Button() {
+                                            Task{
+                                                await viewModel.togglePago([lancamento])
+                                            }
+                                        } label: {
+                                            Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
+                                        }.tint(.accentColor)
+                                    }
+                                }
+                                
+                            case .cartaoAgrupado(let cartao, let total, let lancamentos):
+                                NavigationLink {
+                                    CartaoFaturaView(
+                                        cartao: cartao,
+                                        lancamentos: lancamentos,
+                                        total: total,
+                                        vencimento: section.date
+                                    )
+                                } label: {
+                                    LancamentoCartaoRow(
+                                        cartao: cartao,
+                                        lancamentos: lancamentos,
+                                        total: total
+                                    )
+                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
+                                        Button() {
+                                            Task{
+                                                await viewModel.togglePago(lancamentos)
+                                            }
+                                        } label: {
+                                            var temPendentes: Bool {
+                                                lancamentos.contains { !$0.pago }
+                                            }
+                                            Label(
+                                                temPendentes ? String(
+                                                    localized: "Pago"
+                                                ): String(localized: "Não Pago"),
+                                                systemImage: temPendentes ?
+                                                "checklist.checked" : "checklist.unchecked"
+                                            )
+                                        }.tint(.accentColor)
                                     }
                                 }
                             }
-                            .listRowInsets(
-                                EdgeInsets(
-                                    top: 8,
-                                    leading: 16,
-                                    bottom: 8,
-                                    trailing: 16
-                                )
+                        }
+                        .listRowInsets(
+                            EdgeInsets(
+                                top: 8,
+                                leading: 16,
+                                bottom: 8,
+                                trailing: 16
                             )
-                        } header: {
-                            Text(section.date, format: .dateTime.day().month(.wide))
-                        }
+                        )
+                    } header: {
+                        Text(section.date, format: .dateTime.day().month(.wide))
                     }
                 }
-                .listStyle(.insetGrouped)
-                VStack {
+            }
+            .listStyle(.insetGrouped)
+            VStack {
+                Spacer()
+                HStack {
                     Spacer()
-                    HStack {
-                        Spacer()
-                        Button {
-                            mostrarNovoLancamento = true
-                        } label: {
-                            Image(systemName: "plus")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 48, height: 48)
-                                .background(Color.accentColor)
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 20)
-                    }
-                }
-            }
-            .navigationTitle(
-                Text(selectedDate, format: .dateTime.month(.wide))
-            )
-            .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: "Buscar")
-            .toolbar {
-                
-                ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        showCalendar = true
+                        mostrarNovoLancamento = true
                     } label: {
-                        //Image(systemName: "chevron.left")
-                        Text(selectedDate, format: .dateTime.year())
+                        Image(systemName: "plus")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 48, height: 48)
+                            .background(Color.accentColor)
+                            .clipShape(Circle())
                     }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 20)
                 }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        print("Mais ações")
-                    } label: {
-                        Image(systemName: "ellipsis")
-                    }
-                }
-            }
-            .confirmationDialog(
-                "Excluir lançamento?",
-                isPresented: $mostrarDialogExclusao,
-                titleVisibility: .visible
-            ) {
-                if let lancamento = lancamentoParaExcluir {
-
-                    if lancamento.tipoRecorrente == .nunca {
-                        Button("Confirmar exclusão", role: .destructive) {
-                            Task { await excluirTodos(lancamento) }
-                        }
-                    } else {
-                        Button("Excluir somente este", role: .destructive) {
-                            Task { await excluirSomenteEste(lancamento) }
-                        }
-
-                        Button("Excluir este e os próximos", role: .destructive) {
-                            Task { await excluirEsteEProximos(lancamento) }
-                        }
-
-                        Button("Excluir todos", role: .destructive) {
-                            Task { await excluirTodos(lancamento) }
-                        }
-                    }
-                }
-            }
-            message: {
-                Text("Essa ação não poderá ser desfeita.")
-            }
-
-            .sheet(isPresented: $mostrarNovoLancamento) {
-                NovoLancamentoView()
-            }
-            .sheet(isPresented: $showCalendar) {
-                CalendarioZoomView(
-                    dataInicial: selectedDate,
-                    onConfirm: { dataSelecionada in
-                        viewModel.selecionar(data: dataSelecionada)
-                    }
-                )
-                .presentationDetents([.medium, .large])
             }
         }
-    }
+        .navigationTitle(
+            Text(selectedDate, format: .dateTime.month(.wide))
+        )
+        .navigationBarTitleDisplayMode(.large)
+        .searchable(text: $searchText, prompt: "Buscar")
+        .toolbar {
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showCalendar = true
+                } label: {
+                    //Image(systemName: "chevron.left")
+                    Text(selectedDate, format: .dateTime.year())
+                }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    print("Mais ações")
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+        }
+        .confirmationDialog(
+            "Excluir lançamento?",
+            isPresented: $mostrarDialogExclusao,
+            titleVisibility: .visible
+        ) {
+            if let lancamento = lancamentoParaExcluir {
+                
+                if lancamento.tipoRecorrente == .nunca {
+                    Button("Confirmar exclusão", role: .destructive) {
+                        Task { await excluirTodos(lancamento) }
+                    }
+                } else {
+                    Button("Excluir somente este", role: .destructive) {
+                        Task { await excluirSomenteEste(lancamento) }
+                    }
+                    
+                    Button("Excluir este e os próximos", role: .destructive) {
+                        Task { await excluirEsteEProximos(lancamento) }
+                    }
+                    
+                    Button("Excluir todos", role: .destructive) {
+                        Task { await excluirTodos(lancamento) }
+                    }
+                }
+            }
+        }
+        message: {
+            Text("Essa ação não poderá ser desfeita.")
+        }
+        
+        .sheet(isPresented: $mostrarNovoLancamento) {
+            NovoLancamentoView()
+        }
+        .sheet(isPresented: $showCalendar) {
+            CalendarioZoomView(
+                dataInicial: selectedDate,
+                onConfirm: { dataSelecionada in
+                    viewModel.selecionar(data: dataSelecionada)
+                }
+            )
+            .presentationDetents([.medium, .large])
+        }
+    }        
+    
     
     private func excluirSomenteEste(_ lancamento: LancamentoModel) async {
         await viewModel.removerSomenteEste(lancamento)

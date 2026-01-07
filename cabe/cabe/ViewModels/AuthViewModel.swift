@@ -18,6 +18,13 @@ final class AuthViewModel: ObservableObject {
     @Published var error: AuthError?
     @Published var pendingLinkCredential: AuthCredential?
     @Published private(set) var user: AuthUser?
+    @Published var infoMessage: String?
+    
+    // MARK: - Email/Password
+    @Published var email: String = ""
+    @Published var password: String = ""
+    @Published var errorMessage: String?
+
 
 
     private let appleService = AppleSignInService()
@@ -136,4 +143,83 @@ final class AuthViewModel: ObservableObject {
             self.error = .generic(error.localizedDescription)
         }
     }
+   
+    // Login com email
+    @MainActor
+    func signInWithEmail() async {
+        do {
+            let result = try await Auth.auth().signIn(withEmail: email, password: password)
+            
+            // Verifica se o e-mail está confirmado
+            if !result.user.isEmailVerified {
+                self.errorMessage = "Por favor, verifique seu e-mail antes de entrar."
+                try? Auth.auth().signOut() // impede login sem confirmação
+                return
+            }
+            
+            // Atualiza usuário e limpa erro
+            updateUser(result.user)
+            self.errorMessage = nil
+            
+        } catch let authError as NSError {
+            switch authError.code {
+            case AuthErrorCode.userNotFound.rawValue:
+                self.errorMessage = "Usuário não encontrado. Crie uma conta."
+            case AuthErrorCode.wrongPassword.rawValue:
+                self.errorMessage = "Senha incorreta."
+            case AuthErrorCode.invalidEmail.rawValue:
+                self.errorMessage = "Email inválido."
+            default:
+                self.errorMessage = authError.localizedDescription
+            }
+        }
+    }
+
+
+    // Cadastro de novos usuários
+    @MainActor
+    func registerWithEmail(name: String) async {
+        //TODO: Testar o confirmação de e-mail e validar se está deixando logar sem validar a confirmação
+        do {
+            let result = try await Auth.auth().createUser(withEmail: email, password: password)
+            
+            // Atualiza displayName
+            let changeRequest = result.user.createProfileChangeRequest()
+            changeRequest.displayName = name
+            try await changeRequest.commitChanges()
+            
+            // Limpa mensagens
+            self.errorMessage = nil
+            self.infoMessage = "Conta criada! Verifique seu e-mail para ativar a conta."
+            
+            // Envia e-mail de verificação
+            try await result.user.sendEmailVerification()
+            
+        } catch let authError as NSError {
+            switch authError.code {
+            case AuthErrorCode.emailAlreadyInUse.rawValue:
+                self.errorMessage = "Este e-mail já está registrado. Tente fazer login."
+            case AuthErrorCode.invalidEmail.rawValue:
+                self.errorMessage = "E-mail inválido."
+            case AuthErrorCode.weakPassword.rawValue:
+                self.errorMessage = "Senha muito fraca. Use pelo menos 6 caracteres."
+            default:
+                self.errorMessage = authError.localizedDescription
+            }
+        }
+    }
+
+    // Atualiza usuário e estado
+    private func updateUser(_ firebaseUser: User) {
+        self.user = AuthUser(
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photoURL: firebaseUser.photoURL,
+            creationDate: firebaseUser.metadata.creationDate
+        )
+        self.state = .authenticated
+    }
+
+
 }

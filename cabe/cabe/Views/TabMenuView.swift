@@ -27,24 +27,7 @@ struct TabMenuView: View {
                         }
             .tabItem {
                 Label("Início", systemImage: "square.stack.fill")
-            }
-
-            /*
-            NavigationStack {
-                InicioView()
-                    .navigationDestination(for: DeepLink.self) { destination in
-                        switch destination {
-                        case .notificacoes:
-                            NotificacoesView(
-                                vm: NotificacaoViewModel()
-                            )
-                        }
-                    }
-            }
-            .tabItem {
-                Label("Início", systemImage: "square.stack.fill")
-            }
-             */
+            }            
             
             NavigationStack {
                 LancamentoListView()
