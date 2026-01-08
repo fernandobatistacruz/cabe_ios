@@ -52,19 +52,18 @@ struct AjustesView: View {
                     .buttonStyle(.plain)
                 }
                 Section() {
-                    HStack {
-                        Image(systemName: "sun.max.fill")
-                            .foregroundStyle(.blue)
-                        Text("Aparência")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                    NavigationLink {
+                        AppearanceSettingsView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "sun.max.fill")
+                                .foregroundStyle(.blue)
+                            Text("Aparência")                            
+                           
+                        }
                     }
-                    .contentShape(Rectangle())
-                    .background(
-                        NavigationLink("", destination: AppearanceSettingsView())
-                            .opacity(0)
-                    )
+                    .buttonStyle(.plain)
+                  
                     
                     NavigationLink {
                         NotificacoesSettingsView()
@@ -120,6 +119,7 @@ struct AjustesView: View {
                     }
                 }
                 Section() {
+                    /*
                     HStack {
                         Image(systemName: "switch.2")
                             .foregroundStyle(.green)
@@ -128,6 +128,7 @@ struct AjustesView: View {
                         Image(systemName: "chevron.right")
                             .foregroundStyle(.secondary)
                     }
+                     */
                     HStack {
                         Image(systemName: "wallet.bifold.fill")
                             .foregroundStyle(.orange)
@@ -160,8 +161,21 @@ struct AjustesView: View {
 
 final class ThemeManager: ObservableObject {
 
-    enum Theme: String {
-        case system, light, dark
+    enum Theme: String, CaseIterable {
+        case system
+        case light
+        case dark
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .system:
+                return "theme.system"
+            case .light:
+                return "theme.light"
+            case .dark:
+                return "theme.dark"
+            }
+        }
     }
 
     @Published var theme: Theme {
