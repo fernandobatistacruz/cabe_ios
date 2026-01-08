@@ -55,7 +55,7 @@ struct InicioView: View {
                         moeda: vmContas.contas.first?.currencyCode ?? "BRL"
                     )
                     BannerView(
-                        adUnitID: "ca-app-pub-1562286138930391/3659901803" // teste
+                        adUnitID: "ca-app-pub-1562286138930391/3659901803"
                     )
                     
                     NavigationLink {
