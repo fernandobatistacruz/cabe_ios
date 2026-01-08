@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseCore
+import GoogleMobileAds
 
 @main
 struct cabeApp: App {
@@ -19,7 +20,7 @@ struct cabeApp: App {
     var appDelegate
 
     init() {
-        _ = AppDatabase.shared
+        _ = AppDatabase.shared      
     }
 
     var body: some Scene {

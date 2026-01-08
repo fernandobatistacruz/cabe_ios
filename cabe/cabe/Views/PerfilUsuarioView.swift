@@ -48,11 +48,11 @@ struct PerfilUsuarioView: View {
             Button(role: .destructive) {
                 auth.signOut()
             } label: {
-                Text("Sair da conta")
+                Text("Finalizar sessão")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .padding(.bottom)
+            .padding()
         }
         .padding()
         .navigationTitle("Minha Conta")

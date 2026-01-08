@@ -145,32 +145,45 @@ final class AuthViewModel: ObservableObject {
     }
    
     // Login com email
+  
     @MainActor
     func signInWithEmail() async {
+        errorMessage = nil
+        infoMessage = nil
+        state = .loading
+        
         do {
-            let result = try await Auth.auth().signIn(withEmail: email, password: password)
+            let result = try await Auth.auth()
+                .signIn(withEmail: email, password: password)
             
-            // Verifica se o e-mail está confirmado
-            if !result.user.isEmailVerified {
-                self.errorMessage = "Por favor, verifique seu e-mail antes de entrar."
-                try? Auth.auth().signOut() // impede login sem confirmação
+            // 🔒 Verificação de e-mail
+            guard result.user.isEmailVerified else {
+                infoMessage = "Verifique seu e-mail para ativar sua conta."
+                try Auth.auth().signOut()
+                state = .unauthenticated
                 return
             }
             
-            // Atualiza usuário e limpa erro
+           
+            
+            // ✅ Login OK
             updateUser(result.user)
-            self.errorMessage = nil
+            state = .authenticated
             
         } catch let authError as NSError {
+            state = .unauthenticated
+            
             switch authError.code {
             case AuthErrorCode.userNotFound.rawValue:
-                self.errorMessage = "Usuário não encontrado. Crie uma conta."
+                errorMessage = "Usuário não encontrado. Crie uma conta."
             case AuthErrorCode.wrongPassword.rawValue:
-                self.errorMessage = "Senha incorreta."
+                errorMessage = "Senha incorreta."
             case AuthErrorCode.invalidEmail.rawValue:
-                self.errorMessage = "Email inválido."
+                errorMessage = "E-mail inválido."
+            case AuthErrorCode.userDisabled.rawValue:
+                errorMessage = "Esta conta foi desativada."
             default:
-                self.errorMessage = authError.localizedDescription
+                errorMessage = authError.localizedDescription
             }
         }
     }
@@ -179,7 +192,6 @@ final class AuthViewModel: ObservableObject {
     // Cadastro de novos usuários
     @MainActor
     func registerWithEmail(name: String) async {
-        //TODO: Testar o confirmação de e-mail e validar se está deixando logar sem validar a confirmação
         do {
             let result = try await Auth.auth().createUser(withEmail: email, password: password)
             
@@ -219,7 +231,28 @@ final class AuthViewModel: ObservableObject {
             creationDate: firebaseUser.metadata.creationDate
         )
         self.state = .authenticated
-    }
+    }    
+  
+    func sendPasswordReset() async {
+        guard !email.isEmpty else {
+            errorMessage = "Informe seu e-mail."
+            return
+        }
 
+        do {
+            try await Auth.auth().sendPasswordReset(withEmail: email)
+            errorMessage = nil
+            infoMessage = "Se houver uma conta, enviaremos as instruções por e-mail."
+        } catch let authError as NSError {
+            switch authError.code {
+            case AuthErrorCode.invalidEmail.rawValue:
+                errorMessage = "E-mail inválido."
+            case AuthErrorCode.userNotFound.rawValue:
+                errorMessage = "Nenhuma conta encontrada com esse e-mail."
+            default:
+                errorMessage = authError.localizedDescription
+            }
+        }
+    }
 
 }

@@ -41,7 +41,7 @@ struct RegisterView: View {
                     TextField("Nome", text: $name)
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground))
-                        .cornerRadius(10)
+                        .cornerRadius(12)
                         .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
                         .foregroundColor(.primary)
                         .disableAutocorrection(true)
@@ -52,14 +52,14 @@ struct RegisterView: View {
                         .disableAutocorrection(true)
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground))
-                        .cornerRadius(10)
+                        .cornerRadius(12)
                         .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
                         .foregroundColor(.primary)
                     
                     SecureField("Senha", text: $auth.password)
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground))
-                        .cornerRadius(10)
+                        .cornerRadius(12)
                         .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
                         .foregroundColor(.primary)
                     
@@ -89,7 +89,7 @@ struct RegisterView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity, minHeight: 50)
                             .background(Color.accentColor)
-                            .cornerRadius(10)
+                            .cornerRadius(22)
                     }
                 }
                 
@@ -104,7 +104,7 @@ struct RegisterView: View {
                     .foregroundColor(.blue)
                     .frame(maxWidth: .infinity, minHeight: 50)
                     .background(Color(.secondarySystemGroupedBackground))
-                    .cornerRadius(10)
+                    .cornerRadius(22)
                     .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
                 }
                 

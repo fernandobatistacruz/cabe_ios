@@ -41,7 +41,7 @@ struct InicioView: View {
     
     var body: some View {
         ZStack {
-            Color(uiColor: .systemGroupedBackground)
+            Color(.systemGroupedBackground)
                 .ignoresSafeArea()
             
             ScrollView {
@@ -53,6 +53,9 @@ struct InicioView: View {
                         despesas: vmLancamentos.totalDespesas,
                         mostrarValores: mostrarValores,
                         moeda: vmContas.contas.first?.currencyCode ?? "BRL"
+                    )
+                    BannerView(
+                        adUnitID: "ca-app-pub-1562286138930391/3659901803" // teste
                     )
                     
                     NavigationLink {

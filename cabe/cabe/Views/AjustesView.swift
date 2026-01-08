@@ -20,7 +20,7 @@ struct AjustesView: View {
                     NavigationLink {
                         PerfilUsuarioView()
                     } label: {
-                        HStack {
+                        HStack (){
                             AsyncImage(url: auth.user?.photoURL) { image in
                                 image
                                     .resizable()
@@ -33,6 +33,7 @@ struct AjustesView: View {
                             }
                             .frame(width: 56, height: 56)
                             .clipShape(Circle())
+                            .padding(.trailing, 5)
                             
                             VStack(alignment: .leading) {
                                 Text(auth.user?.name ?? "Conta")
@@ -40,7 +41,7 @@ struct AjustesView: View {
                                     .fontWeight(.bold)
                                 Text(auth.user?.email ?? "")
                                     .font(.subheadline)
-                                    .tint(.secondary)
+                                    .foregroundColor(.secondary)
                             }
                         }
                         .padding(5)
@@ -193,6 +194,7 @@ struct AppearanceSettingsView: View {
             }
             .navigationTitle("Aparência")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .tabBar)
             .listStyle(.insetGrouped)
         }
     }
@@ -242,6 +244,7 @@ struct NotificacoesSettingsView: View {
         }
         .navigationTitle("Notificações")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .listStyle(.insetGrouped)
     }
 
@@ -319,6 +322,7 @@ struct BackupSettingsView: View {
             }
             .navigationTitle("Backup")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .tabBar)
             .listStyle(.insetGrouped)
         }
     }
