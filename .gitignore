@@ -21,3 +21,5 @@ fastlane/test_output
 # macOS
 .DS_Store
 
+#Arquivo de login Firebase
+GoogleService-Info.plist
