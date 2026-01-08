@@ -174,6 +174,12 @@ struct LoginView: View {
                 RegisterView()
                     .environmentObject(auth)
             }
+            .onAppear {
+                AnalyticsService.shared.logScreen(
+                    .login,
+                    viewClass: "LoginView"
+                )
+            }
         }
     }
 }

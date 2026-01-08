@@ -15,6 +15,7 @@ struct cabeApp: App {
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var deepLinkManager = DeepLinkManager()
     @StateObject private var auth = AuthViewModel()
+    @StateObject private var subscriptionManager = SubscriptionManager()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate
@@ -35,6 +36,7 @@ struct cabeApp: App {
                     TabMenuView()
                 }
             }
+            .environmentObject(subscriptionManager)
             .environmentObject(themeManager)
             .environmentObject(deepLinkManager)
             .environmentObject(auth)

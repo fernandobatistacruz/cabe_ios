@@ -14,6 +14,7 @@ struct InicioView: View {
     @StateObject private var vmLancamentos: LancamentoListViewModel
     @StateObject private var vmContas: ContaListViewModel
     @EnvironmentObject var deepLinkManager: DeepLinkManager
+    @EnvironmentObject var sub: SubscriptionManager
     
     @State private var mostrarDetalheRecente = false
     @State private var selectedLancamentoRecente: LancamentoModel?
@@ -54,9 +55,12 @@ struct InicioView: View {
                         mostrarValores: mostrarValores,
                         moeda: vmContas.contas.first?.currencyCode ?? "BRL"
                     )
-                    BannerView(
-                        adUnitID: "ca-app-pub-1562286138930391/3659901803"
-                    )
+                    
+                    if !sub.isSubscribed {
+                        BannerView(
+                            adUnitID: "ca-app-pub-1562286138930391/3659901803"
+                        )
+                    }
                     
                     NavigationLink {
                         ConsumoDetalhadoView(

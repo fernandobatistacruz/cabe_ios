@@ -12,6 +12,9 @@ import UserNotifications
 struct AjustesView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var auth: AuthViewModel
+    @EnvironmentObject var sub: SubscriptionManager
+    @AppStorage(AppSettings.notificacoesAtivas)
+    private var notificacoesAtivas: Bool = false
     
     var body: some View {
         VStack {
@@ -63,19 +66,19 @@ struct AjustesView: View {
                             .opacity(0)
                     )
                     
-                    HStack {
-                        Image(systemName: "bell.fill")
-                            .foregroundStyle(.red)
-                        Text("Notificações")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                    NavigationLink {
+                        NotificacoesSettingsView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "bell.fill")
+                                .foregroundStyle(.red)
+                            Text("Notificações")
+                            Spacer()
+                            Text(notificacoesAtivas ?  String(localized: "Ativado") :  String(localized: "Desativado"))
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    .contentShape(Rectangle())
-                    .background(
-                        NavigationLink("", destination: NotificacoesSettingsView())
-                            .opacity(0)
-                    )
+                    .buttonStyle(.plain)
                     
                     HStack {
                         Image(systemName: "cloud.fill")
@@ -91,15 +94,22 @@ struct AjustesView: View {
                             .opacity(0)
                     )
                     
-                    
-                    HStack {
-                        Image(systemName: "purchased")
-                            .foregroundStyle(.pink)
-                        Text("Assinatura")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                    NavigationLink {
+                        PaywallView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "purchased")
+                                .foregroundStyle(.pink)
+                            Text("Assinatura")
+                            Spacer()
+                            Text(sub.currentPlan.title)
+                                .foregroundStyle(.secondary)
+                        }
                     }
+                    .buttonStyle(.plain)
+                    
+                    
+                    
                     HStack {
                         Image(systemName: "iphone")
                             .foregroundStyle(.gray)

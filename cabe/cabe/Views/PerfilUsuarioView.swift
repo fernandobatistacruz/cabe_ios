@@ -49,7 +49,8 @@ struct PerfilUsuarioView: View {
                 auth.signOut()
             } label: {
                 Text("Finalizar sessão")
-                    .frame(maxWidth: .infinity)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 50)
             }
             .buttonStyle(.borderedProminent)
             .padding()
