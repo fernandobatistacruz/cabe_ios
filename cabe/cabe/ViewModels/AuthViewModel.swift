@@ -160,8 +160,6 @@ final class AuthViewModel: ObservableObject {
     }
    
     // Login com email
-  
-    @MainActor
     func signInWithEmail() async {
         errorMessage = nil
         infoMessage = nil
@@ -212,7 +210,6 @@ final class AuthViewModel: ObservableObject {
 
 
     // Cadastro de novos usuários
-    @MainActor
     func registerWithEmail(name: String) async {
         do {
             let result = try await Auth.auth().createUser(withEmail: email, password: password)
@@ -279,5 +276,4 @@ final class AuthViewModel: ObservableObject {
             }
         }
     }
-
 }

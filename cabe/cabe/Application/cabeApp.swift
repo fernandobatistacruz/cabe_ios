@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import FirebaseCore
-import GoogleMobileAds
 
 @main
 struct cabeApp: App {
@@ -41,7 +39,7 @@ struct cabeApp: App {
             .environmentObject(themeManager)
             .environmentObject(deepLinkManager)
             .environmentObject(auth)
-            .preferredColorScheme(colorScheme)           
+            .preferredColorScheme(colorScheme)
         }
     }
 
