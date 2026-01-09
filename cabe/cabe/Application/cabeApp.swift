@@ -21,7 +21,8 @@ struct cabeApp: App {
     var appDelegate
 
     init() {
-        _ = AppDatabase.shared      
+        _ = AppDatabase.shared
+        appDelegate.deepLinkManager = deepLinkManager
     }
 
     var body: some Scene {
@@ -40,10 +41,7 @@ struct cabeApp: App {
             .environmentObject(themeManager)
             .environmentObject(deepLinkManager)
             .environmentObject(auth)
-            .preferredColorScheme(colorScheme)
-            .onAppear {
-                appDelegate.deepLinkManager = deepLinkManager
-            }
+            .preferredColorScheme(colorScheme)           
         }
     }
 

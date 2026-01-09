@@ -6,7 +6,6 @@
 //
 import SwiftUI
 internal import Combine
-import FirebaseCore
 
 struct NotificacoesView: View {
 
@@ -155,40 +154,3 @@ struct CartaoRowNotification: View {
         return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
     }
 }
-
-enum DeepLink: Hashable {
-    case notificacoes
-}
-
-final class DeepLinkManager: ObservableObject {
-    @Published var path = NavigationPath()
-}
-
-final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-
-    var deepLinkManager: DeepLinkManager?
-
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-    ) -> Bool {
-        UNUserNotificationCenter.current().delegate = self
-        FirebaseApp.configure()
-        return true
-    }
-
-    func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse
-    ) async {
-        let userInfo = response.notification.request.content.userInfo
-
-        if userInfo["destino"] as? String == "notificacoes" {
-            await MainActor.run {
-                self.deepLinkManager?.path.append(DeepLink.notificacoes)
-            }
-        }
-    }
-}
-
-
