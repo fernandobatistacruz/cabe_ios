@@ -55,14 +55,20 @@ private extension PaywallView {
 
     var header: some View {
         VStack(spacing: 12) {
-
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(.green)
+            
+            if sub.currentPlan == .complete {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 56))
+                    .foregroundStyle(.green)
+            } else {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 56))
+                    .foregroundStyle(.secondary)
+            }
 
             Text(sub.currentPlan == .complete
                  ? "Assinatura Ativa"
-                 : "Plano Básico")
+                 : "Assinatura Básica")
                 .font(.title.bold())
 
             Text(statusDescription)
@@ -76,7 +82,7 @@ private extension PaywallView {
     var statusDescription: String {
         sub.currentPlan == .complete
         ? "Você tem acesso a todos os recursos da assinatura completa."
-        : "Você está usando a versão básica do app."
+        : "Você está usando a assinatura básica."
     }
 }
 
