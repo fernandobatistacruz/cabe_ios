@@ -12,47 +12,45 @@ import GoogleMobileAds
 import SwiftUI
 
 struct BannerView: View {
-
-    @State private var isVisible = true
+    
+    @EnvironmentObject var sub: SubscriptionManager
     let adUnitID: String
 
     var body: some View {
-        if isVisible {
-            ZStack(alignment: .topTrailing) {
-
-                // Card
-                VStack {
-                    AdMobBannerView(adUnitID: adUnitID)
-                        .background(Color(uiColor: .secondarySystemBackground))
-                        .frame(height: 50)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                }
-                .background(
-                    RoundedRectangle(cornerRadius: 22)
-                        .fill(Color(.secondarySystemGroupedBackground))
-                )
-                
-                Button {
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        isVisible = false
-                    }
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(8)
-                        .background(
-                            Circle()
-                                .fill(Color(uiColor: .tertiarySystemBackground))
-                        )
-                }
-                .padding(6)
+        
+        ZStack(alignment: .topTrailing) {
+            
+            // Card
+            VStack {
+                AdMobBannerView(adUnitID: adUnitID)
+                    .background(Color(uiColor: .secondarySystemBackground))
+                    .frame(height: 50)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
             }
-            .padding(.horizontal)
-            .transition(.opacity)
+            .background(
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color(.secondarySystemGroupedBackground))
+            )
+            
+            NavigationLink {
+                PaywallView()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(8)
+                    .background(
+                        Circle()
+                            .fill(Color(uiColor: .tertiarySystemBackground))
+                    )
+            }
+            .padding(6)
         }
+        .padding(.horizontal)
+        .transition(.opacity)
     }
+    
 }
 
 struct AdMobBannerView: UIViewRepresentable {

@@ -49,7 +49,6 @@ struct AjustesView: View {
                         }
                         .padding(5)
                     }
-                    .buttonStyle(.plain)
                 }
                 Section() {
                     NavigationLink {
@@ -58,12 +57,13 @@ struct AjustesView: View {
                         HStack (){
                             Image(systemName: "sun.max.fill")
                                 .foregroundStyle(.blue)
-                            Text("Aparência")                            
+                            Text("Aparência")
+                            Spacer()
+                            Text(themeManager.theme.title)
+                                .foregroundStyle(.secondary)
                            
                         }
                     }
-                    .buttonStyle(.plain)
-                  
                     
                     NavigationLink {
                         NotificacoesSettingsView()
@@ -77,7 +77,6 @@ struct AjustesView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .buttonStyle(.plain)
                     
                     HStack {
                         Image(systemName: "cloud.fill")
@@ -105,18 +104,17 @@ struct AjustesView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .buttonStyle(.plain)
                     
-                    
-                    
-                    HStack {
-                        Image(systemName: "iphone")
-                            .foregroundStyle(.gray)
-                        Text("Sobre")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                    NavigationLink {
+                        AboutView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "iphone")
+                                .foregroundStyle(.gray)
+                            Text("Sobre")
+                        }
                     }
+                  
                 }
                 Section() {
                     /*
@@ -348,6 +346,129 @@ struct BackupSettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar)
             .listStyle(.insetGrouped)
+        }
+    }
+}
+
+struct AboutView: View {
+    
+    @State private var showAlert = false
+
+    private let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+        ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
+        ?? "App"
+
+    private let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "-"
+    private let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "-"
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+
+                // MARK: - Header
+                VStack(spacing: 12) {
+                    Image(uiImage: UIImage(named: "AppIcon") ?? UIImage())
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+
+                    Text(appName)
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    Text("Versão \(version) (\(build))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 40)
+
+                // MARK: - Links
+                VStack(spacing: 16) {
+                    //TODO: Ajustar o links de privacidade e termos de uso
+                    LinkRow(
+                        title: "Política de Privacidade",
+                        systemImage: "hand.raised",
+                        url: URL(string: "https://seusite.com/privacy")!
+                    )
+
+                    LinkRow(
+                        title: "Termos de Uso",
+                        systemImage: "doc.text",
+                        url: URL(string: "https://seusite.com/terms")!
+                    )
+
+                    LinkRow(
+                        title: "Licenças de Terceiros",
+                        systemImage: "doc.plaintext",
+                        url: URL(string: "https://seusite.com/licenses")!
+                    )
+                }
+                .padding(.horizontal)
+                
+                
+                
+
+                // MARK: - Support
+                VStack(spacing: 8) {
+                    Text("Suporte")
+                        .font(.headline)
+                    
+                    Button {
+                        let email = "cabe.aplicativo@gmail.com"
+
+                        if let url = URL(string: "mailto:\(email)"),
+                           UIApplication.shared.canOpenURL(url) {
+
+                            UIApplication.shared.open(url)
+                        } else {
+                            UIPasteboard.general.string = email
+                            showAlert = true
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(verbatim: "cabe.aplicativo@gmail.com")
+                        }
+                    }
+                    .alert("E-mail copiado",
+                           isPresented: $showAlert) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text("Cole o e-mail no app de sua preferência.")
+                    }
+                }
+
+                // MARK: - Footer
+                Text("© 2026 Fernando Batista da Cruz")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.bottom, 40)
+            }
+        }
+        .navigationTitle("Sobre")
+        .navigationBarTitleDisplayMode(.inline)
+        .background(Color(uiColor: .systemGroupedBackground))
+    }
+}
+
+struct LinkRow: View {
+    let title: String
+    let systemImage: String
+    let url: URL
+
+    var body: some View {
+        Link(destination: url) {
+            HStack {
+                Label(title, systemImage: systemImage)
+                    .foregroundStyle(.primary)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .background(.background)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
     }
 }
