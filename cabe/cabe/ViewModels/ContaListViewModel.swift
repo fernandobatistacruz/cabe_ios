@@ -7,15 +7,21 @@ final class ContaListViewModel: ObservableObject {
     
     @Published var contas: [ContaModel] = []
     @Published private(set) var saldoTotal: Decimal = 0.0 // <- saldo em Decimal
+    @Published var pagamentoPadrao: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
     
     private let repository: ContaRepository
     private var dbCancellable: AnyDatabaseCancellable?
     private var cancellables: Set<AnyCancellable> = []
     
+    
     init(repository: ContaRepository) {
         self.repository = repository
         observarContas()
         observarSaldoTotal()
+    }
+    
+    deinit {
+        dbCancellable?.cancel()
     }
   
     private func observarContas() {
@@ -46,8 +52,11 @@ final class ContaListViewModel: ObservableObject {
         catch { print("Erro ao editar conta:", error) }
     }
     
-    func remover(id: Int64, uuid: String) {
-        do { try repository.remover(id: id, uuid: uuid) }
+    func remover(_ conta: ContaModel) {
+        do {
+            try repository.remover(id: conta.id ?? 0, uuid: conta.uuid)
+            limparPagamentoPadraoSeNecessario(deletado: .conta(conta))
+        }
         catch { print("Erro ao remover conta:", error) }
     }
     
@@ -66,8 +75,11 @@ final class ContaListViewModel: ObservableObject {
         catch { print("Erro ao consultar por UUID:", error); return [] }
     }
     
-    deinit {
-        dbCancellable?.cancel()
+    private func limparPagamentoPadraoSeNecessario(deletado: MeioPagamento) {
+        if pagamentoPadrao == deletado {
+            UserDefaults.standard.removeObject(forKey: AppSettings.pagamentoPadrao)
+            pagamentoPadrao = nil
+        }
     }
 }
 

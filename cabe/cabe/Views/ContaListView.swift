@@ -67,7 +67,7 @@ struct ContaListView: View {
         {
             Button("Excluir", role: .destructive) {
                 if let conta = contaParaExcluir {
-                    excluir(conta)
+                    viewModel.remover(conta)
                 }
             }
             Button("Cancelar", role: .cancel) { }
@@ -86,15 +86,6 @@ struct ContaListView: View {
         }
         .sheet(isPresented: $mostrarNovaConta) {
             NovaContaView()
-        }
-    }
-    
-    private func excluir(_ conta: ContaModel) {
-        do {
-            try ContaRepository()
-                .remover(id: conta.id ?? 0, uuid: conta.uuid)
-        }catch{
-            debugPrint("Erro ao remover conta", error)
         }
     }
 }

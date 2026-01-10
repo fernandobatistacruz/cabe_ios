@@ -13,6 +13,7 @@ import Combine
 final class CartaoListViewModel: ObservableObject {
     
     @Published var cartoes: [CartaoModel] = []
+    @Published var pagamentoPadrao: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
     
     private let repository: CartaoRepository
     private var dbCancellable: AnyDatabaseCancellable?
@@ -20,6 +21,10 @@ final class CartaoListViewModel: ObservableObject {
     init(repository: CartaoRepository) {
         self.repository = repository
         observarCartoes()
+    }
+    
+    deinit {
+        dbCancellable?.cancel()
     }
   
     private func observarCartoes() {
@@ -38,8 +43,11 @@ final class CartaoListViewModel: ObservableObject {
         catch { print("Erro ao editar cartão:", error) }
     }
     
-    func remover(id: Int64, uuid: String) {
-        do { try repository.remover(id: id, uuid: uuid) }
+    func remover(_ cartao: CartaoModel) {
+        do {
+            try repository.remover(id: cartao.id ?? 0, uuid: cartao.uuid)
+            limparPagamentoPadraoSeNecessario(deletado: .cartao(cartao))
+        }
         catch { print("Erro ao remover cartão:", error) }
     }
     
@@ -58,7 +66,10 @@ final class CartaoListViewModel: ObservableObject {
         catch { print("Erro ao consultar por UUID:", error); return [] }
     }
     
-    deinit {
-        dbCancellable?.cancel()
+    private func limparPagamentoPadraoSeNecessario(deletado: MeioPagamento) {
+        if pagamentoPadrao == deletado {
+            UserDefaults.standard.removeObject(forKey: AppSettings.pagamentoPadrao)
+            pagamentoPadrao = nil
+        }
     }
 }

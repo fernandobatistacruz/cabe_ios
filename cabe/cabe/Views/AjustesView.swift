@@ -19,7 +19,10 @@ struct AjustesView: View {
     @AppStorage(AppSettings.backupAtivo)
     private var backupAtivo = false
     
-    @State private var pagamentoPadrao: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
+    @AppStorage(AppSettings.pagamentoPadrao)
+    private var pagamentoPadraoData: Data?
+    @State private var pagamentoPadrao: MeioPagamento? = nil
+    
     @State private var mostrandoZoomPagamento = false
     
     var body: some View {
@@ -157,7 +160,15 @@ struct AjustesView: View {
             .listStyle(.insetGrouped)
         }
         .navigationTitle("Ajustes")
-        .navigationBarTitleDisplayMode(.large)        
+        .navigationBarTitleDisplayMode(.large)
+        .onAppear {
+            if let data = pagamentoPadraoData,
+               let meio = try? JSONDecoder().decode(MeioPagamento.self, from: data) {
+                pagamentoPadrao = meio
+            } else {
+                pagamentoPadrao = nil
+            }
+        }
     }
 }
 

@@ -102,7 +102,9 @@ struct CartaoListView: View {
         )
         .alert("Excluir cartão?", isPresented: $mostrarConfirmacao) {
             Button("Excluir", role: .destructive) {
-                if let cartao = cartaoParaExcluir { excluir(cartao) }
+                if let cartao = cartaoParaExcluir {
+                    viewModel.remover(cartao)
+                }
             }
             Button("Cancelar", role: .cancel) { }
         } message: {
@@ -119,15 +121,6 @@ struct CartaoListView: View {
                     Image(systemName: "plus")
                 }
             }
-        }
-    }
-    
-    private func excluir(_ cartao: CartaoModel) {
-        do {
-            try CartaoRepository()
-                .remover(id: cartao.id ?? 0, uuid: cartao.uuid)
-        }catch{
-            debugPrint("Erro ao remover cartão", error)
         }
     }
 }
