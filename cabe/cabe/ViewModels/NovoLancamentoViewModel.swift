@@ -22,9 +22,9 @@ final class NovoLancamentoViewModel: ObservableObject {
     @Published var dataLancamento: Date = Date()
     @Published var dataFatura: Date = Date()
     @Published var anotacao: String = ""
-    @Published var recorrente: TipoRecorrente = .nunca
-    @Published var pagamentoSelecionado: MeioPagamento?
+    @Published var recorrente: TipoRecorrente = .nunca    
     @Published var parcelaTexto: String = ""
+    @Published var pagamentoSelecionado: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
 
     // MARK: - Init
 

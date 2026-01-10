@@ -13,6 +13,9 @@ struct ZoomPagamentoView: View {
     @StateObject private var viewModel = ZoomPagamentoViewModel()
 
     @Binding var selecionado: MeioPagamento?
+    
+    /// Se true, salva automaticamente no UserDefaults (usado na tela de ajustes)
+    var salvarComoPadrao: Bool = false
 
     var body: some View {
         List {
@@ -25,6 +28,9 @@ struct ZoomPagamentoView: View {
 
                         Button {
                             selecionado = meio
+                            if salvarComoPadrao {
+                                UserDefaults.standard.salvarPagamentoPadrao(meio)
+                            }
                             dismiss()
                         } label: {
                             PagamentoRowView(
@@ -49,6 +55,9 @@ struct ZoomPagamentoView: View {
 
                         Button {
                             selecionado = meio
+                            if salvarComoPadrao {
+                                UserDefaults.standard.salvarPagamentoPadrao(meio)
+                            }
                             dismiss()
                         } label: {
                             PagamentoRowView(
@@ -64,19 +73,27 @@ struct ZoomPagamentoView: View {
                     }
                 }
             }
+
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Pagamento")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.carregarDados()
+            
+            // Se for tela de ajustes, já seleciona o pagamento padrão
+            if salvarComoPadrao && selecionado == nil {
+                selecionado = UserDefaults.standard.carregarPagamentoPadrao()
+            }
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
+            if !salvarComoPadrao {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
                 }
             }
         }

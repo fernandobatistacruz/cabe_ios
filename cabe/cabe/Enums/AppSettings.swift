@@ -10,4 +10,5 @@ enum AppSettings {
     static let notificacoesAtivas = "notificacoesAtivas"
     static let backupAtivo = "backupAtivo"
     static let ultimoBackupTimestamp = "ultimoBackupTimestamp"
+    static let pagamentoPadrao = "pagamentoPadrao"
 }

@@ -19,6 +19,9 @@ struct AjustesView: View {
     @AppStorage(AppSettings.backupAtivo)
     private var backupAtivo = false
     
+    @State private var pagamentoPadrao: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
+    @State private var mostrandoZoomPagamento = false
+    
     var body: some View {
         VStack {
             List {
@@ -119,24 +122,27 @@ struct AjustesView: View {
                   
                 }
                 Section() {
-                    /*
-                    HStack {
-                        Image(systemName: "switch.2")
-                            .foregroundStyle(.green)
-                        Text("Controle de Pagamento")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
-                    }
-                     */
-                    HStack {
-                        Image(systemName: "wallet.bifold.fill")
-                            .foregroundStyle(.orange)
-                        Text("Carteira Padrão")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
-                    }
+                    NavigationLink {
+                            ZoomPagamentoView(
+                                selecionado: $pagamentoPadrao,
+                                salvarComoPadrao: true
+                            )
+                        } label: {
+                            HStack {
+                                Image(systemName: "wallet.bifold.fill")
+                                    .foregroundStyle(.orange)
+                                Text("Pagamento Padrão")
+                                Spacer()
+                                if let pagamento = pagamentoPadrao {
+                                    Text(pagamento.titulo)
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    Text("Nenhum")
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                    
                     HStack {
                         Image(systemName: "square.split.2x2.fill")
                             .foregroundStyle(.purple)
@@ -151,8 +157,8 @@ struct AjustesView: View {
             .listStyle(.insetGrouped)
         }
         .navigationTitle("Ajustes")
-        .navigationBarTitleDisplayMode(.large)
-    }        
+        .navigationBarTitleDisplayMode(.large)        
+    }
 }
 
 #Preview {
