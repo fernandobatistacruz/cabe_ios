@@ -5,7 +5,7 @@
 //  Created by Fernando Batista da Cruz on 06/01/26.
 //
 import SwiftUI
-internal import Combine
+import Combine
 
 struct NotificacoesView: View {
 

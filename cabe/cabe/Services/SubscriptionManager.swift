@@ -8,7 +8,7 @@
 
 import StoreKit
 import SwiftUI
-internal import Combine
+import Combine
 
 enum SubscriptionError: Error {
     case failedVerification

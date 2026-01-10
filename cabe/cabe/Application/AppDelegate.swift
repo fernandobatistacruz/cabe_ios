@@ -29,7 +29,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
 
         if userInfo["destino"] as? String == "notificacoes" {
             await MainActor.run {
-                self.deepLinkManager?.path.append(DeepLink.notificacoes)
+                self.deepLinkManager?.open(.notificacoes)
             }
         }
     }

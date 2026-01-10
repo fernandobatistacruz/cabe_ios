@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-internal import Combine
+import Combine
 
 struct InicioView: View {
     @State private var mostrarNovaDespesa = false

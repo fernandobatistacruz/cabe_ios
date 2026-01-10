@@ -1,5 +1,12 @@
 import SwiftUI
 
+enum Tab: Hashable {
+    case inicio
+    case lancamentos
+    case resumo
+    case ajustes
+}
+
 struct TabMenuView: View {
     
     @EnvironmentObject var deepLinkManager: DeepLinkManager
@@ -12,22 +19,20 @@ struct TabMenuView: View {
         )
     
     var body: some View {
-        TabView {
-          
+        TabView (selection: $deepLinkManager.selectedTab) {
             NavigationStack(path: $deepLinkManager.path) {
-                            InicioView(vmLancamentos: vmLancamentos) // ⬅️ usa o mesmo VM
-                                .navigationDestination(for: DeepLink.self) { destination in
-                                    switch destination {
-                                    case .notificacoes:
-                                        NotificacoesView(
-                                            vm: vmLancamentos.notificacaoVM // ✅ O MESMO
-                                        )
-                                    }
-                                }
+                InicioView(vmLancamentos: vmLancamentos)
+                    .navigationDestination(for: DeepLink.self) { destination in
+                        switch destination {
+                        case .notificacoes:
+                            NotificacoesView(vm: vmLancamentos.notificacaoVM)
                         }
+                    }
+            }
             .tabItem {
                 Label("Início", systemImage: "square.stack.fill")
-            }            
+            }
+            .tag(Tab.inicio)
             
             NavigationStack {
                 LancamentoListView()
@@ -35,6 +40,7 @@ struct TabMenuView: View {
             .tabItem {
                 Label("Lançamentos", systemImage: "square.stack.fill")
             }
+            .tag(Tab.lancamentos)
 
             NavigationStack {
                 ResumoAnualView()
@@ -42,6 +48,7 @@ struct TabMenuView: View {
             .tabItem {
                 Label("Resumo", systemImage: "chart.bar.xaxis")
             }
+            .tag(Tab.resumo)
 
             NavigationStack {
                 AjustesView()
@@ -49,7 +56,7 @@ struct TabMenuView: View {
             .tabItem {
                 Label("Ajustes", systemImage: "gear")
             }
+            .tag(Tab.ajustes)
         }
-        .environmentObject(deepLinkManager)
     }
 }

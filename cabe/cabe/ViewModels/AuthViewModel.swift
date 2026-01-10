@@ -7,7 +7,7 @@
 
 
 import FirebaseAuth
-internal import Combine
+import Combine
 import AuthenticationServices
 import GoogleSignIn
 

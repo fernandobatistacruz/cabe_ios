@@ -5,7 +5,7 @@
 //  Created by Fernando Batista da Cruz on 24/12/25.
 //
 
-internal import Combine
+import Combine
 
 @MainActor
 final class ZoomPagamentoViewModel: ObservableObject {

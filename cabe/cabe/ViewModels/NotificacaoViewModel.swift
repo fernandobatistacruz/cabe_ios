@@ -4,7 +4,7 @@
 //
 
 import Foundation
-internal import Combine
+import Combine
 
 @MainActor
 final class NotificacaoViewModel: ObservableObject {

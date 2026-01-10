@@ -7,7 +7,7 @@
 
 import SwiftUI
 import GRDB
-internal import Combine
+import Combine
 
 @MainActor
 final class LancamentoListViewModel: ObservableObject {

@@ -7,7 +7,7 @@
 
 import SwiftUI
 import GRDB
-internal import Combine
+import Combine
 
 struct CartaoListView: View {
     
