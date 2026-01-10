@@ -34,7 +34,7 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
         )
     }
 
-    func salvar(_ categoria: inout CategoriaModel) throws {
+    func salvar(_ categoria: CategoriaModel) throws {
         try db.dbQueue.write { db in
             try categoria.insert(db)
         }
@@ -85,7 +85,7 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
 protocol CategoriaRepositoryProtocol {
    
     func observeCategorias(onChange: @escaping ([CategoriaModel]) -> Void) -> AnyDatabaseCancellable
-    func salvar(_ categoria: inout CategoriaModel) throws
+    func salvar(_ categoria: CategoriaModel) throws
     func editar(_ categoria: CategoriaModel) throws
     func remover(id: Int64, tipo: Int) throws
     func limparDados() throws

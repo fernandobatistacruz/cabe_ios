@@ -36,7 +36,7 @@ final class CategoriaListViewModel: ObservableObject {
     // --- Métodos existentes mantidos ---
     
     func salvar(_ categoria: inout CategoriaModel) {
-        do { try repository.salvar(&categoria) }
+        do { try repository.salvar(categoria) }
         catch { print("Erro ao salvar conta:", error) }
     }
     
