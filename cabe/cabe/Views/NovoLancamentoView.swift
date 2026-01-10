@@ -197,14 +197,14 @@ struct NovoLancamentoView: View {
                 NavigationStack {
                     switch sheet {
                     case .categoria:
-                        CategoriaZoomView(
+                        ZoomCategoriaView(
                             categoriaSelecionada: $vm.categoria,
                             tipo: vm.tipo
                         )
                     case .pagamento:
                         ZoomPagamentoView(selecionado: $vm.pagamentoSelecionado)
                     case .fatura:
-                        CalendarioZoomView(
+                        ZoomCalendarioView(
                             dataInicial: vm.dataFatura,
                             onConfirm: { data in
                                 vm.dataFatura = data

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OperadoraZoomView: View {
+struct ZoomOperadoraView: View {
     @Binding var operadoraSelecionada: OperadoraCartao?
     @Environment(\.dismiss) private var dismiss
 

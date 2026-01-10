@@ -148,7 +148,7 @@ struct InicioView: View {
             }
         }
         .sheet(isPresented: $showCalendar) {
-            CalendarioZoomView(
+            ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
                     vmLancamentos.selecionar(data: dataSelecionada)

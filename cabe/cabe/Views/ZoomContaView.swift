@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContaZoomView: View {
+struct ZoomContaView: View {
     @State private var contas: [ContaModel] = []
 
     @Binding var contaSelecionada: ContaModel?

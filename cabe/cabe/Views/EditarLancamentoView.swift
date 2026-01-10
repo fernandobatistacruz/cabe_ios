@@ -166,7 +166,7 @@ struct EditarLancamentoView: View {
                 NavigationStack {
                     switch sheet {
                     case .categoria:
-                        CategoriaZoomView(
+                        ZoomCategoriaView(
                             categoriaSelecionada: $vm.categoria,
                             tipo: vm.tipo
                         )
@@ -177,7 +177,7 @@ struct EditarLancamentoView: View {
                         )
 
                     case .fatura:
-                        CalendarioZoomView(
+                        ZoomCalendarioView(
                             dataInicial: vm.dataFatura,
                             onConfirm: { vm.dataFatura = $0 }
                         )

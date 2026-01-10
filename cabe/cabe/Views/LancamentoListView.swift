@@ -211,7 +211,7 @@ struct LancamentoListView: View {
             NovoLancamentoView()
         }
         .sheet(isPresented: $showCalendar) {
-            CalendarioZoomView(
+            ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
                     viewModel.selecionar(data: dataSelecionada)

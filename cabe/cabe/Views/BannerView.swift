@@ -15,6 +15,7 @@ struct BannerView: View {
     
     @EnvironmentObject var sub: SubscriptionManager
     let adUnitID: String
+    @State private var mostrarPaywall = false
 
     var body: some View {
         
@@ -33,8 +34,8 @@ struct BannerView: View {
                     .fill(Color(.secondarySystemGroupedBackground))
             )
             
-            NavigationLink {
-                PaywallView()
+            Button {
+                mostrarPaywall = true
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 12, weight: .semibold))
@@ -49,8 +50,12 @@ struct BannerView: View {
         }
         .padding(.horizontal)
         .transition(.opacity)
-    }
-    
+        .sheet(isPresented: $mostrarPaywall) {
+            NavigationStack {
+                PaywallView()
+            }
+        }
+    }    
 }
 
 struct AdMobBannerView: UIViewRepresentable {

@@ -299,12 +299,12 @@ struct NovoCartaoView: View {
             NavigationStack {
                 switch sheet {
                 case .conta:
-                    ContaZoomView(
+                    ZoomContaView(
                         contaSelecionada: $viewModel.conta
                     )
                     
                 case .operadora:
-                    OperadoraZoomView(
+                    ZoomOperadoraView(
                         operadoraSelecionada: $viewModel.operadora
                     )
                 }
@@ -338,7 +338,7 @@ struct NovoCartaoView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-    }    
+    }
 
     private func salvar() {
         do {
@@ -422,12 +422,12 @@ struct EditarCartaoView: View {
                 NavigationStack {
                     switch sheet {
                     case .conta:
-                        ContaZoomView(
+                        ZoomContaView(
                             contaSelecionada: $viewModel.conta
                         )
                         
                     case .operadora:
-                        OperadoraZoomView(
+                        ZoomOperadoraView(
                             operadoraSelecionada: $viewModel.operadora
                         )
                     }

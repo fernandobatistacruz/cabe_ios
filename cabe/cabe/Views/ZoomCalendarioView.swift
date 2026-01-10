@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CalendarioZoomView: View {
+struct ZoomCalendarioView: View {
 
     let dataInicial: Date
     let onConfirm: (Date) -> Void
@@ -46,7 +46,7 @@ struct CalendarioZoomView: View {
     }
 }
 
-private extension CalendarioZoomView {
+private extension ZoomCalendarioView {
 
     var mainContent: some View {
         ScrollViewReader { proxy in
@@ -102,7 +102,7 @@ private extension CalendarioZoomView {
     }
 }
 
-private extension CalendarioZoomView {
+private extension ZoomCalendarioView {
 
     func handleMonthSelection(year: Int, month: Int) {
         let date = calendar.date(

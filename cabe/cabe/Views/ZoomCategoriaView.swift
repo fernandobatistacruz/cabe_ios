@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct CategoriaZoomView: View {
+struct ZoomCategoriaView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Binding var categoriaSelecionada: CategoriaModel?
