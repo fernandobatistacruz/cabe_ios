@@ -130,32 +130,32 @@ struct AjustesView: View {
                                 selecionado: $pagamentoPadrao,
                                 salvarComoPadrao: true
                             )
-                        } label: {
-                            HStack {
-                                Image(systemName: "wallet.bifold.fill")
-                                    .foregroundStyle(.orange)
-                                Text("Pagamento Padrão")
-                                Spacer()
-                                if let pagamento = pagamentoPadrao {
-                                    Text(pagamento.titulo)
-                                        .foregroundColor(.secondary)
-                                } else {
-                                    Text("Nenhum")
-                                        .foregroundColor(.secondary)
-                                }
+                    } label: {
+                        HStack {
+                            Image(systemName: "wallet.bifold.fill")
+                                .foregroundStyle(.orange)
+                            Text("Pagamento Padrão")
+                            Spacer()
+                            if let pagamento = pagamentoPadrao {
+                                Text(pagamento.titulo)
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text("Nenhum")
+                                    .foregroundColor(.secondary)
                             }
                         }
+                    }
                     
-                    HStack {
-                        Image(systemName: "square.split.2x2.fill")
-                            .foregroundStyle(.purple)
-                        Text("Categorias")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                    NavigationLink {
+                        CategoriaListView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "square.split.2x2.fill")
+                                .foregroundStyle(.purple)
+                            Text("Categorias")
+                        }
                     }
                 }
-                
             }
             .listStyle(.insetGrouped)
         }

@@ -6,6 +6,7 @@
 //
 
 import GRDB
+import Foundation
 
 final class CategoriaRepository : CategoriaRepositoryProtocol{
     
@@ -20,7 +21,10 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
     ) -> AnyDatabaseCancellable {
         
         let observation = ValueObservation.tracking { db in
-            try CategoriaModel.fetchAll(db)
+            try CategoriaModel.fetchAll(db).sorted {
+                $0.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) <
+                $1.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            }
         }
         
         return observation.start(
@@ -70,10 +74,12 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
             try CategoriaModel
                 .filter(CategoriaModel.Columns.tipo == tipo.rawValue)
                 .order(CategoriaModel.Columns.nome)
-                .fetchAll(db)
+                .fetchAll(db).sorted {
+                    $0.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) <
+                        $1.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                }
         }
     }
-
 }
 
 protocol CategoriaRepositoryProtocol {

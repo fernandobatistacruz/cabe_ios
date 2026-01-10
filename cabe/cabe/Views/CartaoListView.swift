@@ -51,7 +51,6 @@ struct CartaoListView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
-                .padding(.top)
              
                 List {
                     Section {
@@ -276,7 +275,7 @@ struct NovoCartaoView: View {
                         Text(viewModel.conta?.nome ?? String(localized: "Nenhuma"))
                             .foregroundColor(.secondary)
                         Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                             .font(.footnote)
                     }
                 }

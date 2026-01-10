@@ -311,20 +311,3 @@ struct EditarContaView: View {
 
 
 // MARK: - Preview
-
-/*
-#Preview {
-    struct MockRepo: ContaDAO {
-        func listar() throws -> [ContaModel] { [
-            ContaModel(nome: "Nubank", saldo: 1200),
-            ContaModel(nome: "Inter", saldo: -50)
-        ] }
-    }
-    NavigationStack {
-        ContasListView(repository: MockRepo())
-            .preferredColorScheme(.light)
-    }
-}
- */
-
-
