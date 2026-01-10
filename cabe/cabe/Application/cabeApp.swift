@@ -7,19 +7,39 @@
 
 import SwiftUI
 
+enum AppBootstrap {
+    
+    /// Deve ser síncrono para evitar abrir o banco antes do restore.
+    static func prepare() {
+        do {
+            try BackupService.shared.restaurarSeNecessario()
+        } catch {
+            print("Erro ao restaurar backup:", error)
+        }
+        _ = AppDatabase.shared
+    }
+}
+
 @main
 struct cabeApp: App {
 
     @StateObject private var themeManager = ThemeManager()
-    @StateObject private var deepLinkManager = DeepLinkManager()
+    let deepLinkManager = DeepLinkManager()
     @StateObject private var auth = AuthViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
     
+    let backupVM = BackupViewModel()
+        
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate
+    
+    @Environment(\.scenePhase)
+    private var scenePhase
 
     init() {
-        _ = AppDatabase.shared
+        DispatchQueue.global(qos: .utility).sync {
+            AppBootstrap.prepare()
+        }
         appDelegate.deepLinkManager = deepLinkManager
     }
 
@@ -35,10 +55,18 @@ struct cabeApp: App {
                     TabMenuView()
                 }
             }
+            .onChange(of: scenePhase) { phase in
+                if phase == .background {
+                    if BackupPolicy.deveFazerBackupAutomatico() {
+                        backupVM.fazerBackupManual()
+                    }
+                }
+            }
             .environmentObject(subscriptionManager)
             .environmentObject(themeManager)
             .environmentObject(deepLinkManager)
             .environmentObject(auth)
+            .environmentObject(backupVM)
             .preferredColorScheme(colorScheme)
         }
     }

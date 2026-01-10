@@ -16,6 +16,9 @@ struct AjustesView: View {
     @AppStorage(AppSettings.notificacoesAtivas)
     private var notificacoesAtivas: Bool = false
     
+    @AppStorage(AppSettings.backupAtivo)
+    private var backupAtivo = false
+    
     var body: some View {
         VStack {
             List {
@@ -78,19 +81,18 @@ struct AjustesView: View {
                         }
                     }
                     
-                    HStack {
-                        Image(systemName: "cloud.fill")
-                            .foregroundStyle(.cyan)
-                        Text("Backup")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                    NavigationLink {
+                        BackupView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "cloud.fill")
+                                .foregroundStyle(.cyan)
+                            Text("Backup")
+                            Spacer()
+                            Text(backupAtivo ? String(localized: "Ativado") :  String(localized: "Desativado"))
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                    .contentShape(Rectangle())
-                    .background(
-                        NavigationLink("", destination: BackupSettingsView())
-                            .opacity(0)
-                    )
                     
                     NavigationLink {
                         PaywallView()
@@ -322,11 +324,7 @@ struct NotificacoesSettingsView: View {
     }
 }
 
-
-enum AppSettings {
-    static let notificacoesAtivas = "notificacoesAtivas"
-}
-
+/*
 struct BackupSettingsView: View {
 
     @State private var backupAtivo = false
@@ -347,6 +345,68 @@ struct BackupSettingsView: View {
             .toolbar(.hidden, for: .tabBar)
             .listStyle(.insetGrouped)
         }
+    }
+}
+ */
+
+
+struct BackupView: View {
+
+    @AppStorage(AppSettings.backupAtivo)
+    private var backupAtivo = false
+
+    @AppStorage(AppSettings.ultimoBackupTimestamp)
+    private var ultimoBackupTimestamp: Double = 0
+
+    @EnvironmentObject var vm: BackupViewModel
+
+    var body: some View {
+        Form {
+
+            Section {
+                Toggle("Ativar backup automático", isOn: $backupAtivo)
+            }
+            footer: {
+                Text("Quando ativado, seus dados serão salvos automaticamente no iCloud.")
+            }
+
+            Section {
+                HStack {
+                    Text("Último backup")
+                    Spacer()
+                    Text(ultimoBackupTexto)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Section {
+                Button("Fazer backup agora") {
+                    vm.fazerBackupManual()
+                }
+
+                Button("Apagar backup do iCloud", role: .destructive) {
+                    vm.apagarBackup()
+                }
+            }
+
+            if vm.emProgresso {
+                ProgressView()
+            }
+
+            if let erro = vm.erro {
+                Text(erro)
+                    .foregroundStyle(.red)
+            }
+        }
+        .navigationTitle("Backup")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
+    }
+
+    private var ultimoBackupTexto: String {
+        guard ultimoBackupTimestamp > 0 else { return "Nunca" }
+        let date = Date(timeIntervalSince1970: ultimoBackupTimestamp)
+        return date.formatted(date: .abbreviated, time: .shortened)
     }
 }
 
