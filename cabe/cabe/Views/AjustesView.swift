@@ -427,7 +427,7 @@ struct AboutView: View {
 
                 // MARK: - Header
                 VStack(spacing: 12) {
-                    Image(uiImage: UIImage(named: "AppIcon") ?? UIImage())
+                    Image(uiImage: UIImage(named: "app_icon_ui") ?? UIImage())
                         .resizable()
                         .frame(width: 80, height: 80)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -448,19 +448,13 @@ struct AboutView: View {
                     LinkRow(
                         title: "Política de Privacidade",
                         systemImage: "hand.raised",
-                        url: URL(string: "https://seusite.com/privacy")!
+                        url: URL(string: "https://sites.google.com/view/cabeapp/privacidade")!
                     )
 
                     LinkRow(
-                        title: "Termos de Uso",
+                        title: "Termos de Uso (EULA)",
                         systemImage: "doc.text",
-                        url: URL(string: "https://seusite.com/terms")!
-                    )
-
-                    LinkRow(
-                        title: "Licenças de Terceiros",
-                        systemImage: "doc.plaintext",
-                        url: URL(string: "https://seusite.com/licenses")!
+                        url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula")!
                     )
                 }
                 .padding(.horizontal)
@@ -498,7 +492,7 @@ struct AboutView: View {
                 }
 
                 // MARK: - Footer
-                Text("© 2026 Fernando Batista da Cruz")
+                Text("Desenvolvido por Fernando Batista da Cruz")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(.bottom, 40)
@@ -506,6 +500,7 @@ struct AboutView: View {
         }
         .navigationTitle("Sobre")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .background(Color(uiColor: .systemGroupedBackground))
     }
 }
@@ -527,8 +522,8 @@ struct LinkRow: View {
                     .foregroundStyle(.secondary)
             }
             .padding()
-            .background(.background)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 22))
         }
     }
 }
