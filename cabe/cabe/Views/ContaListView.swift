@@ -8,7 +8,7 @@ struct ContaListView: View {
     @State private var mostrarNovaConta = false
     @State private var mostrarConfirmacao = false
     @State private var contaParaExcluir: ContaModel?
-
+    @EnvironmentObject var sub: SubscriptionManager
     @StateObject private var viewModel: ContaListViewModel
 
     init() {
@@ -85,7 +85,13 @@ struct ContaListView: View {
             }
         }
         .sheet(isPresented: $mostrarNovaConta) {
-            NovaContaView()
+            NavigationStack {
+                if viewModel.contas.isEmpty || sub.isSubscribed {
+                    NovaContaView()
+                } else {
+                    PaywallView()
+                }
+            }
         }
     }
 }
@@ -173,43 +179,42 @@ struct NovaContaView: View {
 
 
     var body: some View {
-        NavigationStack {
-            Form {
-                TextField("Nome", text: $nome)
-                
-                TextField("Saldo", text: $saldoText)
-                    .keyboardType(.decimalPad)
-                    .onChange(of: saldoText) { value in
-                        saldoDecimal = NumberFormatter.decimalInput
-                            .number(from: value) as? Decimal
-                    }
-
+        Form {
+            TextField("Nome", text: $nome)
+            
+            TextField("Saldo", text: $saldoText)
+                .keyboardType(.decimalPad)
+                .onChange(of: saldoText) { value in
+                    saldoDecimal = NumberFormatter.decimalInput
+                        .number(from: value) as? Decimal
+                }
+            
+        }
+        .navigationTitle("Nova Conta")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                }
             }
-            .navigationTitle("Nova Conta")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    salvar()
+                } label: {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.white)
+                    
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        salvar()
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.white)
-                            
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
-                    .disabled(nome.isEmpty || saldoDecimal == nil)
-                }
+                .buttonStyle(.borderedProminent)
+                .tint(.accentColor)
+                .disabled(nome.isEmpty || saldoDecimal == nil)
             }
         }
     }
+    
 
     private func salvar() {
         

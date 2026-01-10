@@ -17,6 +17,7 @@ struct CartaoListView: View {
     @State private var cartaoParaExcluir: CartaoModel?
     @State private var filtroSelecionado: FiltroCartao = .ativos
     @StateObject private var viewModel: CartaoListViewModel
+    @EnvironmentObject var sub: SubscriptionManager
     @Environment(\.isSearching) private var isSearching
     
     init() {
@@ -111,7 +112,13 @@ struct CartaoListView: View {
             Text("Essa ação não poderá ser desfeita.")
         }
         .sheet(isPresented: $mostrarNovoCartao) {
-            NovoCartaoView()
+            NavigationStack {
+                if viewModel.cartoes.isEmpty || sub.isSubscribed {
+                    NovoCartaoView()
+                } else {
+                    PaywallView()
+                }
+            }
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) { // Use .navigationBarTrailing para iOS 16
@@ -241,99 +248,97 @@ struct NovoCartaoView: View {
     @State private var erroValidacao: CartaoValidacaoErro?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section{
-                    TextField("Nome", text: $viewModel.nome)
-                    Button {
-                        sheetAtivo = .operadora
-                    } label: {
-                        HStack {
-                            Text("Operadora")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text(viewModel.operadora?.nome ?? String(localized: "Nenhuma"))
-                                .foregroundColor(.secondary)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.footnote)
-                        }
+        Form {
+            Section{
+                TextField("Nome", text: $viewModel.nome)
+                Button {
+                    sheetAtivo = .operadora
+                } label: {
+                    HStack {
+                        Text("Operadora")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Text(viewModel.operadora?.nome ?? String(localized: "Nenhuma"))
+                            .foregroundColor(.secondary)
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                            .font(.footnote)
                     }
-                    
-                    Button {
-                        sheetAtivo = .conta
-                    } label: {
-                        HStack {
-                            Text("Conta")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text(viewModel.conta?.nome ?? String(localized: "Nenhuma"))
-                                .foregroundColor(.secondary)
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.footnote)
-                        }
-                    }
-                }
-                Section{
-                    TextField("Dia do Vencimento", text: $viewModel.vencimentoTexto)
-                        .keyboardType(.numberPad)
-
-                    TextField("Dia do Fechamento", text: $viewModel.fechamentoTexto)
-                        .keyboardType(.numberPad)
-
-                    TextField("Limite", text: $viewModel.limiteTexto)
-                        .keyboardType(.decimalPad)
                 }
                 
-            }
-            .navigationTitle("Novo Cartão")
-            .navigationBarTitleDisplayMode(.inline)
-            .sheet(item: $sheetAtivo) { sheet in
-                NavigationStack {
-                    switch sheet {
-                    case .conta:
-                        ContaZoomView(
-                            contaSelecionada: $viewModel.conta
-                        )
-                        
-                    case .operadora:
-                        OperadoraZoomView(
-                            operadoraSelecionada: $viewModel.operadora
-                        )
+                Button {
+                    sheetAtivo = .conta
+                } label: {
+                    HStack {
+                        Text("Conta")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Text(viewModel.conta?.nome ?? String(localized: "Nenhuma"))
+                            .foregroundColor(.secondary)
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                            .font(.footnote)
                     }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        salvar()
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.white)
-                            
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
-                    .disabled(!viewModel.formValido)
-                }
+            Section{
+                TextField("Dia do Vencimento", text: $viewModel.vencimentoTexto)
+                    .keyboardType(.numberPad)
+                
+                TextField("Dia do Fechamento", text: $viewModel.fechamentoTexto)
+                    .keyboardType(.numberPad)
+                
+                TextField("Limite", text: $viewModel.limiteTexto)
+                    .keyboardType(.decimalPad)
             }
-            .alert(item: $erroValidacao) { erro in
-                Alert(
-                    title: Text("Erro"),
-                    message: Text(erro.localizedDescription),
-                    dismissButton: .default(Text("OK"))
-                )
+            
+        }
+        .navigationTitle("Novo Cartão")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $sheetAtivo) { sheet in
+            NavigationStack {
+                switch sheet {
+                case .conta:
+                    ContaZoomView(
+                        contaSelecionada: $viewModel.conta
+                    )
+                    
+                case .operadora:
+                    OperadoraZoomView(
+                        operadoraSelecionada: $viewModel.operadora
+                    )
+                }
             }
         }
-    }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    salvar()
+                } label: {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.white)
+                    
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.accentColor)
+                .disabled(!viewModel.formValido)
+            }
+        }
+        .alert(item: $erroValidacao) { erro in
+            Alert(
+                title: Text("Erro"),
+                message: Text(erro.localizedDescription),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+    }    
 
     private func salvar() {
         do {

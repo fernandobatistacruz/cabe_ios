@@ -101,7 +101,7 @@ struct AjustesView: View {
                     }
                     
                     NavigationLink {
-                        PaywallView()
+                        PaywallView(isModal: false)
                     } label: {
                         HStack (){
                             Image(systemName: "purchased")

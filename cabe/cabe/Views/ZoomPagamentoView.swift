@@ -78,6 +78,7 @@ struct ZoomPagamentoView: View {
         .listStyle(.insetGrouped)
         .navigationTitle("Pagamento")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .onAppear {
             viewModel.carregarDados()
             

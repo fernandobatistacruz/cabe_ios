@@ -12,6 +12,8 @@ import StoreKit
 struct PaywallView: View {
 
     @EnvironmentObject var sub: SubscriptionManager
+    @Environment(\.dismiss) private var dismiss
+    var isModal: Bool = true
 
     var body: some View {
         ScrollView {
@@ -28,8 +30,16 @@ struct PaywallView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .background(Color(.systemGroupedBackground))
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if isModal {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     Task {
