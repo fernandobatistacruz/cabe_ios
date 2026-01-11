@@ -33,13 +33,25 @@ struct ZoomCategoriaView: View {
                     dismiss()
                 } label: {
                     HStack {
-                        Image(systemName: categoria.getIcone().systemName)
-                            .frame(width: 24)
-                            .foregroundColor(categoria.getCor().cor)
+                        if categoria.pai == nil {
+                            Image(systemName: categoria.getIcone().systemName)
+                                .frame(width: 24)
+                                .foregroundColor(categoria.getCor().cor)
 
-                        Text(categoria.nome)
-                            .foregroundColor(.primary)
+                            Text(categoria.nome)
+                                .foregroundColor(.primary)
+                            
+                        } else {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 10))
+                                .frame(width: 24)
+                                .foregroundColor(categoria.getCor().cor)
 
+                            Text(categoria.nomeSubcategoria ?? "")
+                                .foregroundColor(.primary)
+                            
+                        }
+                        
                         Spacer()
 
                         if isSelecionada(categoria) {

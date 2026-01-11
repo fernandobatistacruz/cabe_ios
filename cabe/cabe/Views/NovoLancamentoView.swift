@@ -48,11 +48,12 @@ struct NovoLancamentoView: View {
                                     Text("Categoria")
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text(
-                                        vm.categoria?.nome ?? String(
-                                            localized: "Nenhuma"
-                                        )
-                                    )
+                                    
+                                    let nome = vm.categoria?.pai == nil
+                                        ? vm.categoria?.nome ?? String(localized: "Nenhuma")
+                                        : vm.categoria?.nomeSubcategoria ?? String(localized: "Nenhuma")
+
+                                    Text(nome)
                                     .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)
