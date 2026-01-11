@@ -225,7 +225,19 @@ struct NovaCategoriaView: View {
 
 // MARK: - Editar Categoria
 
-import SwiftUI
+enum SubcategoriaSheetMode: Identifiable {
+    case nova
+    case editar(CategoriaModel)
+
+    var id: String {
+        switch self {
+        case .nova:
+            return "nova"
+        case .editar(let sub):
+            return "editar-\(sub.id ?? 0)"
+        }
+    }
+}
 
 struct CategoriaFormView: View {
     @Environment(\.dismiss) private var dismiss
@@ -245,12 +257,8 @@ struct CategoriaFormView: View {
     @State private var subcategorias: [CategoriaModel] = []
     @State private var todasCategorias: [CategoriaModel] = []
 
-    // MARK: - Sheet subcategoria
-    @State private var mostrarSheetSubcategoria: Bool = false
-    @State private var nomeNovaSubcategoria: String = ""
-
     // MARK: - Categoria selecionada para editar
-    @State private var categoriaSelecionadaParaEdicao: CategoriaModel?
+    @State private var sheetSubcategoria: SubcategoriaSheetMode?
 
     // MARK: - Init
     init(categoria: CategoriaModel? = nil, isEditar: Bool = false) {
@@ -308,46 +316,50 @@ struct CategoriaFormView: View {
                     .padding(.horizontal)
                     
                     // MARK: - Subcategorias (somente edição de categoria)
+                    // MARK: - Subcategorias (somente edição de categoria)
+                    // MARK: - Subcategorias (somente edição de categoria)
                     if isEditar {
                         VStack(spacing: 8) {
                             HStack {
-                                Text("Subcategorias").bold()
+                                Text("Subcategorias")
+                                    .font(.headline)
+
                                 Spacer()
-                                Button(action: {
-                                    nomeNovaSubcategoria = ""
-                                    mostrarSheetSubcategoria = true
-                                }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
+
+                                Button {
+                                    sheetSubcategoria = .nova
+                                } label: {
+                                    Image(systemName: "plus")
                                 }
                             }
                             .padding(.horizontal)
 
-                            ForEach(subcategorias) { sub in
-                                HStack {
-                                    Circle()
-                                        .fill(sub.getCor().cor)
-                                        .frame(width: 12, height: 12)
-                                    Text(sub.nomeSubcategoria ?? sub.nome)
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
-                                        .font(.footnote)
+                            VStack(spacing: 0) {
+                                ForEach(subcategorias) { sub in
+                                    subcategoriaRow(sub)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            sheetSubcategoria = .editar(sub)
+                                        }
+                                        .swipeActions {
+                                            Button(role: .destructive) {
+                                                removerSubcategoria(sub)
+                                            } label: {
+                                                Label("Excluir", systemImage: "trash")
+                                            }
+                                        }
+
+                                    // Divider padrão iOS
+                                    if sub.id != subcategorias.last?.id {
+                                        Divider()
+                                            .padding(.leading, 44)
+                                    }
                                 }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    categoriaSelecionadaParaEdicao = sub
-                                    nome = sub.nomeSubcategoria ?? sub.nome
-                                    corSelecionada = sub.getCor()
-                                    iconeSelecionado = sub.getIcone()
-                                    tipoFiltro = Tipo(rawValue: sub.tipo) ?? .despesa
-                                    categoriaPai = todasCategorias.first { $0.id == sub.pai }
-                                }
-                                .padding(.vertical, 4)
-                                .padding(.horizontal, 24)
                             }
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(22)
+                            .padding(.horizontal)
                         }
-                        .padding(.top, 12)
                     }
 
                     // MARK: - Seleção de cores e ícones (somente se não for subcategoria)
@@ -415,49 +427,42 @@ struct CategoriaFormView: View {
                     subcategorias = todasCategorias.filter { $0.pai == cat.id }
                 }
             }
-            .sheet(isPresented: $mostrarSheetSubcategoria) {
-                NavigationStack {
-                    ZStack {
-                        Color(uiColor: .systemGroupedBackground)
-                            .ignoresSafeArea()
-
-                        VStack(spacing: 24) {
-                            Form {
-                                Section{
-                                    TextField("Nome", text: $nomeNovaSubcategoria)
-                                }
-                            }
+            .sheet(item: $sheetSubcategoria) { mode in
+                SubcategoriaSheet(
+                    categoriaPai: categoria!,
+                    subcategoria: {
+                        if case let .editar(sub) = mode { return sub }
+                        return nil
+                    }(),
+                    onSalvar: { sub in
+                        if let index = subcategorias.firstIndex(where: { $0.id == sub.id }) {
+                            subcategorias[index] = sub
+                        } else {
+                            subcategorias.append(sub)
                         }
                     }
-                    .navigationTitle("Nova Subcategoria")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button {
-                                mostrarSheetSubcategoria = false
-                            } label: {
-                                Image(systemName: "xmark")
-                            }
-                        }
-
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button {
-                                salvarSubcategoria()
-                                mostrarSheetSubcategoria = false
-                            } label: {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.white)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.accentColor)
-                            .disabled(nomeNovaSubcategoria.isEmpty)
-                        }
-                    }
-                }
+                )
             }
         }
     }
-
+    
+    private func subcategoriaRow(_ sub: CategoriaModel) -> some View {
+        HStack {
+            Circle()
+                .fill(sub.getCor().cor)
+                .frame(width: 10, height: 10)
+            
+            Text(sub.nomeSubcategoria ?? sub.nome)
+            
+            Spacer()
+        }.padding()
+    }
+    
+    private func removerSubcategoria(_ sub: CategoriaModel) {
+        try? CategoriaRepository().remover(id: sub.id ?? 0, tipo: sub.tipo)
+        subcategorias.removeAll { $0.id == sub.id }
+    }
+    
     // MARK: - Salvar categoria principal
     private func salvar() {
         let proximoId: Int64 = (try! CategoriaRepository()
@@ -490,28 +495,85 @@ struct CategoriaFormView: View {
 
         dismiss()
     }
+}
 
-    // MARK: - Salvar subcategoria
-    private func salvarSubcategoria() {
-        guard let pai = categoria else { return }
+struct SubcategoriaSheet: View {
+    @Environment(\.dismiss) private var dismiss
 
-        let proximoId: Int64 = (try! CategoriaRepository().listar()
-            .compactMap { $0.id }
-            .max() ?? 0) + 1
+    let categoriaPai: CategoriaModel
+    let subcategoria: CategoriaModel?
+    let onSalvar: (CategoriaModel) -> Void
 
-        let novaSub = CategoriaModel(
-            id: proximoId,
-            nome: pai.nome, // mantém nome da categoria pai
-            nomeSubcategoria: nomeNovaSubcategoria,
-            tipo: pai.tipo,
-            icone: pai.icone,
-            cor: pai.cor,
-            pai: pai.id
+    @State private var nome: String
+
+    init(
+        categoriaPai: CategoriaModel,
+        subcategoria: CategoriaModel?,
+        onSalvar: @escaping (CategoriaModel) -> Void
+    ) {
+        self.categoriaPai = categoriaPai
+        self.subcategoria = subcategoria
+        self.onSalvar = onSalvar
+        _nome = State(initialValue: subcategoria?.nomeSubcategoria ?? "")
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Nome da subcategoria", text: $nome)
+                }
+            }
+            .navigationTitle(subcategoria == nil ? "Nova Subcategoria" : "Editar Subcategoria")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        salvar()
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.white)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
+                    .disabled(nome.isEmpty)
+                }
+            }
+        }
+    }
+
+    private func salvar() {
+        let id: Int64 = subcategoria?.id ??
+            ((try! CategoriaRepository().listar()
+                .compactMap { $0.id }
+                .max() ?? 0) + 1)
+
+        let nova = CategoriaModel(
+            id: id,
+            nome: categoriaPai.nome,
+            nomeSubcategoria: nome,
+            tipo: categoriaPai.tipo,
+            icone: categoriaPai.icone,
+            cor: categoriaPai.cor,
+            pai: categoriaPai.id
         )
 
         do {
-            try CategoriaRepository().salvar(novaSub)
-            subcategorias.append(novaSub)
+            if subcategoria == nil {
+                try CategoriaRepository().salvar(nova)
+            } else {
+                try CategoriaRepository().editar(nova)
+            }
+            onSalvar(nova)
+            dismiss()
         } catch {
             debugPrint("Erro ao salvar subcategoria", error)
         }
