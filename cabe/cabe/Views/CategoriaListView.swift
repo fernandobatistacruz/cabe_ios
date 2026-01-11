@@ -272,8 +272,7 @@ struct CategoriaFormView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                
+            VStack(spacing: 0) {
                 // MARK: - Tipo
                 if !isEditar {
                     Picker("Tipo", selection: $tipoFiltro) {
@@ -282,82 +281,32 @@ struct CategoriaFormView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    .padding(.top)
+                }
+                List {
                     
-                }
-
-                // MARK: - Card Ícone + Nome
-                Section {
-                    VStack(spacing: 16) {
-                        ZStack {
-                            Circle()
-                                .fill(categoriaPai?.getCor().cor ?? corSelecionada.cor)
-                                .frame(width: 80, height: 80)
-
-                            Image(systemName: categoriaPai?.getIcone().systemName ?? iconeSelecionado.systemName)
-                                .font(.system(size: 36))
-                                .foregroundColor(.white)
-                        }
-
-                        TextField(
-                            categoriaPai == nil ? "Nome da categoria" : "Nome da subcategoria",
-                            text: $nome
-                        )
-                        .padding()
-                        .background(Color(.systemGroupedBackground))
-                        .cornerRadius(22)
-                        .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .cornerRadius(22)
-                }
-                .listRowInsets(.init())
-                .listRowBackground(Color.clear)
-
-                // MARK: - Subcategorias
-                if isEditar {
+                    // MARK: - Card Ícone + Nome
                     Section {
-                        ForEach(subcategorias) { sub in
-                            subcategoriaRow(sub)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    sheetSubcategoria = .editar(sub)
-                                }
-                                .swipeActions {
-                                    Button(role: .destructive) {
-                                        removerSubcategoria(sub)
-                                    } label: {
-                                        Label("Excluir", systemImage: "trash")
-                                    }
-                                }
-                        }
-                    } header: {
-                        HStack {
-                            Text("Subcategorias")
-                            Spacer()
-                            Button {
-                                sheetSubcategoria = .nova
-                            } label: {
-                                Image(systemName: "plus")
-                            }
-                        }
-                    }
-                }
-
-                // MARK: - Cores
-                if categoriaPai == nil {
-                    Section {
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
-                            ForEach(CorModel.cores, id: \.id) { cor in
+                        VStack(spacing: 16) {
+                            ZStack {
                                 Circle()
-                                    .fill(cor.cor)
-                                    .frame(width: 32, height: 32)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.gray, lineWidth: cor.id == corSelecionada.id ? 3 : 0)
-                                    )
-                                    .onTapGesture { corSelecionada = cor }
+                                    .fill(categoriaPai?.getCor().cor ?? corSelecionada.cor)
+                                    .frame(width: 80, height: 80)
+                                
+                                Image(systemName: categoriaPai?.getIcone().systemName ?? iconeSelecionado.systemName)
+                                    .font(.system(size: 36))
+                                    .foregroundColor(.white)
                             }
+                            
+                            TextField(
+                                categoriaPai == nil ? "Nome da categoria" : "Nome da subcategoria",
+                                text: $nome
+                            )
+                            .padding()
+                            .background(Color(.systemGroupedBackground))
+                            .cornerRadius(22)
+                            .multilineTextAlignment(.center)
                         }
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground))
@@ -365,29 +314,90 @@ struct CategoriaFormView: View {
                     }
                     .listRowInsets(.init())
                     .listRowBackground(Color.clear)
-
-                    // MARK: - Ícones
-                    Section {
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
-                            ForEach(IconeModel.icones, id: \.id) { icone in
-                                Image(systemName: icone.systemName)
-                                    .frame(width: 32, height: 32)
-                                    .padding(8)
-                                    .background(
-                                        icone.id == iconeSelecionado.id
-                                        ? Color(.systemGray4)
-                                        : Color.clear
-                                    )
-                                    .cornerRadius(8)
-                                    .onTapGesture { iconeSelecionado = icone }
+                    
+                    // MARK: - Subcategorias
+                    if isEditar {
+                        Section {
+                            ForEach(subcategorias) { sub in
+                                subcategoriaRow(sub)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        sheetSubcategoria = .editar(sub)
+                                    }
+                                    .swipeActions {
+                                        Button(role: .destructive) {
+                                            removerSubcategoria(sub)
+                                        } label: {
+                                            Label("Excluir", systemImage: "trash")
+                                        }
+                                    }
+                            }
+                        } header: {
+                            HStack {
+                                Text("Subcategorias")                              
+                                Spacer()
+                                Button {
+                                    sheetSubcategoria = .nova
+                                } label: {
+                                    Image(systemName: "plus")
+                                }
                             }
                         }
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .cornerRadius(22)
                     }
-                    .listRowInsets(.init())
-                    .listRowBackground(Color.clear)
+                    
+                    // MARK: - Cores
+                    if categoriaPai == nil {
+                        Section {
+                            LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
+                                ForEach(CorModel.cores, id: \.id) { cor in
+                                    Circle()
+                                        .fill(cor.cor)
+                                        .frame(width: 32, height: 32)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(.gray, lineWidth: cor.id == corSelecionada.id ? 3 : 0)
+                                        )
+                                        .onTapGesture { corSelecionada = cor }
+                                }
+                            }
+                            .padding()
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(22)
+                        } header: {
+                            HStack {
+                                Text("Cor")
+                            }.padding(.horizontal)
+                        }
+                        .listRowInsets(.init())
+                        .listRowBackground(Color.clear)
+                        
+                        // MARK: - Ícones
+                        Section {
+                            LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
+                                ForEach(IconeModel.icones, id: \.id) { icone in
+                                    Image(systemName: icone.systemName)
+                                        .frame(width: 32, height: 32)
+                                        .padding(8)
+                                        .background(
+                                            icone.id == iconeSelecionado.id
+                                            ? Color(.systemGray4)
+                                            : Color.clear
+                                        )
+                                        .cornerRadius(8)
+                                        .onTapGesture { iconeSelecionado = icone }
+                                }
+                            }
+                            .padding()
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(22)
+                        } header: {
+                            HStack {
+                                Text("Ícone")
+                            }.padding(.horizontal)
+                        }
+                        .listRowInsets(.init())
+                        .listRowBackground(Color.clear)
+                    }
                 }
             }
             .listStyle(.insetGrouped)
@@ -439,6 +449,9 @@ struct CategoriaFormView: View {
             
             Text(sub.nomeSubcategoria ?? sub.nome)
             Spacer()
+            Image(systemName: "chevron.right")
+                .font(.footnote)
+                .foregroundColor(.secondary)
         }
     }
     
