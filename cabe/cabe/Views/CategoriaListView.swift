@@ -251,13 +251,13 @@ struct CategoriaFormView: View {
     @State private var corSelecionada: CorModel
     @State private var iconeSelecionado: IconeModel
     @State private var tipoFiltro: Tipo
-    @State private var categoriaPai: CategoriaModel? // para subcategoria
+    @State private var categoriaPai: CategoriaModel?
 
     // MARK: - Subcategorias
     @State private var subcategorias: [CategoriaModel] = []
     @State private var todasCategorias: [CategoriaModel] = []
 
-    // MARK: - Categoria selecionada para editar
+    // MARK: - Sheet
     @State private var sheetSubcategoria: SubcategoriaSheetMode?
 
     // MARK: - Init
@@ -272,27 +272,27 @@ struct CategoriaFormView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-
-                    // MARK: - Tipo (somente se não tem pai e não é edição)
-                    if categoriaPai == nil && !isEditar {
-                        Picker("Tipo", selection: $tipoFiltro) {
-                            ForEach(Tipo.allCases.reversed(), id: \.self) { tipo in
-                                Text(tipo.descricao).tag(tipo)
-                            }
+            List {
+                
+                // MARK: - Tipo
+                if !isEditar {
+                    Picker("Tipo", selection: $tipoFiltro) {
+                        ForEach(Tipo.allCases.reversed(), id: \.self) {
+                            Text($0.descricao).tag($0)
                         }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal)
                     }
-                  
+                    .pickerStyle(.segmented)
+                    
+                }
 
-                    // MARK: - Card ícone + nome
+                // MARK: - Card Ícone + Nome
+                Section {
                     VStack(spacing: 16) {
                         ZStack {
                             Circle()
                                 .fill(categoriaPai?.getCor().cor ?? corSelecionada.cor)
                                 .frame(width: 80, height: 80)
+
                             Image(systemName: categoriaPai?.getIcone().systemName ?? iconeSelecionado.systemName)
                                 .font(.system(size: 36))
                                 .foregroundColor(.white)
@@ -302,77 +302,59 @@ struct CategoriaFormView: View {
                             categoriaPai == nil ? "Nome da categoria" : "Nome da subcategoria",
                             text: $nome
                         )
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
+                        .padding()
                         .background(Color(.systemGroupedBackground))
                         .cornerRadius(22)
-                        .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                     }
                     .padding()
                     .background(Color(.secondarySystemGroupedBackground))
                     .cornerRadius(22)
-                    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-                    .padding(.horizontal)
-                    
-                    // MARK: - Subcategorias (somente edição de categoria)
-                    // MARK: - Subcategorias (somente edição de categoria)
-                    // MARK: - Subcategorias (somente edição de categoria)
-                    if isEditar {
-                        VStack(spacing: 8) {
-                            HStack {
-                                Text("Subcategorias")
-                                    .font(.headline)
+                }
+                .listRowInsets(.init())
+                .listRowBackground(Color.clear)
 
-                                Spacer()
-
-                                Button {
-                                    sheetSubcategoria = .nova
-                                } label: {
-                                    Image(systemName: "plus")
+                // MARK: - Subcategorias
+                if isEditar {
+                    Section {
+                        ForEach(subcategorias) { sub in
+                            subcategoriaRow(sub)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    sheetSubcategoria = .editar(sub)
                                 }
-                            }
-                            .padding(.horizontal)
-
-                            VStack(spacing: 0) {
-                                ForEach(subcategorias) { sub in
-                                    subcategoriaRow(sub)
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            sheetSubcategoria = .editar(sub)
-                                        }
-                                        .swipeActions {
-                                            Button(role: .destructive) {
-                                                removerSubcategoria(sub)
-                                            } label: {
-                                                Label("Excluir", systemImage: "trash")
-                                            }
-                                        }
-
-                                    // Divider padrão iOS
-                                    if sub.id != subcategorias.last?.id {
-                                        Divider()
-                                            .padding(.leading, 44)
+                                .swipeActions {
+                                    Button(role: .destructive) {
+                                        removerSubcategoria(sub)
+                                    } label: {
+                                        Label("Excluir", systemImage: "trash")
                                     }
                                 }
+                        }
+                    } header: {
+                        HStack {
+                            Text("Subcategorias")
+                            Spacer()
+                            Button {
+                                sheetSubcategoria = .nova
+                            } label: {
+                                Image(systemName: "plus")
                             }
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .cornerRadius(22)
-                            .padding(.horizontal)
                         }
                     }
+                }
 
-                    // MARK: - Seleção de cores e ícones (somente se não for subcategoria)
-                    if categoriaPai == nil {
-                        // Cores
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+                // MARK: - Cores
+                if categoriaPai == nil {
+                    Section {
+                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
                             ForEach(CorModel.cores, id: \.id) { cor in
                                 Circle()
                                     .fill(cor.cor)
                                     .frame(width: 32, height: 32)
                                     .overlay(
                                         Circle()
-                                            .stroke(Color(.systemGray), lineWidth: cor.id == corSelecionada.id ? 4 : 0)
+                                            .stroke(.gray, lineWidth: cor.id == corSelecionada.id ? 3 : 0)
                                     )
                                     .onTapGesture { corSelecionada = cor }
                             }
@@ -380,17 +362,22 @@ struct CategoriaFormView: View {
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground))
                         .cornerRadius(22)
-                        .padding(.horizontal)
+                    }
+                    .listRowInsets(.init())
+                    .listRowBackground(Color.clear)
 
-                        // Ícones
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+                    // MARK: - Ícones
+                    Section {
+                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
                             ForEach(IconeModel.icones, id: \.id) { icone in
                                 Image(systemName: icone.systemName)
-                                    .resizable()
-                                    .scaledToFit()
                                     .frame(width: 32, height: 32)
                                     .padding(8)
-                                    .background(icone.id == iconeSelecionado.id ? Color(.systemGray) : Color.clear)
+                                    .background(
+                                        icone.id == iconeSelecionado.id
+                                        ? Color(.systemGray4)
+                                        : Color.clear
+                                    )
                                     .cornerRadius(8)
                                     .onTapGesture { iconeSelecionado = icone }
                             }
@@ -398,14 +385,12 @@ struct CategoriaFormView: View {
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground))
                         .cornerRadius(22)
-                        .padding(.horizontal)
-                        .padding(.bottom, 24)
                     }
+                    .listRowInsets(.init())
+                    .listRowBackground(Color.clear)
                 }
-                .padding(.top, 12)
             }
-            .background(Color(.systemGroupedBackground))
-            .scrollContentBackground(.hidden)
+            .listStyle(.insetGrouped)
             .navigationTitle(isEditar ? "Editar Categoria" : "Nova Categoria")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -417,7 +402,6 @@ struct CategoriaFormView: View {
                         Image(systemName: "checkmark").foregroundColor(.white)
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
                     .disabled(nome.isEmpty)
                 }
             }
@@ -435,8 +419,8 @@ struct CategoriaFormView: View {
                         return nil
                     }(),
                     onSalvar: { sub in
-                        if let index = subcategorias.firstIndex(where: { $0.id == sub.id }) {
-                            subcategorias[index] = sub
+                        if let i = subcategorias.firstIndex(where: { $0.id == sub.id }) {
+                            subcategorias[i] = sub
                         } else {
                             subcategorias.append(sub)
                         }
@@ -446,6 +430,7 @@ struct CategoriaFormView: View {
         }
     }
     
+    // MARK: - Row Subcategoria
     private func subcategoriaRow(_ sub: CategoriaModel) -> some View {
         HStack {
             Circle()
@@ -453,9 +438,8 @@ struct CategoriaFormView: View {
                 .frame(width: 10, height: 10)
             
             Text(sub.nomeSubcategoria ?? sub.nome)
-            
             Spacer()
-        }.padding()
+        }
     }
     
     private func removerSubcategoria(_ sub: CategoriaModel) {
