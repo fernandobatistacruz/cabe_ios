@@ -190,6 +190,27 @@ extension CategoriaModel {
     }
 }
 
+extension CategoriaModel {
+
+    /// Retorna a cor correta considerando herança do pai (se existir)
+    func corEfetiva(todas: [CategoriaModel]) -> CorModel {
+        if let paiId = pai,
+           let categoriaPai = todas.first(where: { $0.id == paiId }) {
+            return categoriaPai.getCor()
+        }
+        return getCor()
+    }
+
+    /// Retorna o ícone correto considerando herança do pai (se existir)
+    func iconeEfetivo(todas: [CategoriaModel]) -> IconeModel {
+        if let paiId = pai,
+           let categoriaPai = todas.first(where: { $0.id == paiId }) {
+            return categoriaPai.getIcone()
+        }
+        return getIcone()
+    }
+}
+
 
 
 

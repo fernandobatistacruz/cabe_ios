@@ -458,7 +458,7 @@ struct CategoriaFormView: View {
     private func subcategoriaRow(_ sub: CategoriaModel) -> some View {
         HStack {
             Circle()
-                .fill(sub.getCor().cor)
+                .fill(corSelecionada.cor)
                 .frame(width: 10, height: 10)
             
             Text(sub.nomeSubcategoria ?? sub.nome)
