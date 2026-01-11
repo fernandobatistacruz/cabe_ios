@@ -332,6 +332,7 @@ struct CategoriaFormView: View {
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.secondary)
+                                        .font(.footnote)
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -343,7 +344,7 @@ struct CategoriaFormView: View {
                                     categoriaPai = todasCategorias.first { $0.id == sub.pai }
                                 }
                                 .padding(.vertical, 4)
-                                .padding(.horizontal)
+                                .padding(.horizontal, 24)
                             }
                         }
                         .padding(.top, 12)
@@ -416,25 +417,39 @@ struct CategoriaFormView: View {
             }
             .sheet(isPresented: $mostrarSheetSubcategoria) {
                 NavigationStack {
-                    VStack(spacing: 24) {
-                        TextField("Nome da subcategoria", text: $nomeNovaSubcategoria)
-                            .padding()
-                            .background(Color(.systemGroupedBackground))
-                            .cornerRadius(12)
-                            .padding(.horizontal)
-                        Spacer()
+                    ZStack {
+                        Color(uiColor: .systemGroupedBackground)
+                            .ignoresSafeArea()
+
+                        VStack(spacing: 24) {
+                            Form {
+                                Section{
+                                    TextField("Nome", text: $nomeNovaSubcategoria)
+                                }
+                            }
+                        }
                     }
                     .navigationTitle("Nova Subcategoria")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .topBarLeading) {
-                            Button { mostrarSheetSubcategoria = false } label: { Text("Cancelar") }
+                            Button {
+                                mostrarSheetSubcategoria = false
+                            } label: {
+                                Image(systemName: "xmark")
+                            }
                         }
+
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Salvar") {
+                            Button {
                                 salvarSubcategoria()
                                 mostrarSheetSubcategoria = false
+                            } label: {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.white)
                             }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.accentColor)
                             .disabled(nomeNovaSubcategoria.isEmpty)
                         }
                     }

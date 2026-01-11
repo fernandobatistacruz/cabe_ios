@@ -54,7 +54,6 @@ struct NovoLancamentoView: View {
                                         )
                                     )
                                     .foregroundColor(.secondary)
-                                    .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)
                                         .font(.footnote)

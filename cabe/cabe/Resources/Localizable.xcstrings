@@ -1286,9 +1286,6 @@
         }
       }
     },
-    "Salvar" : {
-
-    },
     "Selecione a conta vinculada ao cartão." : {
       "comment" : "Erro de validação da conta do cartão"
     },
