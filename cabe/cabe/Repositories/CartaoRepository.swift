@@ -76,8 +76,7 @@ final class CartaoRepository : CartaoRepositoryProtocol{
                     c.operadora,
                     c.arquivado,
                     c.conta_uuid,
-                    c.limite,
-            
+                    c.limite,            
                     a.id            AS conta_id,
                     a.uuid          AS conta_uuid,
                     a.nome          AS conta_nome,
