@@ -51,4 +51,3 @@ struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         OperadoraCartao(rawValue: operadora) ?? .outra
     }
 }
-

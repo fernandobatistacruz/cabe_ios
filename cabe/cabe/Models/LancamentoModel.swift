@@ -34,14 +34,13 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var pagoRaw: Int
     var divididoRaw: Int
     var contaUuid: String
-    var notificadoRaw: Int
-    var dataCriacao: Date
+    var dataCriacao: String
+    var notificacaoLidaRaw: Int
     
     var categoria: CategoriaModel?
     var cartao: CartaoModel?
     var conta: ContaModel?
-    var conferido: Int?
-    var notificacaoLida: Bool = false
+    var conferido: Int?    
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -65,9 +64,8 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         case contaUuid = "conta_uuid"
         case categoriaID = "categoria"
         case cartaoUuid = "cartao_uuid"
-        case notificadoRaw = "notificado"
         case dataCriacao
-        case notificacaoLida = "notificacao_lida"
+        case notificacaoLidaRaw = "notificado"
     }
     
     enum Columns {
@@ -92,9 +90,8 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         static let contaUuid = Column("conta_uuid")
         static let categoriaID = Column("categoria")
         static let cartaoUuid = Column("cartao_uuid")
-        static let notificadoRaw = Column("notificado")
         static let dataCriacao = Column("dataCriacao")
-        static let notificacaoLida = Column("notificacao_lida")
+        static let notificacaoLidaRaw = Column("notificado")
     }
 }
 
@@ -116,6 +113,13 @@ extension LancamentoModel {
 }
 
 extension LancamentoModel {
+    var notificacaoLida: Bool {
+        get { notificacaoLidaRaw == 1 }
+        set { notificacaoLidaRaw = newValue ? 1 : 0 }
+    }
+}
+
+extension LancamentoModel {
     var pago: Bool {
         get { pagoRaw == 1 }
         set { pagoRaw = newValue ? 1 : 0 }
@@ -126,12 +130,6 @@ extension LancamentoModel {
     var dividido: Bool {
         get { divididoRaw == 1 }
         set { divididoRaw = newValue ? 1 : 0 }
-    }
-}
-
-extension LancamentoModel {
-    var notificado: Bool{
-        notificadoRaw == 1
     }
 }
 
@@ -232,11 +230,22 @@ extension LancamentoModel {
 }
 
 extension LancamentoModel {
-    /// Agrupamento para lançamentos recentes (não considera cartão)
     var dataAgrupamentoRecentes: Date {
-        Calendar.current.startOfDay(for: dataCriacao)
+        Calendar.current.startOfDay(for: dataCriacaoDate)
     }
 }
+
+extension LancamentoModel {
+    var dataCriacaoDate: Date {
+        isoFormatter.date(from: dataCriacao) ?? .now
+    }
+}
+
+private let isoFormatter: ISO8601DateFormatter = {
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return f
+}()
 
 
 

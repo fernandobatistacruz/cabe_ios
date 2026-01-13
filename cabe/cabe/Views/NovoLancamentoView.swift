@@ -50,7 +50,9 @@ struct NovoLancamentoView: View {
                                     Spacer()
                                     
                                     let nome = vm.categoria?.pai == nil
-                                        ? vm.categoria?.nome ?? String(localized: "Nenhuma")
+                                    ? vm.categoria?.nome ?? String(
+                                        localized: "Nenhuma"
+                                    )
                                         : vm.categoria?.nomeSubcategoria ?? String(localized: "Nenhuma")
 
                                     Text(nome)

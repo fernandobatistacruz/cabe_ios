@@ -12,7 +12,8 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
     static let databaseTableName = "categoria"
     
     var id: Int64?
-    var nome: String
+    var nomeRaw: String
+    var nomeKey: String?
     var nomeSubcategoria: String?
     var tipo: Int
     var icone: Int
@@ -21,7 +22,8 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
     
     enum CodingKeys: String, CodingKey {
         case id
-        case nome
+        case nomeRaw = "nome"
+        case nomeKey
         case nomeSubcategoria
         case tipo
         case icone
@@ -31,7 +33,8 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
     
     enum Columns {
         static let id = Column("id")
-        static let nome = Column("nome")
+        static let nomeRaw = Column("nome")
+        static let nomeKey = Column("nomeKey")
         static let nomeSubcategoria = Column("nomeSubcategoria")
         static let tipo = Column("tipo")
         static let icone = Column("icone")
@@ -180,7 +183,7 @@ extension CategoriaModel {
     static var outros: CategoriaModel {
         CategoriaModel(
             id: nil,                     // não vem do banco
-            nome: "Outros",
+            nomeRaw: "Outros",
             nomeSubcategoria: nil,
             tipo: Tipo.despesa.rawValue, // importante
             icone: IconeModel.default.id,
@@ -208,6 +211,15 @@ extension CategoriaModel {
             return categoriaPai.getIcone()
         }
         return getIcone()
+    }
+}
+
+extension CategoriaModel {
+    var nome: String {
+        if let nomeKey, nomeRaw.isEmpty {
+            return NSLocalizedString(nomeKey, comment: "")
+        }
+        return nomeRaw
     }
 }
 

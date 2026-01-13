@@ -153,77 +153,7 @@ struct CategoriaListRow: View {
     }
 }
 
-// MARK: - Nova Categoria
-
-struct NovaCategoriaView: View {
-
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var nome: String = ""
-    @State private var saldoText: String = ""
-    @State private var saldoDecimal: Decimal? = nil
-
-
-    var body: some View {
-        Form {
-            TextField("Nome", text: $nome)
-            
-            TextField("Saldo", text: $saldoText)
-                .keyboardType(.decimalPad)
-                .onChange(of: saldoText) { value in
-                    saldoDecimal = NumberFormatter.decimalInput
-                        .number(from: value) as? Decimal
-                }
-            
-        }
-        .navigationTitle("Nova Conta")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    salvar()
-                } label: {
-                    Image(systemName: "checkmark")
-                        .foregroundColor(.white)
-                    
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
-                .disabled(nome.isEmpty || saldoDecimal == nil)
-            }
-        }
-    }
-    
-
-    private func salvar() {
-        
-        var conta = ContaModel.init(
-            uuid: UUID().uuidString,
-            nome: nome,
-            saldo: NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue,
-            currencyCode : Locale.current.currency?.identifier ?? "BRL"
-        )
-        
-        do {
-            try ContaRepository().salvar(&conta)
-        }
-        catch{
-            debugPrint("Erro ao editar conta", error)
-        }
-        
-        dismiss()
-    }
-}
-
-
-// MARK: - Editar Categoria
+// MARK: - Nova e Editar Categoria
 
 enum SubcategoriaSheetMode: Identifiable {
     case nova
@@ -483,9 +413,10 @@ struct CategoriaFormView: View {
 
         let novoId: Int64 = isEditar ? categoria?.id ?? proximoId : proximoId
 
+        //TODO: Revisa para quando for editar categoria considerando o nomeKey
         let novaCategoria = CategoriaModel(
-            id: novoId,
-            nome: categoriaPai == nil ? nome : categoria?.nome ?? "",
+            id: novoId,            
+            nomeRaw: categoriaPai == nil ? nome : categoria?.nome ?? "",
             nomeSubcategoria: categoriaPai == nil ? nil : nome,
             tipo: categoriaPai?.tipo ?? (isEditar ? categoria?.tipo ?? 1 : tipoFiltro.rawValue),
             icone: categoriaPai?.icone ?? iconeSelecionado.id,
@@ -569,7 +500,7 @@ struct SubcategoriaSheet: View {
 
         let nova = CategoriaModel(
             id: id,
-            nome: categoriaPai.nome,
+            nomeRaw: categoriaPai.nome,
             nomeSubcategoria: nome,
             tipo: categoriaPai.tipo,
             icone: categoriaPai.icone,

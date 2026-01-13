@@ -55,7 +55,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
                 ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
                 ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
                 cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
             FROM lancamento l
             LEFT JOIN conta c ON l.conta_uuid = c.uuid
@@ -165,7 +165,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                     ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
                     ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
                     ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                    cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                    cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
                     cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
                 FROM lancamento l
                 LEFT JOIN conta c ON l.conta_uuid = c.uuid
@@ -219,7 +219,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
 
             let categoria = row["cat.id"] != nil ? CategoriaModel(
                 id: row["cat.id"],
-                nome: row["cat.nome"],
+                nomeRaw: row["cat.nome"],
+                nomeKey: row["cat.nomeKey"],
                 nomeSubcategoria: row["cat.nomeSubcategoria"],
                 tipo: row["cat.tipo"],
                 icone: row["cat.icone"],
@@ -249,12 +250,11 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 pagoRaw: row["pago"],
                 divididoRaw: row["dividido"],
                 contaUuid: row["conta_uuid"],
-                notificadoRaw: row["notificado"],
                 dataCriacao: row["dataCriacao"],
+                notificacaoLidaRaw: row["notificado"] as Int? ?? 0,
                 categoria: categoria,
                 cartao: cartao,
-                conta: conta,
-                notificacaoLida: row["notificacao_lida"],
+                conta: conta
             )
         }
     }

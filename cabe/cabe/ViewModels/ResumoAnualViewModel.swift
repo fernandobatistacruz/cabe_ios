@@ -120,7 +120,10 @@ private extension ResumoAnualViewModel {
 
         // Maior despesa por categoria
         if let maior = despesasPorCategoria.first {
-            frases.append("🏷️ \(maior.categoria.nome) foi sua maior despesa do ano.")
+            frases
+                .append(
+                    "🏷️ \(maior.categoria.nome) foi sua maior despesa do ano."
+                )
         }
 
         // Despesas recorrentes

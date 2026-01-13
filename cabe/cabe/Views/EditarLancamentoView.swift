@@ -52,6 +52,7 @@ struct EditarLancamentoView: View {
                                     Text("Categoria")
                                         .foregroundColor(.primary)
                                     Spacer()
+                                    
                                     Text(vm.categoria?.nome ?? "Nenhuma")
                                         .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")

@@ -73,10 +73,9 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
         try db.dbQueue.read { db in
             try CategoriaModel
                 .filter(CategoriaModel.Columns.tipo == tipo.rawValue)
-                .order(CategoriaModel.Columns.nome)
                 .fetchAll(db).sorted {
                     $0.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current) <
-                        $1.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                    $1.nome.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
                 }
         }
     }

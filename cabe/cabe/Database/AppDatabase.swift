@@ -25,8 +25,13 @@ final class AppDatabase {
 
     static let shared = AppDatabase()
     let dbQueue: DatabaseQueue
+    let defaultCurrencyCode: String
 
     private init() {
+        
+        self.defaultCurrencyCode =
+                    Locale.current.currency?.identifier ?? "USD"
+        
         do {
             let url = try FileManager.default
                 .url(for: .documentDirectory,
@@ -37,7 +42,9 @@ final class AppDatabase {
             
             dbQueue = try DatabaseQueue(path: url.path)
             
-            try Self.makeMigrator().migrate(dbQueue)
+            try Self.makeMigrator(
+                            defaultCurrencyCode: defaultCurrencyCode
+                        ).migrate(dbQueue)
         }
         catch {
             debugPrint("Erro ao abrir o banco", error)

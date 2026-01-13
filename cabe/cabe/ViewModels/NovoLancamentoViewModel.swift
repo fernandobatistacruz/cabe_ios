@@ -178,8 +178,8 @@ final class NovoLancamentoViewModel: ObservableObject {
             pagoRaw: pago ? 1 : 0,
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
-            notificadoRaw: 0,
-            dataCriacao: Date()
+            dataCriacao: Date().description,
+            notificacaoLidaRaw: 0
         )
     }
 
