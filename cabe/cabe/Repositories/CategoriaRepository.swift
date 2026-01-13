@@ -46,6 +46,14 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
         }
     }
     
+    func editarSubcategorias(_ categorias: [CategoriaModel]) async throws {
+        try await db.dbQueue.write { db in
+            for categoria in categorias {
+                try categoria.update(db)
+            }
+        }
+    }
+    
     func remover(id: Int64, tipo: Int) throws {
        _ =  try db.dbQueue.write { db in
             try CategoriaModel

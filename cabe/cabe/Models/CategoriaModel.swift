@@ -194,27 +194,6 @@ extension CategoriaModel {
 }
 
 extension CategoriaModel {
-
-    /// Retorna a cor correta considerando herança do pai (se existir)
-    func corEfetiva(todas: [CategoriaModel]) -> CorModel {
-        if let paiId = pai,
-           let categoriaPai = todas.first(where: { $0.id == paiId  && $0.tipo == tipo}) {
-            return categoriaPai.getCor()
-        }
-        return getCor()
-    }
-
-    /// Retorna o ícone correto considerando herança do pai (se existir)
-    func iconeEfetivo(todas: [CategoriaModel]) -> IconeModel {
-        if let paiId = pai,
-           let categoriaPai = todas.first(where: { $0.id == paiId && $0.tipo == tipo }) {
-            return categoriaPai.getIcone()
-        }
-        return getIcone()
-    }
-}
-
-extension CategoriaModel {
     var nome: String {
         if let nomeKey, nomeRaw.isEmpty {
             return NSLocalizedString(nomeKey, comment: "")
@@ -223,6 +202,8 @@ extension CategoriaModel {
     }
 }
 
-
-
-
+extension CategoriaModel {
+    var isSub: Bool {
+       return pai != nil
+    }
+}

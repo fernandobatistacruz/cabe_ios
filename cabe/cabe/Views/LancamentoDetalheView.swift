@@ -23,7 +23,7 @@ struct LancamentoDetalheView: View {
                     VStack (alignment: .leading){
                         Text(lancamento.descricao)
                             .font(.title2.bold())
-                        Text(lancamento.categoria?.nome ?? "")
+                        Text(lancamento.categoria?.isSub ?? false ? lancamento.categoria?.nomeSubcategoria ?? "" : lancamento.categoria?.nome ?? "")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                     }

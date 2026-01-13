@@ -342,7 +342,9 @@ struct LancamentoRow: View {
                     .font(.body)
                     .foregroundColor(.primary)
 
-                Text(lancamento.categoria?.nome ?? "")
+                Text(
+                    lancamento.categoria?.isSub ?? false ? lancamento.categoria?.nomeSubcategoria ?? "" : lancamento.categoria?.nome ?? ""
+                )
                     .font(.footnote)
                     .foregroundColor(.secondary)
             }

@@ -203,7 +203,12 @@ struct CategoriaFormView: View {
                         Button { dismiss() } label: { Image(systemName: "xmark") }
                     }
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button { salvar() } label: {
+                        Button {
+                            Task{
+                                await salvar()
+                            }
+                            
+                        } label: {
                             Image(systemName: "checkmark").foregroundColor(.white)
                         }
                         .buttonStyle(.borderedProminent)
@@ -257,7 +262,7 @@ struct CategoriaFormView: View {
     }
     
     // MARK: - Salvar categoria principal
-    private func salvar() {
+    private func salvar() async {
         let proximoId: Int64 = (try! CategoriaRepository()
             .listar()
             .compactMap { $0.id }
@@ -276,7 +281,17 @@ struct CategoriaFormView: View {
 
         do {
             if isEditar {
-                try CategoriaRepository().editar(novaCategoria)
+                let repository = CategoriaRepository()
+                try repository.editar(novaCategoria)
+                
+                subcategorias = subcategorias.map { categoria in
+                    var nova = categoria
+                    nova.cor = corSelecionada.id
+                    nova.icone = iconeSelecionado.id
+                    return nova
+                }
+                
+                try await repository.editarSubcategorias(subcategorias)
             } else {
                 try CategoriaRepository().salvar(novaCategoria)
             }
