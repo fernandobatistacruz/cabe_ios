@@ -13,7 +13,7 @@ struct NotificacoesView: View {
 
     var body: some View {
         List {
-            if !vm.vencemHoje.isEmpty || !vm.cartoesHoje.isEmpty {
+            if !vm.vencemHoje.isEmpty || !vm.cartoesVenceHoje.isEmpty {
                 Section("Vence Hoje") {
                     ForEach(vm.vencemHoje) { lancamento in
                         LancamentoRow(
@@ -33,7 +33,7 @@ struct NotificacoesView: View {
                             .tint(.accentColor)
                         }
                     }
-                    ForEach(vm.cartoesHoje) { cartao in
+                    ForEach(vm.cartoesVenceHoje) { cartao in
                         CartaoRowNotification(cartaoNotificacao: cartao)
                             .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                             .swipeActions(edge: .trailing,allowsFullSwipe: false) {
@@ -49,20 +49,36 @@ struct NotificacoesView: View {
                             }
                     }
                 }
+            }
             
-                if !vm.vencidos.isEmpty || !vm.cartoesVencidos.isEmpty {
-                    Section("Vencidos") {
-                        ForEach(vm.vencidos) { lancamento in
-                            LancamentoRow(
-                                lancamento: lancamento,
-                                mostrarPagamento: false,
-                                mostrarValores: true
-                            )
+            if !vm.vencidos.isEmpty || !vm.cartoesVencidos.isEmpty {
+                Section("Vencidos") {
+                    ForEach(vm.vencidos) { lancamento in
+                        LancamentoRow(
+                            lancamento: lancamento,
+                            mostrarPagamento: false,
+                            mostrarValores: true
+                        )
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                            Button() {
+                                Task {
+                                    await vm.marcarLancamentosComoLidos([lancamento])
+                                }
+                            } label: {
+                                Label ("Lido", systemImage: "checklist")
+                                
+                            }
+                            .tint(.accentColor)
+                        }
+                    }
+                    ForEach(vm.cartoesVencidos) { cartao in
+                        CartaoRowNotification(cartaoNotificacao: cartao)
                             .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                             .swipeActions(edge: .trailing,allowsFullSwipe: false) {
                                 Button() {
                                     Task {
-                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                        await vm.marcarLancamentosComoLidos(cartao.lancamentos)
                                     }
                                 } label: {
                                     Label ("Lido", systemImage: "checklist")
@@ -70,25 +86,8 @@ struct NotificacoesView: View {
                                 }
                                 .tint(.accentColor)
                             }
-                        }
-                        ForEach(vm.cartoesVencidos) { cartao in
-                            CartaoRowNotification(cartaoNotificacao: cartao)
-                                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                                .swipeActions(edge: .trailing,allowsFullSwipe: false) {
-                                    Button() {
-                                        Task {
-                                            await vm.marcarLancamentosComoLidos(cartao.lancamentos)
-                                        }
-                                    } label: {
-                                        Label ("Lido", systemImage: "checklist")
-                                        
-                                    }
-                                    .tint(.accentColor)
-                                }
-                        }
                     }
                 }
-
             }
         }
         .navigationTitle("Notificações")
@@ -103,7 +102,7 @@ struct NotificacoesView: View {
                             vm.vencidos +
                             vm.vencemHoje +
                             vm.cartoesVencidos.flatMap(\.lancamentos) +
-                            vm.cartoesHoje.flatMap( \.lancamentos)
+                            vm.cartoesVenceHoje.flatMap( \.lancamentos)
                         )
                     }
                 } label: {

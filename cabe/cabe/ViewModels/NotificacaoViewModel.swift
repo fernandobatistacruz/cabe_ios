@@ -15,11 +15,11 @@ final class NotificacaoViewModel: ObservableObject {
 
     // MARK: - Cartões agrupados
     @Published private(set) var cartoesVencidos: [CartaoNotificacao] = []
-    @Published private(set) var cartoesHoje: [CartaoNotificacao] = []
+    @Published private(set) var cartoesVenceHoje: [CartaoNotificacao] = []
 
     // MARK: - Total de notificações não lidas
     var total: Int {
-        vencidos.count + vencemHoje.count + cartoesVencidos.count + cartoesHoje.count
+        vencidos.count + vencemHoje.count + cartoesVencidos.count + cartoesVenceHoje.count
     }
 
     // MARK: - Atualiza a ViewModel com lançamentos
@@ -47,7 +47,7 @@ final class NotificacaoViewModel: ObservableObject {
             lancamentos: lancamentosCartao.filter { $0.dataAgrupamento < hoje && !$0.pago }
         )
 
-        cartoesHoje = gerarNotificacoesPorCartao(
+        cartoesVenceHoje = gerarNotificacoesPorCartao(
             lancamentos: lancamentosCartao.filter { Calendar.current.isDate($0.dataAgrupamento, inSameDayAs: hoje) && !$0.pago }
         )
     }
@@ -55,7 +55,7 @@ final class NotificacaoViewModel: ObservableObject {
     // MARK: - Mensagem para notificação do sistema
     func mensagemNotificacao() -> String {
         let simples = "\(vencidos.count) vencidos • \(vencemHoje.count) hoje"
-        let cartoes = "\(cartoesVencidos.count) cartões vencidos • \(cartoesHoje.count) hoje"
+        let cartoes = "\(cartoesVencidos.count) cartões vencidos • \(cartoesVenceHoje.count) hoje"
 
         let partes = [simples, cartoes].filter { !$0.hasPrefix("0") && !$0.contains("0 ") }
         return partes.joined(separator: " • ")
@@ -79,7 +79,7 @@ final class NotificacaoViewModel: ObservableObject {
             }
 
             // Atualiza a UI
-            let todos = vencidos + vencemHoje + cartoesVencidos.flatMap { $0.lancamentos } + cartoesHoje.flatMap { $0.lancamentos }
+            let todos = vencidos + vencemHoje + cartoesVencidos.flatMap { $0.lancamentos } + cartoesVenceHoje.flatMap { $0.lancamentos }
             atualizar(lancamentos: todos)
         } catch {
             print("Erro ao marcar notificações como lidas:", error)
