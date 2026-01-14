@@ -66,8 +66,10 @@ struct ContaListView: View {
         )
         {
             Button("Excluir", role: .destructive) {
-                if let conta = contaParaExcluir {
-                    viewModel.remover(conta)
+                Task{
+                    if let conta = contaParaExcluir {
+                       await viewModel.remover(conta)
+                    }
                 }
             }
             Button("Cancelar", role: .cancel) { }
@@ -202,7 +204,9 @@ struct NovaContaView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    salvar()
+                    Task{
+                        await salvar()
+                    }
                 } label: {
                     Image(systemName: "checkmark")
                         .foregroundColor(.white)
@@ -216,9 +220,9 @@ struct NovaContaView: View {
     }
     
 
-    private func salvar() {
+    private func salvar() async {
         
-        var conta = ContaModel.init(
+        let conta = ContaModel.init(
             uuid: UUID().uuidString,
             nome: nome,
             saldo: NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue,
@@ -226,7 +230,7 @@ struct NovaContaView: View {
         )
         
         do {
-            try ContaRepository().salvar(&conta)
+            try await ContaRepository().salvar(conta)
         }
         catch{
             debugPrint("Erro ao editar conta", error)
@@ -272,7 +276,9 @@ struct EditarContaView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        salvar()
+                        Task{
+                           await salvar()
+                        }
                     } label: {
                         Image(systemName: "checkmark")
                             .foregroundColor(.white)
@@ -293,13 +299,13 @@ struct EditarContaView: View {
         }
     }
 
-    private func salvar() {
+    private func salvar() async {
         
         conta.nome = nome
         conta.saldo = NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue
         
         do {
-            try ContaRepository().editar(conta)
+            try await ContaRepository().editar(conta)
         }
         catch{
             debugPrint("Erro ao editar conta", error)

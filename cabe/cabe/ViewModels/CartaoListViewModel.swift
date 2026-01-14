@@ -33,37 +33,27 @@ final class CartaoListViewModel: ObservableObject {
         }
     }
    
-    func salvar(_ cartao: inout CartaoModel) {
-        do { try repository.salvar(&cartao) }
+    func salvar(_ cartao: inout CartaoModel) async {
+        do { try await repository.salvar(cartao) }
         catch { print("Erro ao salvar cartão:", error) }
     }
     
-    func editar(_ cartao: CartaoModel) {
-        do { try repository.editar(cartao) }
+    func editar(_ cartao: CartaoModel) async {
+        do { try await repository.editar(cartao) }
         catch { print("Erro ao editar cartão:", error) }
     }
     
-    func remover(_ cartao: CartaoModel) {
+    func remover(_ cartao: CartaoModel) async {
         do {
-            try repository.remover(id: cartao.id ?? 0, uuid: cartao.uuid)
+            try await repository.remover(id: cartao.id ?? 0, uuid: cartao.uuid)
             limparPagamentoPadraoSeNecessario(deletado: .cartao(cartao))
         }
         catch { print("Erro ao remover cartão:", error) }
-    }
-    
-    func limparDados() {
-        do { try repository.limparDados() }
-        catch { print("Erro ao limpar dados:", error) }
     }
    
     func listar() -> [CartaoModel] {
         do { return try repository.listar() }
         catch { print("Erro ao listar cartões:", error); return [] }
-    }
-    
-    func consultarPorUuid(_ uuid: String) -> [CartaoModel] {
-        do { return try repository.consultarPorUuid(uuid) }
-        catch { print("Erro ao consultar por UUID:", error); return [] }
     }
     
     private func limparPagamentoPadraoSeNecessario(deletado: MeioPagamento) {

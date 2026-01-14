@@ -30,32 +30,26 @@ final class CartaoRepository : CartaoRepositoryProtocol{
         )
     }
 
-    func salvar(_ cartao: inout CartaoModel) throws {
-        try db.dbQueue.write { db in
+    func salvar(_ cartao: CartaoModel) async throws {
+        try await db.dbQueue.write { db in
             try cartao.insert(db)
         }
     }
     
-    func editar(_ cartao: CartaoModel) throws {
-        try db.dbQueue.write { db in
+    func editar(_ cartao: CartaoModel) async throws {
+        try await db.dbQueue.write { db in
             try cartao.update(db)
         }
     }
     
-    func remover(id: Int64, uuid: String) throws {
-       _ =  try db.dbQueue.write { db in
+    func remover(id: Int64, uuid: String) async throws {
+        _ =  try await db.dbQueue.write { db in
             try CartaoModel
                 .filter(
                     CartaoModel.Columns.id == id &&
                     CartaoModel.Columns.uuid == uuid
                 )
                 .deleteAll(db)
-        }
-    }
-    
-    func limparDados() throws {
-       _ =  try db.dbQueue.write { db in
-            try CartaoModel.deleteAll(db)
         }
     }
     
@@ -110,25 +104,15 @@ final class CartaoRepository : CartaoRepositoryProtocol{
             )
         }        
     }
-    
-    func consultarPorUuid(_ uuid: String) throws -> [CartaoModel] {
-        try db.dbQueue.read { db in
-            try CartaoModel
-                .filter(CartaoModel.Columns.uuid == uuid)
-                .fetchAll(db)
-        }
-    }
 }
 
 protocol CartaoRepositoryProtocol {
     
     func observeCartoes(onChange: @escaping ([CartaoModel]) -> Void) -> AnyDatabaseCancellable
-    func salvar(_ cartao: inout CartaoModel) throws
-    func editar(_ cartao: CartaoModel) throws
-    func remover(id: Int64, uuid: String) throws
-    func limparDados() throws
+    func salvar(_ cartao: CartaoModel) async throws
+    func editar(_ cartao: CartaoModel) async throws
+    func remover(id: Int64, uuid: String) async throws
     func listar() throws -> [CartaoModel]
-    func consultarPorUuid(_ uuid: String) throws -> [CartaoModel]
 }
 
 

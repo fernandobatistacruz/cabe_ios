@@ -103,8 +103,10 @@ struct CartaoListView: View {
         )
         .alert("Excluir cartão?", isPresented: $mostrarConfirmacao) {
             Button("Excluir", role: .destructive) {
-                if let cartao = cartaoParaExcluir {
-                    viewModel.remover(cartao)
+                Task{
+                    if let cartao = cartaoParaExcluir {
+                        await viewModel.remover(cartao)
+                    }
                 }
             }
             Button("Cancelar", role: .cancel) { }
@@ -320,7 +322,9 @@ struct NovoCartaoView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    salvar()
+                    Task{
+                        await salvar()
+                    }
                 } label: {
                     Image(systemName: "checkmark")
                         .foregroundColor(.white)
@@ -340,10 +344,10 @@ struct NovoCartaoView: View {
         }
     }
 
-    private func salvar() {
+    private func salvar() async {
         do {
             var cartao = try viewModel.construirCartao()
-            try CartaoRepository().salvar(&cartao)
+            try await CartaoRepository().salvar(cartao)
             dismiss()
         } catch let erro as CartaoValidacaoErro {
             erroValidacao = erro
@@ -443,7 +447,9 @@ struct EditarCartaoView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        salvar()
+                        Task{
+                            await salvar()
+                        }
                     } label: {
                         Image(systemName: "checkmark")
                             .foregroundColor(.white)
@@ -472,13 +478,13 @@ struct EditarCartaoView: View {
         }
     }
 
-    private func salvar() {
+    private func salvar() async {
         do {
             var cartao = try viewModel.construirCartao()
             cartao.id = self.cartao.id
             cartao.uuid = self.cartao.uuid
             
-            try CartaoRepository().editar(cartao)
+            try await CartaoRepository().editar(cartao)
             dismiss()
         } catch let erro as CartaoValidacaoErro {
             erroValidacao = erro

@@ -134,12 +134,6 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    func limparDados() async throws {
-        _ =  try await db.dbQueue.write { db in
-            try LancamentoModel.deleteAll(db)
-        }
-    }
-    
     // MARK: - Nova função pública para ViewModel
     func listarLancamentosDoAno(ano: Int) async throws -> [LancamentoModel] {
         do {
@@ -258,14 +252,6 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             )
         }
     }
-    
-    func consultarPorUuid(_ uuid: String) async throws -> [LancamentoModel] {
-        try await db.dbQueue.read { db in
-            try LancamentoModel
-                .filter(LancamentoModel.Columns.uuid == uuid)
-                .fetchAll(db)
-        }
-    }
 }
 
 protocol LancamentoRepositoryProtocol {
@@ -277,9 +263,7 @@ protocol LancamentoRepositoryProtocol {
     func salvar(_ lancamento: LancamentoModel) async throws
     func editar(_ lancamento: LancamentoModel) async throws
     func remover(id: Int64, uuid: String) async throws
-    func removerRecorrentes(uuid: String) async throws
-    func limparDados() async throws
-    func consultarPorUuid(_ uuid: String) async throws -> [LancamentoModel]
+    func removerRecorrentes(uuid: String) async throws 
 }
 
 

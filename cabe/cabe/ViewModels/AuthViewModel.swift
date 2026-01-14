@@ -276,4 +276,37 @@ final class AuthViewModel: ObservableObject {
             }
         }
     }
+    
+    func removerConta() async {
+        guard let user = Auth.auth().currentUser else {
+            infoMessage = "Nenhum usuário logado."
+            return
+        }
+
+        do {
+            // 1️⃣ Apaga o usuário no Firebase Auth
+            try await user.delete()
+            
+            // Analytics opcional
+            AnalyticsService.shared.accountDeleted()
+
+            // 2️⃣ Apagar banco local
+            try AppDatabase.shared.deleteDatabase()
+
+            // 3️⃣ Limpar preferências locais
+            if let bundleId = Bundle.main.bundleIdentifier {
+                UserDefaults.standard.removePersistentDomain(forName: bundleId)
+            }
+
+            // 4️⃣ Informar o usuário que a conta foi removida
+            self.infoMessage = "Conta removida com sucesso."
+
+        } catch let error as NSError {
+            if error.code == AuthErrorCode.requiresRecentLogin.rawValue {
+                self.errorMessage = "Para remover a conta, faça login novamente."
+            } else {
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
 }

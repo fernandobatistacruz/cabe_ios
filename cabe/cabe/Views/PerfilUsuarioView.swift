@@ -9,6 +9,8 @@ import SwiftUI
 
 struct PerfilUsuarioView: View {
     @EnvironmentObject var auth: AuthViewModel
+    @State private var showConfirmation = false
+    @State private var showSuccess = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -43,14 +45,36 @@ struct PerfilUsuarioView: View {
             }
 
             Spacer()
-
-            // Logout
+            
             Button(role: .destructive) {
+                showConfirmation = true
+            } label: {
+                Text("Remover conta")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 40)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
+            .alert("Remover conta", isPresented: $showConfirmation) {
+                Button("Cancelar", role: .cancel) { }
+                Button("Confirmar", role: .destructive) {
+                    Task {
+                        await auth.removerConta()
+                        if auth.errorMessage == nil {
+                            showSuccess = true
+                        }
+                    }
+                }
+            } message: {
+                Text("Tem certeza que deseja remover sua conta? Essa ação não pode ser desfeita.")
+            }
+           
+            Button {
                 auth.signOut()
             } label: {
                 Text("Finalizar sessão")
                     .font(.headline)
-                    .frame(maxWidth: .infinity, minHeight: 50)
+                    .frame(maxWidth: .infinity, minHeight: 40)
             }
             .buttonStyle(.borderedProminent)
             .padding()
@@ -59,5 +83,14 @@ struct PerfilUsuarioView: View {
         .navigationTitle("Minha Conta")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
+        .alert("Conta removida", isPresented: $showSuccess) {
+            Button("OK") {
+                auth.signOut()
+            }
+        } message: {
+            Text("Sua conta foi removida com sucesso.")
+        }
     }
 }
+
+

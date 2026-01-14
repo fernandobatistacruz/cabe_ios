@@ -30,20 +30,20 @@ final class ContaRepository : ContaRepositoryProtocol{
         )
     }
 
-    func salvar(_ conta: inout ContaModel) throws {
-        try db.dbQueue.write { db in
+    func salvar(_ conta: ContaModel) async throws {
+        try await db.dbQueue.write { db in
             try conta.insert(db)
         }
     }
     
-    func editar(_ conta: ContaModel) throws {
-        try db.dbQueue.write { db in
+    func editar(_ conta: ContaModel) async throws {
+        try await db.dbQueue.write { db in
             try conta.update(db)
         }
     }
     
-    func remover(id: Int64, uuid: String) throws {
-       _ =  try db.dbQueue.write { db in
+    func remover(id: Int64, uuid: String) async throws {
+        _ =  try await db.dbQueue.write { db in
             try ContaModel
                 .filter(
                     ContaModel.Columns.id == id &&
@@ -53,23 +53,9 @@ final class ContaRepository : ContaRepositoryProtocol{
         }
     }
     
-    func limparDados() throws {
-       _ =  try db.dbQueue.write { db in
-            try ContaModel.deleteAll(db)
-        }
-    }
-    
     func listar() throws -> [ContaModel] {
         try db.dbQueue.read { db in
             try ContaModel.fetchAll(db)
-        }
-    }
-    
-    func consultarPorUuid(_ uuid: String) throws -> [ContaModel] {
-        try db.dbQueue.read { db in
-            try ContaModel
-                .filter(ContaModel.Columns.uuid == uuid)
-                .fetchAll(db)
         }
     }
 }
@@ -77,10 +63,8 @@ final class ContaRepository : ContaRepositoryProtocol{
 protocol ContaRepositoryProtocol {
    
     func observeContas(onChange: @escaping ([ContaModel]) -> Void) -> AnyDatabaseCancellable
-    func salvar(_ conta: inout ContaModel) throws
-    func editar(_ conta: ContaModel) throws
-    func remover(id: Int64, uuid: String) throws
-    func limparDados() throws
+    func salvar(_ conta: ContaModel) async throws
+    func editar(_ conta: ContaModel) async throws
+    func remover(id: Int64, uuid: String) async throws
     func listar() throws -> [ContaModel]
-    func consultarPorUuid(_ uuid: String) throws -> [ContaModel]
 }

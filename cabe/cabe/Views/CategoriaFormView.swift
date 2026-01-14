@@ -120,7 +120,9 @@ struct CategoriaFormView: View {
                                             }
                                             .swipeActions {
                                                 Button(role: .destructive) {
-                                                    removerSubcategoria(sub)
+                                                    Task{
+                                                        await removerSubcategoria(sub)
+                                                    }
                                                 } label: {
                                                     Label("Excluir", systemImage: "trash")
                                                 }
@@ -256,8 +258,8 @@ struct CategoriaFormView: View {
         }
     }
     
-    private func removerSubcategoria(_ sub: CategoriaModel) {
-        try? CategoriaRepository().remover(id: sub.id ?? 0, tipo: sub.tipo)
+    private func removerSubcategoria (_ sub: CategoriaModel) async {
+        try? await CategoriaRepository().remover(id: sub.id ?? 0, tipo: sub.tipo)
         subcategorias.removeAll { $0.id == sub.id }
     }
     
@@ -282,7 +284,7 @@ struct CategoriaFormView: View {
         do {
             if isEditar {
                 let repository = CategoriaRepository()
-                try repository.editar(novaCategoria)
+                try await repository.editar(novaCategoria)
                 
                 subcategorias = subcategorias.map { categoria in
                     var nova = categoria
@@ -293,7 +295,7 @@ struct CategoriaFormView: View {
                 
                 try await repository.editarSubcategorias(subcategorias)
             } else {
-                try CategoriaRepository().salvar(novaCategoria)
+                try await CategoriaRepository().salvar(novaCategoria)
             }
             self.categoria = novaCategoria
         } catch {
@@ -344,7 +346,9 @@ struct SubcategoriaSheet: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        salvar()
+                        Task{
+                            await salvar()
+                        }
                     } label: {
                         Image(systemName: "checkmark")
                             .foregroundColor(.white)
@@ -357,7 +361,7 @@ struct SubcategoriaSheet: View {
         }
     }
 
-    private func salvar() {
+    private func salvar() async {
         let id: Int64 = subcategoria?.id ??
             ((try! CategoriaRepository().listar()
                 .compactMap { $0.id }
@@ -375,9 +379,9 @@ struct SubcategoriaSheet: View {
 
         do {
             if subcategoria == nil {
-                try CategoriaRepository().salvar(nova)
+                try await CategoriaRepository().salvar(nova)
             } else {
-                try CategoriaRepository().editar(nova)
+                try await CategoriaRepository().editar(nova)
             }
             onSalvar(nova)
             dismiss()

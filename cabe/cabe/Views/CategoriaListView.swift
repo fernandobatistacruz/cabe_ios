@@ -96,8 +96,10 @@ struct CategoriaListView: View {
             isPresented: $mostrarConfirmacao
         ) {
             Button("Excluir", role: .destructive) {
-                if let categoria = categoriaParaExcluir {
-                    viewModel.remover(categoria)
+                Task{
+                    if let categoria = categoriaParaExcluir {
+                        await viewModel.remover(categoria)
+                    }
                 }
             }
             Button("Cancelar", role: .cancel) { }

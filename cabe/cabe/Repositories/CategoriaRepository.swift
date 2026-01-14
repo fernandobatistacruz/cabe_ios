@@ -34,14 +34,14 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
         )
     }
 
-    func salvar(_ categoria: CategoriaModel) throws {
-        try db.dbQueue.write { db in
+    func salvar(_ categoria: CategoriaModel) async throws {
+        try await db.dbQueue.write { db in
             try categoria.insert(db)
         }
     }
     
-    func editar(_ categoria: CategoriaModel) throws {
-        try db.dbQueue.write { db in
+    func editar(_ categoria: CategoriaModel) async throws {
+        try await db.dbQueue.write { db in
             try categoria.update(db)
         }
     }
@@ -54,20 +54,14 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
         }
     }
     
-    func remover(id: Int64, tipo: Int) throws {
-       _ =  try db.dbQueue.write { db in
+    func remover(id: Int64, tipo: Int) async throws {
+        _ =  try await db.dbQueue.write { db in
             try CategoriaModel
                 .filter(
                     CategoriaModel.Columns.id == id &&
                     CategoriaModel.Columns.tipo == tipo
                 )
                 .deleteAll(db)
-        }
-    }
-    
-    func limparDados() throws {
-       _ =  try db.dbQueue.write { db in
-            try CategoriaModel.deleteAll(db)
         }
     }
     
@@ -92,10 +86,9 @@ final class CategoriaRepository : CategoriaRepositoryProtocol{
 protocol CategoriaRepositoryProtocol {
    
     func observeCategorias(onChange: @escaping ([CategoriaModel]) -> Void) -> AnyDatabaseCancellable
-    func salvar(_ categoria: CategoriaModel) throws
-    func editar(_ categoria: CategoriaModel) throws
-    func remover(id: Int64, tipo: Int) throws
-    func limparDados() throws
+    func salvar(_ categoria: CategoriaModel) async throws
+    func editar(_ categoria: CategoriaModel) async throws
+    func remover(id: Int64, tipo: Int) async throws
     func listar() throws -> [CategoriaModel]
     func listar(tipo: Tipo) throws -> [CategoriaModel]
 }

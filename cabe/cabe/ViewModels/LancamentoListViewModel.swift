@@ -306,16 +306,6 @@ final class LancamentoListViewModel: ObservableObject {
         catch { print("Erro ao remover lançamento:", error) }
     }
     
-    func limparDados() async {
-        do { try await repository.limparDados() }
-        catch { print("Erro ao limpar dados:", error) }
-    }
-    
-    func consultarPorUuid (_ uuid: String) async -> [LancamentoModel] {
-        do { return try await repository.consultarPorUuid(uuid) }
-        catch { print("Erro ao consultar por UUID:", error); return [] }
-    }
-    
     func togglePago(_ lancamentos: [LancamentoModel]) async {
         do { try await repository.togglePago(lancamentos) }
         catch { print("Erro ao alternar pagamento:", error) }

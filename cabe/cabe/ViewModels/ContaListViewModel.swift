@@ -42,37 +42,27 @@ final class ContaListViewModel: ObservableObject {
    
     // --- Métodos existentes mantidos ---
     
-    func salvar(_ conta: inout ContaModel) {
-        do { try repository.salvar(&conta) }
+    func salvar(_ conta: ContaModel) async {
+        do { try await repository.salvar(conta) }
         catch { print("Erro ao salvar conta:", error) }
     }
     
-    func editar(_ conta: ContaModel) {
-        do { try repository.editar(conta) }
+    func editar(_ conta: ContaModel) async {
+        do { try await repository.editar(conta) }
         catch { print("Erro ao editar conta:", error) }
     }
     
-    func remover(_ conta: ContaModel) {
+    func remover(_ conta: ContaModel) async {
         do {
-            try repository.remover(id: conta.id ?? 0, uuid: conta.uuid)
+            try await repository.remover(id: conta.id ?? 0, uuid: conta.uuid)
             limparPagamentoPadraoSeNecessario(deletado: .conta(conta))
         }
         catch { print("Erro ao remover conta:", error) }
-    }
-    
-    func limparDados() {
-        do { try repository.limparDados() }
-        catch { print("Erro ao limpar dados:", error) }
     }
    
     func listar() -> [ContaModel] {
         do { return try repository.listar() }
         catch { print("Erro ao listar contas:", error); return [] }
-    }
-    
-    func consultarPorUuid(_ uuid: String) -> [ContaModel] {
-        do { return try repository.consultarPorUuid(uuid) }
-        catch { print("Erro ao consultar por UUID:", error); return [] }
     }
     
     private func limparPagamentoPadraoSeNecessario(deletado: MeioPagamento) {
