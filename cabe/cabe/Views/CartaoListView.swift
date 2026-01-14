@@ -51,7 +51,7 @@ struct CartaoListView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
-             
+                
                 List {
                     Section {
                         ForEach(cartoesFiltrados) { cartao in
@@ -67,7 +67,7 @@ struct CartaoListView: View {
                                             Label("Excluir", systemImage: "trash")
                                         }
                                     }
-                            }                            
+                            }
                             .listRowInsets(
                                 EdgeInsets(
                                     top: 8,
@@ -81,16 +81,17 @@ struct CartaoListView: View {
                 }
                 .listStyle(.insetGrouped)
                 .scrollContentBackground(.hidden)
-                .overlay {
-                    if cartoesFiltrados.isEmpty {
-                        VStack(spacing: 12) {
-                            Text("Nenhum cartão encontrado")
-                                .font(.title3)
+                .overlay(
+                    Group {
+                        if cartoesFiltrados.isEmpty {
+                            Text("Nenhum cartão")
+                                .font(.title2)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
+                                .padding()
                         }
                     }
-                }
+                )
             }
         }
         .navigationTitle("Cartões")

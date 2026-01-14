@@ -87,6 +87,17 @@ struct ZoomPagamentoView: View {
                 selecionado = UserDefaults.standard.carregarPagamentoPadrao()
             }
         }
+        .overlay(
+            Group {
+                if viewModel.cartoes.isEmpty && viewModel.contas.isEmpty {
+                    Text("Nenhum registro")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
+            }
+        )
         .toolbar {
             if !salvarComoPadrao {
                 ToolbarItem(placement: .topBarLeading) {

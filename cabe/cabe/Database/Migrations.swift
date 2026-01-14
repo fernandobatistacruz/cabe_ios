@@ -18,8 +18,7 @@ extension AppDatabase {
                 t.autoIncrementedPrimaryKey("id")
                 t.column("uuid", .text).notNull()
                 t.column("nome", .text).notNull()
-                t.column("saldo", .double).notNull().defaults(to: 0)
-                t.column("currency_code", .text).notNull()
+                t.column("saldo", .double).notNull()
             }
 
             try db.create(table: "cartao") { t in
@@ -73,7 +72,6 @@ extension AppDatabase {
             }
         }
         
-        /*
         migrator.registerMigration("addCurrencyCodeToConta") { db in
             try db.alter(table: "conta") { t in
                 t.add(column: "currency_code", .text)
@@ -81,7 +79,6 @@ extension AppDatabase {
                     .defaults(to: defaultCurrencyCode)
             }
         }
-         */
          
         migrator.registerMigration("insertContaInicial") { db in
             let count = try Int.fetchOne(
@@ -113,7 +110,7 @@ extension AppDatabase {
         
         migrator.registerMigration("seedCategoriasPadrao") { db in
             let count = try CategoriaModel.fetchCount(db)
-            guard count == 0 else { return } // só em instalação nova
+            guard count == 0 else { return }
 
             let categoriasPadrao: [CategoriaModel] = [
                 // Receitas

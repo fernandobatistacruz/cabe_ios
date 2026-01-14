@@ -46,7 +46,7 @@ struct ContaListView: View {
         .overlay(
                 Group {
                     if contasFiltradas.isEmpty {
-                        Text("Nenhuma conta encontrada")
+                        Text("Nenhuma conta")
                             .font(.title2)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -108,7 +108,7 @@ struct ContaRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "creditcard")
+            Image(systemName: "building.columns.fill")
                 .foregroundStyle(iconColor)
                 .font(.system(size: 18, weight: .medium))
 
@@ -135,7 +135,7 @@ struct ContaDetalheView: View {
         VStack(spacing: 24) {
 
             VStack(spacing: 8) {
-                Image(systemName: "creditcard")
+                Image(systemName: "building.columns.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(conta.saldo >= 0 ? .green : .red)
 

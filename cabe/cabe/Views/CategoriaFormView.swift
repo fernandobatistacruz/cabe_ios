@@ -106,8 +106,8 @@ struct CategoriaFormView: View {
                         if isEditar {
                             Section {
                                 if subcategorias.isEmpty {
-                                    Text("Nenhuma subcategoria cadastrada")
-                                        .font(.headline)
+                                    Text("Nenhuma subcategoria")
+                                        .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                         .frame(maxWidth: .infinity, alignment: .center)
 
@@ -175,7 +175,7 @@ struct CategoriaFormView: View {
                                             .padding(8)
                                             .background(
                                                 icone.id == iconeSelecionado.id
-                                                ? Color(.systemGray4)
+                                                ? Color(.systemGray)
                                                 : Color.clear
                                             )
                                             .cornerRadius(8)

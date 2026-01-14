@@ -17,6 +17,7 @@ final class ResumoAnualViewModel: ObservableObject {
     @Published var anoSelecionado: Int
     @Published var resumoAnual: ResumoAnualModel?
     @Published var resumoMensal: [ResumoMensalModel] = []
+    @Published var lancamentos: [LancamentoModel] = []
     @Published var despesasPorCategoria: [DespesaPorCategoriaModel] = []
     @Published var insights: [LocalizedStringKey] = []
 
@@ -31,7 +32,7 @@ final class ResumoAnualViewModel: ObservableObject {
     // MARK: - Carregar dados
     func carregarDados() async {
         do {
-            let lancamentos =  try await repository.listarLancamentosDoAno(ano: anoSelecionado)
+            lancamentos =  try await repository.listarLancamentosDoAno(ano: anoSelecionado)
             processar(lancamentos)
         } catch {
             print("Erro ao carregar lançamentos do ano:", error)

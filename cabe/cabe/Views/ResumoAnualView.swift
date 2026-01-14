@@ -5,6 +5,9 @@ import Charts
 struct ResumoAnualView: View {
 
     @StateObject private var vm: ResumoAnualViewModel
+    @State private var exportURL: URL?
+    @EnvironmentObject var sub: SubscriptionManager
+    @State private var showingPaywall = false
 
     init(
         ano: Int = Calendar.current.component(.year, from: .now),
@@ -31,7 +34,9 @@ struct ResumoAnualView: View {
                     
                     graficoReceitaDespesa
                     graficoCategorias
-                    insightsView
+                    if !vm.insights.isEmpty {
+                        insightsView
+                    }
                 }
                 .padding()
             }
@@ -52,10 +57,21 @@ struct ResumoAnualView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    print("Exportar")
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
+                if let url = exportURL {
+                    ShareLink(item: url) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                } else {
+                    Button {
+                        if sub.isSubscribed {
+                            exportarCSV()
+                        } else {
+                            showingPaywall = true
+                        }
+                        
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
                 }
             }
         }
@@ -69,6 +85,22 @@ struct ResumoAnualView: View {
             Task {
                 await vm.carregarDados()
             }
+        }
+        .sheet(isPresented: $showingPaywall) {
+            NavigationStack {
+                PaywallView()
+            }
+        }
+    }
+    
+    private func exportarCSV() {
+        do {
+            exportURL = try ExportarLancamentos.export(
+                lancamentos: vm.lancamentos,
+                fileName: "lancamentos_anuais.csv"
+            )
+        } catch {
+            print("Erro ao exportar CSV:", error)
         }
     }
 

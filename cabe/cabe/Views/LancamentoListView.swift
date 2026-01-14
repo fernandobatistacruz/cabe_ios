@@ -15,6 +15,9 @@ struct LancamentoListView: View {
     @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
     @State private var mostrarDialogExclusao = false
+    @State private var exportURL: URL?
+    @EnvironmentObject var sub: SubscriptionManager
+    @State private var showingPaywall = false
     
     private var selectedDate: Date {
         Calendar.current.date(
@@ -170,8 +173,31 @@ struct LancamentoListView: View {
             }
             
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    print("Mais ações")
+                Menu {
+                    if let url = exportURL {
+                        ShareLink(item: url) {
+                            Label("Exportar", systemImage: "square.and.arrow.up")
+                        }
+                    } else {
+                        Button {
+                            if sub.isSubscribed {
+                                exportarCSV()
+                            } else {
+                                showingPaywall = true
+                            }
+                        } label: {
+                            Label("Exportar", systemImage: "square.and.arrow.up")
+                        }
+                    }
+                   
+                    Divider()
+                   
+                    Button {
+                        print("Ação")
+                    } label: {
+                        Label("Transferência entre contas", systemImage: "arrow.left.arrow.right")
+                    }
+                    
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -219,8 +245,29 @@ struct LancamentoListView: View {
             )
             .presentationDetents([.medium, .large])
         }
-    }        
+        .sheet(isPresented: $showingPaywall) {
+            NavigationStack {
+                PaywallView()
+            }
+        }
+    }
     
+    private func exportarCSV() {
+        do {
+            let mesPorExtenso = selectedDate.formatted(
+                .dateTime
+                    .month(.wide)
+                    .locale(Locale(identifier: "pt_BR"))
+            )
+            
+            exportURL = try ExportarLancamentos.export(
+                lancamentos: viewModel.lancamentos,
+                fileName: "lancamentos_\(mesPorExtenso).csv"
+            )
+        } catch {
+            print("Erro ao exportar CSV:", error)
+        }
+    }    
     
     private func excluirSomenteEste(_ lancamento: LancamentoModel) async {
         await viewModel.removerSomenteEste(lancamento)

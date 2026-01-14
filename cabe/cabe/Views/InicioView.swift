@@ -321,25 +321,46 @@ struct ConsumoCardView: View {
     let mostrarValores: Bool
 
     var body: some View {
-        
-        VStack(alignment: .leading){
+        VStack(alignment: .leading) {
             Text("Consumo")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
-            
-            HStack(spacing: 24) {
-                ConsumoListView(items: dados, mostrarValores: mostrarValores)
-                    .padding()
-                DonutChartView(items: dados, lineWidth: 18 , size: 70)
-                    .padding(.trailing, 30)
+
+            if dados.isEmpty {
+                emptyState
+            } else {
+                content
             }
+        }
+    }
+
+    private var content: some View {
+        HStack(spacing: 24) {
+            ConsumoListView(items: dados, mostrarValores: mostrarValores)
+                .frame(maxWidth: .infinity, minHeight: 80)
+                .padding()
+
+            DonutChartView(items: dados, lineWidth: 18, size: 70)
+                .padding(.trailing, 30)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+        .padding(.horizontal)
+    }
+
+    private var emptyState: some View {
+        Text("Nenhum consumo")
+            .font(.headline)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, minHeight: 100)
             .background(
                 RoundedRectangle(cornerRadius: 22)
                     .fill(Color(.secondarySystemGroupedBackground))
             )
             .padding(.horizontal)
-        }
     }
 }
 
