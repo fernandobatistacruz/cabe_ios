@@ -63,13 +63,6 @@ enum TransferenciaError: Error {
     case dadosInvalidos
 }
 
-//
-//  TransferenciaUseCase.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 14/01/26.
-//
-
 final class TransferenciaUseCase {
 
     private let contaRepo: ContaRepositoryProtocol

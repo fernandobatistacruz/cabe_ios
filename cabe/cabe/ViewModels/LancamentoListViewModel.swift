@@ -165,7 +165,8 @@ final class LancamentoListViewModel: ObservableObject {
     var gastosPorCategoriaResumo: [CategoriaResumo] {
 
         let despesas = lancamentos.filter {
-            $0.tipo == Tipo.despesa.rawValue
+            $0.tipo == Tipo.despesa.rawValue &&
+            !$0.transferencia
         }
 
         let agrupado = Dictionary(grouping: despesas, by: \.categoriaID)
@@ -224,7 +225,8 @@ final class LancamentoListViewModel: ObservableObject {
     var gastosPorCategoriaDetalhado: [CategoriaResumo] {
 
         let despesas = lancamentos.filter {
-            $0.tipo == Tipo.despesa.rawValue
+            $0.tipo == Tipo.despesa.rawValue &&
+            !$0.transferencia
         }
 
         let agrupado = Dictionary(grouping: despesas, by: \.categoriaID)

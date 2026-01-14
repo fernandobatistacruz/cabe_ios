@@ -384,31 +384,46 @@ struct LancamentoRow: View {
                     .fill(lancamento.pago ? Color.clear : .accentColor)
                     .frame(width: 12, height: 12)
             }
-            if lancamento.transferencia {
-                Image(systemName: "arrow.left.arrow.right")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(
-                        lancamento.tipo == Tipo.despesa.rawValue ? .red : .green
-                    )
-            } else{
-                
-                Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(lancamento.categoria?.getCor().cor)
-            }
+            let systemName: String = {
+                if lancamento.transferencia {
+                    return "arrow.left.arrow.right"
+                } else {
+                    return lancamento.categoria?.getIcone().systemName ?? "questionmark"
+                }
+            }()
+
+            let color: Color = {
+                if lancamento.transferencia {
+                    return lancamento.tipo == Tipo.despesa.rawValue ? .red : .green
+                } else {
+                    return lancamento.categoria?.getCor().cor ?? .primary
+                }
+            }()
+
+            Image(systemName: systemName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundColor(color)
             
             VStack(alignment: .leading) {
                 Text(lancamento.descricao)
                     .font(.body)
                     .foregroundColor(.primary)
+                
+                let subtitleText: String = {
+                    if lancamento.transferencia {
+                        return lancamento.tipo == Tipo.despesa.rawValue ? "Saída" : "Entrada"
+                    } else {
+                        if lancamento.categoria?.isSub == true {
+                            return lancamento.categoria?.nomeSubcategoria ?? ""
+                        } else {
+                            return lancamento.categoria?.nome ?? ""
+                        }
+                    }
+                }()
 
-                Text(
-                    lancamento.categoria?.isSub ?? false ? lancamento.categoria?.nomeSubcategoria ?? "" : lancamento.categoria?.nome ?? ""
-                )
+                Text(subtitleText)
                     .font(.footnote)
                     .foregroundColor(.secondary)
             }

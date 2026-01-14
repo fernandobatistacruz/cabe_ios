@@ -33,7 +33,12 @@ final class ResumoAnualViewModel: ObservableObject {
     func carregarDados() async {
         do {
             lancamentos =  try await repository.listarLancamentosDoAno(ano: anoSelecionado)
-            processar(lancamentos)
+            
+            let lancamentosSemTransferencia = lancamentos.filter {
+                !$0.transferencia
+            }
+            
+            processar(lancamentosSemTransferencia)
         } catch {
             print("Erro ao carregar lançamentos do ano:", error)
         }

@@ -16,14 +16,44 @@ struct LancamentoDetalheView: View {
         Form {
             Section {
                 HStack(spacing: 16) {
+                    let systemName: String = {
+                        if lancamento.transferencia {
+                            return "arrow.left.arrow.right"
+                        } else {
+                            return lancamento.categoria?.getIcone().systemName ?? "questionmark"
+                        }
+                    }()
+
+                    let color: Color = {
+                        if lancamento.transferencia {
+                            return lancamento.tipo == Tipo.despesa.rawValue ? .red : .green
+                        } else {
+                            return lancamento.categoria?.getCor().cor ?? .primary
+                        }
+                    }()
                     
-                    Image(systemName: lancamento.categoria?.getIcone().systemName ?? "",)
-                        .foregroundColor(lancamento.categoria?.getCor().cor)
-                        .font(.system(size: 30))
+                    Image(systemName: systemName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(color)
+                    
                     VStack (alignment: .leading){
                         Text(lancamento.descricao)
                             .font(.title2.bold())
-                        Text(lancamento.categoria?.isSub ?? false ? lancamento.categoria?.nomeSubcategoria ?? "" : lancamento.categoria?.nome ?? "")
+                        let subtitleText: String = {
+                            if lancamento.transferencia {
+                                return lancamento.tipo == Tipo.despesa.rawValue ? "Saída" : "Entrada"
+                            } else {
+                                if lancamento.categoria?.isSub == true {
+                                    return lancamento.categoria?.nomeSubcategoria ?? ""
+                                } else {
+                                    return lancamento.categoria?.nome ?? ""
+                                }
+                            }
+                        }()
+
+                        Text(subtitleText)
                             .font(.footnote)
                             .foregroundColor(.secondary)
                     }
