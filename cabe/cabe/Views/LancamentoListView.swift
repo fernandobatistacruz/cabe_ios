@@ -15,10 +15,12 @@ struct LancamentoListView: View {
     @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
     @State private var mostrarDialogExclusao = false
-    @State private var exportURL: URL?
     @EnvironmentObject var sub: SubscriptionManager
     @State private var showingPaywall = false
     @State private var mostrarTransferencia = false
+    @State private var exportURL: URL?
+    @State private var isExporting = false
+    @State private var shareItem: ShareItem?
     
     private var selectedDate: Date {
         Calendar.current.date(
@@ -175,21 +177,22 @@ struct LancamentoListView: View {
             
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    if let url = exportURL {
-                        ShareLink(item: url) {
-                            Label("Exportar", systemImage: "square.and.arrow.up")
-                        }
-                    } else {
-                        Button {
-                            if sub.isSubscribed {
-                                exportarCSV()
-                            } else {
-                                showingPaywall = true
+                    Button {
+                        if sub.isSubscribed {
+                            Task {
+                                await exportarCSV()
                             }
-                        } label: {
+                        } else {
+                            showingPaywall = true
+                        }
+                    } label: {
+                        if isExporting {
+                            ProgressView()
+                        } else {
                             Label("Exportar", systemImage: "square.and.arrow.up")
                         }
                     }
+                    .disabled(isExporting)
                    
                     Divider()
                    
@@ -256,9 +259,30 @@ struct LancamentoListView: View {
                 TransferenciaView()
             }
         }
+        .sheet(item: $shareItem) { item in
+            ActivityView(activityItems: [item.url])
+        }
+        .overlay {
+            if isExporting {
+                ZStack {
+                    Color.black.opacity(0.15)
+                        .ignoresSafeArea()
+
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.2)
+                }
+            }
+        }
     }
-    
-    private func exportarCSV() {
+        
+    private func exportarCSV() async {
+        guard !isExporting else { return }
+
+        isExporting = true
+
+        defer { isExporting = false }
+
         do {
             let mesPorExtenso = selectedDate.formatted(
                 .dateTime
@@ -266,14 +290,16 @@ struct LancamentoListView: View {
                     .locale(Locale(identifier: "pt_BR"))
             )
             
-            exportURL = try ExportarLancamentos.export(
+            let url = try await ExportarLancamentos.export(
                 lancamentos: viewModel.lancamentos,
                 fileName: "lancamentos_\(mesPorExtenso).csv"
             )
+
+            shareItem = ShareItem(url: url)
         } catch {
             print("Erro ao exportar CSV:", error)
         }
-    }    
+    }
     
     private func excluirSomenteEste(_ lancamento: LancamentoModel) async {
         await viewModel.removerSomenteEste(lancamento)

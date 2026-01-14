@@ -13,7 +13,7 @@ struct ExportarLancamentos {
     static func export(
         lancamentos: [LancamentoModel],
         fileName: String = "lancamentos"
-    ) throws -> URL {
+    ) async throws -> URL {
 
         let csv = makeCSV(from: lancamentos)
 

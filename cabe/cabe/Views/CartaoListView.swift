@@ -346,7 +346,7 @@ struct NovoCartaoView: View {
 
     private func salvar() async {
         do {
-            var cartao = try viewModel.construirCartao()
+            let cartao = try viewModel.construirCartao()
             try await CartaoRepository().salvar(cartao)
             dismiss()
         } catch let erro as CartaoValidacaoErro {

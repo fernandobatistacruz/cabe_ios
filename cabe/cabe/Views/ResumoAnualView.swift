@@ -5,10 +5,12 @@ import Charts
 struct ResumoAnualView: View {
 
     @StateObject private var vm: ResumoAnualViewModel
-    @State private var exportURL: URL?
     @EnvironmentObject var sub: SubscriptionManager
     @State private var showingPaywall = false
-
+    @State private var exportURL: URL?
+    @State private var isExporting = false
+    @State private var shareItem: ShareItem?
+    
     init(
         ano: Int = Calendar.current.component(.year, from: .now),
         repository: LancamentoRepository = LancamentoRepository()
@@ -55,24 +57,24 @@ struct ResumoAnualView: View {
                     Text("\(String(vm.anoSelecionado))")
                         .font(.subheadline)
                 }
-            }
+            }           
             ToolbarItem(placement: .topBarTrailing) {
-                if let url = exportURL {
-                    ShareLink(item: url) {
-                        Image(systemName: "square.and.arrow.up")
-                    }
-                } else {
-                    Button {
-                        if sub.isSubscribed {
-                            exportarCSV()
-                        } else {
-                            showingPaywall = true
+                Button {
+                    if sub.isSubscribed {
+                        Task {
+                            await exportarCSV()
                         }
-                        
-                    } label: {
+                    } else {
+                        showingPaywall = true
+                    }
+                } label: {
+                    if isExporting {
+                        ProgressView()
+                    } else {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }
+                .disabled(isExporting)
             }
         }
         .task {
@@ -91,14 +93,37 @@ struct ResumoAnualView: View {
                 PaywallView()
             }
         }
+        .sheet(item: $shareItem) { item in
+            ActivityView(activityItems: [item.url])
+        }
+        .overlay {
+            if isExporting {
+                ZStack {
+                    Color.black.opacity(0.15)
+                        .ignoresSafeArea()
+
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.2)
+                }
+            }
+        }
     }
     
-    private func exportarCSV() {
+    private func exportarCSV() async {
+        guard !isExporting else { return }
+
+        isExporting = true
+
+        defer { isExporting = false }
+
         do {
-            exportURL = try ExportarLancamentos.export(
+            let url = try await ExportarLancamentos.export(
                 lancamentos: vm.lancamentos,
                 fileName: "lancamentos_anuais.csv"
             )
+
+            shareItem = ShareItem(url: url)
         } catch {
             print("Erro ao exportar CSV:", error)
         }
@@ -109,11 +134,7 @@ struct ResumoAnualView: View {
         HStack(spacing: 12) {
             CardResumoView(titulo: "Receita", valor: resumo.receitaTotal, cor: .green)
             CardResumoView(titulo: "Despesa", valor: resumo.despesaTotal, cor: .red)
-            CardResumoView(
-                titulo: "Saldo",
-                valor: resumo.saldo,
-                cor: resumo.saldo >= 0 ? .green : .red
-            )
+            CardResumoView(titulo: "Saldo", valor: resumo.saldo, cor: resumo.saldo >= 0 ? .green : .red)
         }
     }
 
@@ -246,12 +267,13 @@ struct CardResumoView: View {
             Text(titulo)
                 .font(.caption)
                 .foregroundColor(.secondary)
-
+            
             Text(valor.abreviado())
                 .font(.headline)
                 .foregroundColor(cor)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
+            
         }
         .frame(maxWidth: .infinity)
         .padding()
@@ -297,4 +319,3 @@ struct ChartCard<Content: View>: View {
         )
     }
 }
-
