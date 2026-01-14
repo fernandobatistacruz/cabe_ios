@@ -110,7 +110,10 @@ struct EditarLancamentoView: View {
                             }
 
                             TextField("Valor", text: $vm.valorTexto)
-                                .keyboardType(.decimalPad)
+                            .keyboardType(.numberPad)
+                            .onChange(of: vm.valorTexto) { novoValor in
+                                vm.atualizarValor(novoValor)
+                            }
 
                             Toggle("Pago", isOn: $vm.pago)
 

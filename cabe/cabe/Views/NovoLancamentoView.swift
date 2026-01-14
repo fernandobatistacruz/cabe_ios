@@ -138,10 +138,13 @@ struct NovoLancamentoView: View {
                                 .pickerStyle(.menu)
                                 .tint(.secondary)
                             }
-                            
+                          
                             TextField("Valor", text: $vm.valorTexto)
-                                .keyboardType(.decimalPad)
-                            
+                            .keyboardType(.numberPad)
+                            .onChange(of: vm.valorTexto) { novoValor in
+                                vm.atualizarValor(novoValor)
+                            }
+                             
                             Toggle(isOn: $vm.pago) {Text("Pago")}
                             
                             Button {

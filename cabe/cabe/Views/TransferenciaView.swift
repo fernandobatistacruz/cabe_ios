@@ -53,9 +53,16 @@ struct TransferenciaView: View {
             }
 
             // 🔹 Valor
+            // 🔹 Valor
             Section("Valor") {
-                TextField("0,00", value: $vm.valor, format: .currency(code: Locale.current.currency?.identifier ?? "BRL"))
-                    .keyboardType(.decimalPad)
+                TextField(
+                    NSLocalizedString("transfer.value.placeholder", comment: "Valor da transferência"),
+                    text: $vm.valorTexto
+                )
+                .keyboardType(.numberPad)
+                .onChange(of: vm.valorTexto) { novoValor in
+                    vm.atualizarValor(novoValor)
+                }
             }
 
             // 🔹 Descrição

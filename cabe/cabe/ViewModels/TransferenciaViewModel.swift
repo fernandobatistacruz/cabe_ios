@@ -15,8 +15,19 @@ import Combine
 final class TransferenciaViewModel: ObservableObject {
 
     @Published var contas: [ContaModel] = []
+
+    /// Valor real (usado na regra de negócio / banco)
     @Published var valor: Decimal = 0
-    @Published var descricao: String = "Transferência"
+
+    /// Texto formatado para digitação (UI)
+    @Published var valorTexto: String = ""
+
+    /// ⚠️ Ideal que venha de Localizable.strings
+    @Published var descricao: String = NSLocalizedString(
+        "transfer.description",
+        comment: "Descrição padrão de transferência"
+    )
+
     @Published var contaOrigemUuid: String?
     @Published var contaDestinoUuid: String?
 
@@ -25,6 +36,7 @@ final class TransferenciaViewModel: ObservableObject {
     /// ✅ Dependência injetada (SEM default argument)
     init(useCase: TransferenciaUseCase) {
         self.useCase = useCase
+        configurarValorInicial()
         loadContas()
     }
 
@@ -55,6 +67,29 @@ final class TransferenciaViewModel: ObservableObject {
 
         loadContas()
     }
+
+    // MARK: - Currency Mask (Multi-idioma)
+
+    func atualizarValor(_ novoTexto: String) {
+        // remove tudo que não for número
+        let numeros = novoTexto.filter { $0.isNumber }
+
+        let centavos = Decimal(Int(numeros) ?? 0)
+        let valorDecimal = centavos / 100
+
+        valor = valorDecimal
+
+        valorTexto = CurrencyFormatter
+            .formatter(for: .current)
+            .string(from: valorDecimal as NSDecimalNumber) ?? ""
+    }
+
+    private func configurarValorInicial() {
+        valor = 0
+        valorTexto = CurrencyFormatter
+            .formatter(for: .current)
+            .string(from: 0) ?? ""
+    }
 }
 
 // MARK: - Errors
@@ -62,6 +97,8 @@ final class TransferenciaViewModel: ObservableObject {
 enum TransferenciaError: Error {
     case dadosInvalidos
 }
+
+// MARK: - UseCase
 
 final class TransferenciaUseCase {
 
@@ -101,7 +138,6 @@ final class TransferenciaUseCase {
 
         try db.dbQueue.write { db in
 
-            // 🔹 Buscar contas dentro da transação
             guard
                 var origem = try ContaModel
                     .filter(ContaModel.Columns.uuid == origemUuid)

@@ -12,3 +12,16 @@ extension NumberFormatter {
         return formatter
     }()
 }
+
+final class CurrencyFormatter {
+
+    static func formatter(for locale: Locale) -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
+        return formatter
+    }
+}
+

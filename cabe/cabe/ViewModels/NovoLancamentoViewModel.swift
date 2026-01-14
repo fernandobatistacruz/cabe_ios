@@ -17,6 +17,7 @@ final class NovoLancamentoViewModel: ObservableObject {
     @Published var categoria: CategoriaModel?
     @Published var tipo: Tipo = .despesa
     @Published var valorTexto: String = ""
+    @Published var valor: Decimal = 0
     @Published var dividida: Bool = false
     @Published var pago: Bool = false
     @Published var dataLancamento: Date = Date()
@@ -29,7 +30,9 @@ final class NovoLancamentoViewModel: ObservableObject {
     // MARK: - Init
 
     /// Cadastro
-    init() {}
+    init() {
+        configurarValorInicial(0)
+    }
 
     /// Edição
     init(lancamento: LancamentoModel) {
@@ -64,6 +67,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             .string(from: lancamento.valor as NSDecimalNumber) ?? ""
         
         carregarPagamento(from: lancamento)
+        configurarValorInicial(lancamento.valor)
     }
 
     // MARK: - Conversões
@@ -72,6 +76,28 @@ final class NovoLancamentoViewModel: ObservableObject {
         NumberFormatter.decimalInput
             .number(from: valorTexto)?
             .decimalValue
+    }
+    
+    func atualizarValor(_ novoTexto: String) {
+        // remove tudo que não for número
+        let numeros = novoTexto.filter { $0.isNumber }
+
+        let centavos = Decimal(Int(numeros) ?? 0)
+        let valorDecimal = centavos / 100
+
+        valor = valorDecimal
+
+        valorTexto = CurrencyFormatter
+            .formatter(for: .current)
+            .string(from: valorDecimal as NSDecimalNumber) ?? ""
+    }
+    
+    private func configurarValorInicial(_ valorInicial: Decimal = 0) {
+        valor = valorInicial
+
+        valorTexto = CurrencyFormatter
+            .formatter(for: .current)
+            .string(from: valorInicial as NSDecimalNumber) ?? ""
     }
     
     func carregarPagamento(from lancamento: LancamentoModel) {
