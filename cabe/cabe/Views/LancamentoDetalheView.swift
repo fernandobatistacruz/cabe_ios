@@ -152,11 +152,13 @@ struct LancamentoDetalheView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Image(systemName: "pencil")
-                    .onTapGesture {
-                        mostrarEdicao = true
-                    }
+            if !lancamento.transferencia {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Image(systemName: "pencil")
+                        .onTapGesture {
+                            mostrarEdicao = true
+                        }
+                }
             }
         }
         .sheet(isPresented: $mostrarEdicao) {
