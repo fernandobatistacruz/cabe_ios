@@ -18,6 +18,7 @@ struct LancamentoListView: View {
     @State private var exportURL: URL?
     @EnvironmentObject var sub: SubscriptionManager
     @State private var showingPaywall = false
+    @State private var mostrarTransferencia = false
     
     private var selectedDate: Date {
         Calendar.current.date(
@@ -193,7 +194,7 @@ struct LancamentoListView: View {
                     Divider()
                    
                     Button {
-                        print("Ação")
+                        mostrarTransferencia = true
                     } label: {
                         Label("Transferência entre contas", systemImage: "arrow.left.arrow.right")
                     }
@@ -248,6 +249,11 @@ struct LancamentoListView: View {
         .sheet(isPresented: $showingPaywall) {
             NavigationStack {
                 PaywallView()
+            }
+        }
+        .sheet(isPresented: $mostrarTransferencia) {
+            NavigationStack {
+                TransferenciaView()
             }
         }
     }
@@ -378,11 +384,22 @@ struct LancamentoRow: View {
                     .fill(lancamento.pago ? Color.clear : .accentColor)
                     .frame(width: 12, height: 12)
             }
-            Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-                .foregroundColor(lancamento.categoria?.getCor().cor)
+            if lancamento.transferencia {
+                Image(systemName: "arrow.left.arrow.right")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(
+                        lancamento.tipo == Tipo.despesa.rawValue ? .red : .green
+                    )
+            } else{
+                
+                Image(systemName: lancamento.categoria?.getIcone().systemName ?? "")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(lancamento.categoria?.getCor().cor)
+            }
             
             VStack(alignment: .leading) {
                 Text(lancamento.descricao)
