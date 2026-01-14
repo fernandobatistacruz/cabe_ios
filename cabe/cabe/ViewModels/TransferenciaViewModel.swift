@@ -5,14 +5,6 @@
 //  Created by Fernando Batista da Cruz on 14/01/26.
 //
 
-
-//
-//  TransferenciaViewModel.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 14/01/26.
-//
-
 import Foundation
 import GRDB
 import Combine
