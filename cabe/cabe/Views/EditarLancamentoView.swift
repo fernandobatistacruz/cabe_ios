@@ -226,7 +226,7 @@ struct EditarLancamentoView: View {
             var editado = lancamento
             editado.descricao = vm.descricao
             editado.anotacao = vm.anotacao
-            editado.valor = vm.valorDecimal ?? editado.valor
+            editado.valor = vm.valor
             editado.pago = vm.pago
             editado.dividido = vm.dividida
             editado.categoriaID = vm.categoria?.id ?? editado.categoriaID

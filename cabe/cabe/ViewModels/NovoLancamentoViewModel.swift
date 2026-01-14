@@ -69,14 +69,6 @@ final class NovoLancamentoViewModel: ObservableObject {
         carregarPagamento(from: lancamento)
         configurarValorInicial(lancamento.valor)
     }
-
-    // MARK: - Conversões
-
-    var valorDecimal: Decimal? {
-        NumberFormatter.decimalInput
-            .number(from: valorTexto)?
-            .decimalValue
-    }
     
     func atualizarValor(_ novoTexto: String) {
         // remove tudo que não for número
@@ -131,7 +123,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             return .descricaoVazio
         }
 
-        guard let valor = valorDecimal, valor > 0 else {
+        if valor == 0 {
             return .valorInvalido
         }
 
@@ -200,7 +192,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             recorrente: recorrente.rawValue,
             parcelas: parcelaInt,
             parcelaMes: parcelaMes,
-            valor: valorDecimal ?? 0,
+            valor: valor,
             pagoRaw: pago ? 1 : 0,
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
@@ -221,7 +213,7 @@ final class NovoLancamentoViewModel: ObservableObject {
 
         lancamento.descricao = descricao
         lancamento.anotacao = anotacao
-        lancamento.valor = valorDecimal ?? lancamento.valor
+        lancamento.valor = valor
         lancamento.divididoRaw = dividida ? 1 : 0
         lancamento.pagoRaw = pago ? 1 : 0
         lancamento.categoriaID = categoria?.id ?? lancamento.categoriaID

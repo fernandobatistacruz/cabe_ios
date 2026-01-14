@@ -14,6 +14,9 @@ struct CartaoFaturaView: View {
     let vencimento: Date
     
     @State private var searchText = ""
+    @State private var exportURL: URL?
+    @State private var isExporting = false
+    @State private var shareItem: ShareItem?
     
     var filtroLancamentos: [LancamentoModel] {
         searchText.isEmpty
@@ -105,10 +108,18 @@ struct CartaoFaturaView: View {
                         Label("Conferência de Fatura", systemImage: "doc.text.magnifyingglass")
                     }
                     Button {
-                        print("Ação")
+                        Task {
+                            await exportarCSV()
+                        }
+                       
                     } label: {
-                        Label("Exportar Fatura", systemImage: "square.and.arrow.up")
+                        if isExporting {
+                            ProgressView()
+                        } else {
+                            Label("Exportar Fatura", systemImage: "square.and.arrow.up")
+                        }
                     }
+                    .disabled(isExporting)                    
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -125,5 +136,39 @@ struct CartaoFaturaView: View {
                 }
             }
         )
+        .sheet(item: $shareItem) { item in
+            ActivityView(activityItems: [item.url])
+        }
+        .overlay {
+            if isExporting {
+                ZStack {
+                    Color.black.opacity(0.15)
+                        .ignoresSafeArea()
+
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.2)
+                }
+            }
+        }
+    }
+    
+    private func exportarCSV() async {
+        guard !isExporting else { return }
+
+        isExporting = true
+
+        defer { isExporting = false }
+
+        do {
+            let url = try await ExportarLancamentos.export(
+                lancamentos: lancamentos,
+                fileName: "lancamentos_fatura.csv"
+            )
+
+            shareItem = ShareItem(url: url)
+        } catch {
+            print("Erro ao exportar CSV:", error)
+        }
     }
 }
