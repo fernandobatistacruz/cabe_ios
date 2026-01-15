@@ -1,10 +1,3 @@
-//
-//  CartaoFaturaView.swift
-//  cabe
-//
-//  Created by Fernando Batista da Cruz on 03/01/26.
-//
-
 import SwiftUI
 
 struct CartaoFaturaView: View {
@@ -13,60 +6,123 @@ struct CartaoFaturaView: View {
     let lancamentos: [LancamentoModel]
     let total: Decimal
     let vencimento: Date
-    
+
     @State private var searchText = ""
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
     @State private var lancamentoParaExcluir: LancamentoModel?
     @State private var mostrarDialogExclusao = false
-    
+    @State private var ordemData: OrdemData = .decrescente
+    @State private var filtroSelecionado: FiltroLancamento = .todos
+
+    // 🔹 Estados da conferência
+    @State private var modoConferencia = false
+    @State private var lancamentosConferidos: Set<LancamentoModel.ID> = []
+
     var filtroLancamentos: [LancamentoModel] {
-        searchText.isEmpty
-        ? lancamentos
-        : lancamentos
-            .filter {
+        var resultado = searchText.isEmpty
+            ? lancamentos
+            : lancamentos.filter {
                 $0.descricao.localizedCaseInsensitiveContains(searchText)
             }
+
+        // 🔹 Filtro por tipo
+        switch filtroSelecionado {
+        case .todos:
+            break
+
+        case .recorrentes:
+            resultado = resultado.filter {
+                $0.tipoRecorrente != .nunca
+            }
+
+        case .parcelados:
+            resultado = resultado.filter {
+                $0.tipoRecorrente == .parcelado
+            }
+
+        case .divididos:
+            resultado = resultado.filter {
+                $0.dividido
+            }
+        }
+
+        // 🔹 Ordenação por data
+        resultado.sort(by: {
+            ordemData == .crescente
+            ? $0.dataCompraFormatada < $1.dataCompraFormatada
+            : $0.dataCompraFormatada > $1.dataCompraFormatada
+        })
+
+        return resultado
+    }
+    
+    private var filtroAtivo: Bool {
+        ordemData != .decrescente || filtroSelecionado != .todos
+    }
+    
+    // 🔹 Total dinâmico da conferência
+    var totalConferido: Decimal {
+        lancamentos
+            .filter { lancamentosConferidos.contains($0.id) }
+            .map(\.valor)
+            .reduce(0, +)
     }
 
     var body: some View {
         List {
+            // 🔹 Card do cartão
             HStack(spacing: 16) {
                 Image(cartao.operadoraEnum.imageName)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 45, height: 45)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(cartao.nome)
                         .font(.title3.bold())
+
                     Text(vencimento.formatted(date: .long, time: .omitted))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
+
                 Spacer()
+
                 Text(
-                    total,
-                    format:
-                        .currency(
-                            code: lancamentos.first?.currencyCode ?? "USD"
-                        )
+                    modoConferencia ? totalConferido : total,
+                    format: .currency(
+                        code: lancamentos.first?.currencyCode ?? "USD"
+                    )
                 )
                 .font(.title2.bold())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(
+                    modoConferencia ? Color.accentColor : .secondary
+                )
             }
-            if(!filtroLancamentos.isEmpty) {
+
+            if !filtroLancamentos.isEmpty {
                 Section("Entries") {
                     ForEach(filtroLancamentos) { lancamento in
-                        NavigationLink {
-                            LancamentoDetalheView(lancamento: lancamento)
-                        } label: {
-                            LancamentoRow(
+                        if modoConferencia {
+                            LancamentoConferenciaRow(
                                 lancamento: lancamento,
-                                mostrarPagamento: false,
-                                mostrarValores: true
+                                selecionado: lancamentosConferidos.contains(lancamento.id)
                             )
+                            .onTapGesture {
+                                toggleConferencia(lancamento)
+                            }
+                        } else {
+                            NavigationLink {
+                                LancamentoDetalheView(lancamento: lancamento)
+                            } label: {
+                                LancamentoRow(
+                                    lancamento: lancamento,
+                                    mostrarPagamento: false,
+                                    mostrarValores: true
+                                )
+                            }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
                                     lancamentoParaExcluir = lancamento
@@ -78,129 +134,179 @@ struct CartaoFaturaView: View {
                         }
                     }
                     .listRowInsets(
-                        EdgeInsets(
-                            top: 8,
-                            leading: 16,
-                            bottom: 8,
-                            trailing: 16
-                        )
+                        EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
                     )
                 }
             }
-            
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Fatura")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
+
+        // 🔹 Busca (mantida)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                HStack(spacing: 12) {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        
-                        TextField("Buscar", text: $searchText)
-                    }
-                    .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-                    .clipShape(Capsule())
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
+
+                    TextField("Buscar", text: $searchText)
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .clipShape(Capsule())
             }
         }
+
+        // 🔹 Toolbar superior
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button{
-                    print("Filtro")
-                    
+                Menu {
+                    Section("Ordem por data") {
+                        ForEach(OrdemData.allCases, id: \.self) { ordem in
+                            Button {
+                                ordemData = ordem
+                            } label: {
+                                HStack {
+                                    Text(ordem.titulo)
+
+                                    Spacer()
+
+                                    if ordemData == ordem {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Section("Filtrar por") {
+                        ForEach(FiltroLancamento.allCases) { filtro in
+                            Button {
+                                filtroSelecionado = filtro
+                            } label: {
+                                HStack {
+                                    Text(filtro.titulo)
+
+                                    Spacer()
+
+                                    if filtroSelecionado == filtro {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    }
                 } label: {
-                    Image(systemName: "line.3.horizontal.decrease")
+                    Image(systemName: filtroAtivo
+                          ? "line.3.horizontal.decrease.circle.fill"
+                          : "line.3.horizontal.decrease")
                 }
+                
                 Menu {
                     Button {
-                        print("Ação")
-                    } label: {
-                        Label("Conferência de Fatura", systemImage: "doc.text.magnifyingglass")
-                    }
-                    Button {
-                        Task {
-                            await exportarCSV()
+                        withAnimation {
+                            modoConferencia = true
+                            lancamentosConferidos.removeAll()
                         }
-                       
+                    } label: {
+                        Label("Conferência", systemImage: "doc.text.magnifyingglass")
+                    }
+
+                    Button {
+                        Task { await exportarCSV() }
                     } label: {
                         if isExporting {
                             ProgressView()
                         } else {
-                            Label("Exportar Fatura", systemImage: "square.and.arrow.up")
+                            Label("Exportar", systemImage: "square.and.arrow.up")
                         }
                     }
-                    .disabled(isExporting)                    
+                    .disabled(isExporting)
                 } label: {
                     Image(systemName: "ellipsis")
                 }
             }
-        }
-        .overlay(
-            Group {
-                if filtroLancamentos.isEmpty {
-                    Text("Nenhum lançamento encontrado")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding()
+
+            // 🔹 Botão OK no modo conferência
+            if modoConferencia {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("OK") {
+                        withAnimation {
+                            modoConferencia = false
+                            lancamentosConferidos.removeAll()
+                        }
+                    }
                 }
             }
-        )
+        }
+
+        // 🔹 Estado vazio
+        .overlay {
+            if filtroLancamentos.isEmpty {
+                Text("Nenhum lançamento")
+                    .font(.title2)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+        }
+
+        // 🔹 Share
         .sheet(item: $shareItem) { item in
             ActivityView(activityItems: [item.url])
         }
+
+        // 🔹 Overlay exportação
         .overlay {
             if isExporting {
                 ZStack {
-                    Color.black.opacity(0.15)
-                        .ignoresSafeArea()
-
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .scaleEffect(1.2)
+                    Color.black.opacity(0.15).ignoresSafeArea()
+                    ProgressView().scaleEffect(1.2)
                 }
             }
         }
+
+        // 🔹 Confirmação exclusão
         .confirmationDialog(
             "Excluir lançamento?",
-            isPresented: $mostrarDialogExclusao,
-            titleVisibility: .visible
+            isPresented: $mostrarDialogExclusao
         ) {
             if let lancamento = lancamentoParaExcluir {
-                
                 if lancamento.tipoRecorrente == .nunca {
                     Button("Confirmar exclusão", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 } else {
                     Button("Excluir somente este", role: .destructive) {
-                        Task { await viewModel.removerSomenteEste(lancamento)}
+                        Task { await viewModel.removerSomenteEste(lancamento) }
                     }
-                    
                     Button("Excluir este e os próximos", role: .destructive) {
                         Task { await viewModel.removerEsteEProximos(lancamento) }
                     }
-                    
                     Button("Excluir todos", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 }
             }
-        }
-        message: {
+        } message: {
             Text("Essa ação não poderá ser desfeita.")
         }
     }
-    
+
+    // 🔹 Toggle seleção
+    private func toggleConferencia(_ lancamento: LancamentoModel) {
+        if lancamentosConferidos.contains(lancamento.id) {
+            lancamentosConferidos.remove(lancamento.id)
+        } else {
+            lancamentosConferidos.insert(lancamento.id)
+        }
+    }
+
     private func exportarCSV() async {
         guard !isExporting else { return }
-
         isExporting = true
-
         defer { isExporting = false }
 
         do {
@@ -208,10 +314,72 @@ struct CartaoFaturaView: View {
                 lancamentos: lancamentos,
                 fileName: "lancamentos_fatura.csv"
             )
-
             shareItem = ShareItem(url: url)
         } catch {
             print("Erro ao exportar CSV:", error)
+        }
+    }
+}
+
+struct LancamentoConferenciaRow: View {
+    let lancamento: LancamentoModel
+    let selecionado: Bool
+
+    var body: some View {
+        HStack {
+            LancamentoRow(
+                lancamento: lancamento,
+                mostrarPagamento: false,
+                mostrarValores: true
+            )
+
+            Spacer()
+
+            Image(systemName: selecionado ? "checkmark.circle.fill" : "circle")
+                .font(.title3)
+                .foregroundStyle(selecionado ? Color.accentColor : .secondary)
+        }
+        .contentShape(Rectangle())
+        .animation(.easeInOut(duration: 0.15), value: selecionado)
+    }
+}
+
+enum OrdemData: CaseIterable {
+    case crescente
+    case decrescente
+
+    var titulo: String {
+        self == .crescente ? "Crescente" : "Decrescente"
+    }
+
+    var icon: String {
+        self == .crescente ? "arrow.up" : "arrow.down"
+    }
+}
+
+enum FiltroLancamento: String, CaseIterable, Identifiable {
+    case todos
+    case parcelados
+    case divididos
+    case recorrentes
+
+    var id: String { rawValue }
+
+    var titulo: String {
+        switch self {
+        case .todos: return "Todos"
+        case .parcelados: return "Parcelados"
+        case .divididos: return "Divididos"
+        case .recorrentes: return "Recorrentes"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .todos: return "tray.full"
+        case .parcelados: return "calendar"
+        case .divididos: return "person.2"
+        case .recorrentes: return "repeat"
         }
     }
 }
