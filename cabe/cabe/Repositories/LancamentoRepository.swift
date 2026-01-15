@@ -246,6 +246,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 contaUuid: row["conta_uuid"],
                 dataCriacao: row["dataCriacao"],
                 notificacaoLidaRaw: row["notificado"] as Int? ?? 0,
+                currencyCode: row["currency_code"],
                 categoria: categoria,
                 cartao: cartao,
                 conta: conta
@@ -263,7 +264,7 @@ protocol LancamentoRepositoryProtocol {
     func salvar(_ lancamento: LancamentoModel) async throws
     func editar(_ lancamento: LancamentoModel) async throws
     func remover(id: Int64, uuid: String) async throws
-    func removerRecorrentes(uuid: String) async throws 
+    func removerRecorrentes(uuid: String) async throws
 }
 
 

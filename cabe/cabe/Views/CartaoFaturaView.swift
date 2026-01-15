@@ -45,7 +45,10 @@ struct CartaoFaturaView: View {
                 Spacer()
                 Text(
                     total,
-                    format: .currency(code: cartao.conta?.currencyCode ?? "BRL")
+                    format:
+                        .currency(
+                            code: lancamentos.first?.currencyCode ?? "USD"
+                        )
                 )
                 .font(.title2.bold())
                 .foregroundStyle(.secondary)

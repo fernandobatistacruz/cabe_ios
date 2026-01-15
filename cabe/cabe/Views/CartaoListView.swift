@@ -212,7 +212,7 @@ struct CartaoDetalheView: View {
                 HStack {
                     Text("Limite")
                     Spacer()
-                    Text(cartao.limite, format: .currency(code: cartao.conta?.currencyCode ?? "BRL"))
+                    Text(cartao.limite, format: .currency(code: cartao.conta?.currencyCode ?? "USD"))
                         .foregroundColor(.secondary)
                 }
             }

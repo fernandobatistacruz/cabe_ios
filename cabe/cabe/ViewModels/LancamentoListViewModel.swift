@@ -361,7 +361,7 @@ struct CategoriaResumo: Identifiable {
 
     var valorFormatado: String {
         valor.formatted(
-            .currency(code: Locale.current.currency?.identifier ?? "BRL")
+            .currency(code: Locale.current.currency?.identifier ?? "USD")
         )
     }
 }

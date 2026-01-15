@@ -141,7 +141,7 @@ struct LancamentosPorCategoriaView: View {
                     Text(
                         lancamento.valor,
                         format: .currency(
-                            code: lancamento.conta?.currencyCode ?? Locale.current.currency?.identifier ?? "BRL"
+                            code: lancamento.conta?.currencyCode ?? Locale.current.currency?.identifier ?? "USD"
                         )
                     )
                     .foregroundStyle(.secondary)
@@ -188,7 +188,7 @@ struct DonutChartView: View {
             
             if detalhar && total > 0 {
                 VStack(spacing: -2) {
-                    Text(total, format: .currency(code: "BRL"))
+                    Text(total, format: .currency(code: "USD"))
                         .font(.headline)
                         .fontWeight(.bold)
                 }

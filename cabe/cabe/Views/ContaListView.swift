@@ -226,7 +226,7 @@ struct NovaContaView: View {
             uuid: UUID().uuidString,
             nome: nome,
             saldo: NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue,
-            currencyCode : Locale.current.currency?.identifier ?? "BRL"
+            currencyCode : Locale.current.currency?.identifier ?? "USD"
         )
         
         do {

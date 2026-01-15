@@ -57,7 +57,7 @@ struct ResumoAnualView: View {
                     Text("\(String(vm.anoSelecionado))")
                         .font(.subheadline)
                 }
-            }           
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     if sub.isSubscribed {
@@ -131,10 +131,27 @@ struct ResumoAnualView: View {
 
     // MARK: - Cards
     func cardsResumo(_ resumo: ResumoAnualModel) -> some View {
-        HStack(spacing: 12) {
-            CardResumoView(titulo: "Receita", valor: resumo.receitaTotal, cor: .green)
-            CardResumoView(titulo: "Despesa", valor: resumo.despesaTotal, cor: .red)
-            CardResumoView(titulo: "Saldo", valor: resumo.saldo, cor: resumo.saldo >= 0 ? .green : .red)
+        let currentCode = vm.lancamentos.first?.currencyCode ?? "USD"
+        
+        return HStack(spacing: 12) {
+            CardResumoView(
+                titulo: "Receita",
+                valor: resumo.receitaTotal,
+                cor: .green,
+                currencyCode: currentCode
+            )
+            CardResumoView(
+                titulo: "Despesa",
+                valor: resumo.despesaTotal,
+                cor: .red,
+                currencyCode: currentCode
+            )
+            CardResumoView(
+                titulo: "Saldo",
+                valor: resumo.saldo,
+                cor: resumo.saldo >= 0 ? .green : .red,
+                currencyCode: currentCode
+            )
         }
     }
 
@@ -172,7 +189,7 @@ struct ResumoAnualView: View {
         }
     }
     
-    func graficoCategoriasHorizontal(_ categorias: [DespesaPorCategoriaModel]) -> some View {
+    func graficoCategoriasHorizontal(_ categorias: [DespesaPorCategoriaModel],_ currencyCode: String) -> some View {
         Chart(categorias) { item in
             BarMark(
                 x: .value("Total", item.total.doubleValue),
@@ -180,7 +197,7 @@ struct ResumoAnualView: View {
             )
             .foregroundStyle(.blue)
             .annotation(position: .trailing) {
-                Text(item.total.abreviado())
+                Text(item.total.abreviado(currencyCode: currencyCode))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -215,7 +232,10 @@ struct ResumoAnualView: View {
                         Text("Despesas por Categoria")
                             .font(.headline)
 
-                        graficoCategoriasHorizontal(categoriasValidas)
+                        graficoCategoriasHorizontal(
+                            categoriasValidas,
+                            vm.lancamentos
+                                .first?.currencyCode ?? "USD")
                     }
                 }
             }
@@ -239,18 +259,47 @@ struct ResumoAnualView: View {
 private extension Decimal {
     var doubleValue: Double { NSDecimalNumber(decimal: self).doubleValue }
 }
-   
-extension Decimal {
-    func abreviado() -> String {
-        let value = NSDecimalNumber(decimal: self).doubleValue
 
-        switch abs(value) {
+extension Decimal {
+
+    func abreviado(
+        currencyCode: String,
+        locale: Locale = .current
+    ) -> String {
+
+        let value = NSDecimalNumber(decimal: self).doubleValue
+        let absValue = abs(value)
+
+        let formatter = NumberFormatter()
+        formatter.locale = locale
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currencyCode
+        formatter.maximumFractionDigits = absValue >= 1_000 ? 1 : 0
+
+        let thousandSuffix = String(
+            localized: "suffix_thousand",
+            bundle: .main
+        )
+
+        let millionSuffix = String(
+            localized: "suffix_million",
+            bundle: .main
+        )
+
+        switch absValue {
         case 1_000_000...:
-            return String(format: "R$ %.1f mi", value / 1_000_000)
+            let number = value / 1_000_000
+            let formatted = formatter.string(from: NSNumber(value: number)) ?? ""
+            return "\(formatted) \(millionSuffix)"
+
         case 1_000...:
-            return String(format: "R$ %.1f mil", value / 1_000)
+            let number = value / 1_000
+            let formatted = formatter.string(from: NSNumber(value: number)) ?? ""
+            return "\(formatted) \(thousandSuffix)"
+
         default:
-            return String(format: "R$ %.0f", value)
+            formatter.maximumFractionDigits = 0
+            return formatter.string(from: NSNumber(value: value)) ?? ""
         }
     }
 }
@@ -261,6 +310,7 @@ struct CardResumoView: View {
     let titulo: LocalizedStringKey
     let valor: Decimal
     let cor: Color
+    let currencyCode: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -268,7 +318,7 @@ struct CardResumoView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             
-            Text(valor.abreviado())
+            Text(valor.abreviado(currencyCode: currencyCode))
                 .font(.headline)
                 .foregroundColor(cor)
                 .lineLimit(1)

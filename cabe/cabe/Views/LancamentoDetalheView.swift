@@ -61,7 +61,7 @@ struct LancamentoDetalheView: View {
                     Text(
                         lancamento.valorComSinal,
                         format: .currency(
-                            code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+                            code: lancamento.cartao?.conta?.currencyCode ?? "USD"
                         )
                     )
                     .font(.title2.bold())
@@ -111,7 +111,7 @@ struct LancamentoDetalheView: View {
                     HStack (){
                         Text("Dividido")
                         Spacer()
-                        Text(lancamento.valorComSinal/2, format: .currency(code: lancamento.cartao?.conta?.currencyCode ?? "BRL"))
+                        Text(lancamento.valorComSinal/2, format: .currency(code: lancamento.cartao?.conta?.currencyCode ?? "USD"))
                             .foregroundColor(.secondary)
                     }
                 }

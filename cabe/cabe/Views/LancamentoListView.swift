@@ -391,7 +391,7 @@ struct LancamentoCartaoRow: View {
 
             Text(
                 total,
-                format: .currency(code: cartao.conta?.currencyCode ?? "BRL")
+                format: .currency(code: lancamentos.first?.currencyCode ?? "USD")
             )
             .foregroundColor(.secondary)
         }
@@ -456,11 +456,13 @@ struct LancamentoRow: View {
 
             Spacer()
             
+            
+            
             if(mostrarValores) {
                 Text(
                     lancamento.valorComSinal,
                     format: .currency(
-                        code: lancamento.cartao?.conta?.currencyCode ?? "BRL"
+                        code: lancamento.currencyCode
                     )
                 )
                 .foregroundColor(.secondary)

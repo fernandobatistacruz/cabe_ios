@@ -197,7 +197,8 @@ final class NovoLancamentoViewModel: ObservableObject {
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
             dataCriacao: Date().description,
-            notificacaoLidaRaw: 0
+            notificacaoLidaRaw: 0,
+            currencyCode: Locale.current.currency?.identifier ?? "USD"
         )
     }
 

@@ -79,6 +79,14 @@ extension AppDatabase {
                     .defaults(to: defaultCurrencyCode)
             }
         }
+        
+        migrator.registerMigration("addCurrencyCodeToLancamento") { db in
+            try db.alter(table: "lancamento") { t in
+                t.add(column: "currency_code", .text)
+                    .notNull()
+                    .defaults(to: defaultCurrencyCode)
+            }
+        }
          
         migrator.registerMigration("insertContaInicial") { db in
             let count = try Int.fetchOne(

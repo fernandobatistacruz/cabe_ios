@@ -53,7 +53,7 @@ struct InicioView: View {
                         constas: vmContas.saldoTotal,
                         despesas: vmLancamentos.totalDespesas,
                         mostrarValores: mostrarValores,
-                        moeda: vmContas.contas.first?.currencyCode ?? "BRL"
+                        moeda: vmContas.contas.first?.currencyCode ?? "USD"
                     )
                     
                     if !sub.isSubscribed {

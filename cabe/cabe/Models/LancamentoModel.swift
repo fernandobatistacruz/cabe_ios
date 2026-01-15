@@ -36,6 +36,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
     var contaUuid: String
     var dataCriacao: String
     var notificacaoLidaRaw: Int
+    var currencyCode: String
     
     var categoria: CategoriaModel?
     var cartao: CartaoModel?
@@ -66,6 +67,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         case cartaoUuid = "cartao_uuid"
         case dataCriacao
         case notificacaoLidaRaw = "notificado"
+        case currencyCode = "currency_code"
     }
     
     enum Columns {
@@ -92,6 +94,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         static let cartaoUuid = Column("cartao_uuid")
         static let dataCriacao = Column("dataCriacao")
         static let notificacaoLidaRaw = Column("notificado")
+        static let currencyCode = Column("currency_code")
     }
 }
 

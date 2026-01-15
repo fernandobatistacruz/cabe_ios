@@ -188,7 +188,8 @@ final class TransferenciaUseCase {
                 divididoRaw: 0,
                 contaUuid: origem.uuid,
                 dataCriacao: dataISO,
-                notificacaoLidaRaw: 1
+                notificacaoLidaRaw: 1,
+                currencyCode: Locale.current.currency?.identifier ?? "USD"
             )
 
             // 🔹 Lançamento entrada
@@ -215,7 +216,8 @@ final class TransferenciaUseCase {
                 divididoRaw: 0,
                 contaUuid: destino.uuid,
                 dataCriacao: dataISO,
-                notificacaoLidaRaw: 1
+                notificacaoLidaRaw: 1,
+                currencyCode: Locale.current.currency?.identifier ?? "USD"
             )
 
             try saida.insert(db)
