@@ -16,6 +16,7 @@ struct NovoLancamentoView: View {
     @State private var mostrarCalendario = false
     @State private var mostrarZoomCategoria = false
     @State private var showCalendar = false
+    @State private var isSaving = false
    
     var body: some View {
         NavigationStack{
@@ -229,17 +230,23 @@ struct NovoLancamentoView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task{
+                        Task {
+                            isSaving = true
                             await salvar()
+                            isSaving = false
                         }
                     } label: {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.white)
-                        
+                        if isSaving {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.white)
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    .disabled(!vm.formValido)
+                    .disabled(!vm.formValido || isSaving)
                 }
             }
             .alert(item: $erroValidacao) { erro in

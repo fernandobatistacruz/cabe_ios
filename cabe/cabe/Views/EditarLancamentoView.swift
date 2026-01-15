@@ -20,6 +20,7 @@ struct EditarLancamentoView: View {
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
+    @State private var isSaving = false
 
     // 🔹 Lançamento que será editado
     private let lancamento: LancamentoModel
@@ -200,11 +201,22 @@ struct EditarLancamentoView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task { await salvarEdicao() }
+                        Task {
+                            isSaving = true
+                            await salvarEdicao()
+                            isSaving = false
+                        }
                     } label: {
-                        Image(systemName: "checkmark")
+                        if isSaving {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.white)
+                        }
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
                     .disabled(!vm.formValido)
                 }
             }

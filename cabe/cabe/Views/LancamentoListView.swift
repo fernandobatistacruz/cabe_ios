@@ -94,6 +94,7 @@ struct LancamentoListView: View {
                             case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                 NavigationLink {
                                     CartaoFaturaView(
+                                        viewModel: viewModel,
                                         cartao: cartao,
                                         lancamentos: lancamentos,
                                         total: total,
@@ -153,7 +154,9 @@ struct LancamentoListView: View {
                             .frame(width: 48, height: 48)
                             .background(Color.accentColor)
                             .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
                     }
+                    .buttonStyle(FloatingButtonStyle())
                     .padding(.trailing, 20)
                     .padding(.bottom, 20)
                 }
@@ -216,19 +219,19 @@ struct LancamentoListView: View {
                 
                 if lancamento.tipoRecorrente == .nunca {
                     Button("Confirmar exclusão", role: .destructive) {
-                        Task { await excluirTodos(lancamento) }
+                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 } else {
                     Button("Excluir somente este", role: .destructive) {
-                        Task { await excluirSomenteEste(lancamento) }
+                        Task { await viewModel.removerSomenteEste(lancamento)}
                     }
                     
                     Button("Excluir este e os próximos", role: .destructive) {
-                        Task { await excluirEsteEProximos(lancamento) }
+                        Task { await viewModel.removerEsteEProximos(lancamento) }
                     }
                     
                     Button("Excluir todos", role: .destructive) {
-                        Task { await excluirTodos(lancamento) }
+                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 }
             }
@@ -236,7 +239,6 @@ struct LancamentoListView: View {
         message: {
             Text("Essa ação não poderá ser desfeita.")
         }
-        
         .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView()
         }
@@ -300,19 +302,6 @@ struct LancamentoListView: View {
             print("Erro ao exportar CSV:", error)
         }
     }
-    
-    private func excluirSomenteEste(_ lancamento: LancamentoModel) async {
-        await viewModel.removerSomenteEste(lancamento)
-    }
-
-    private func excluirEsteEProximos(_ lancamento: LancamentoModel) async {
-        await viewModel.removerEsteEProximos(lancamento)
-    }
-    
-    private func excluirTodos(_ lancamento: LancamentoModel) async {
-        await viewModel.removerTodosRecorrentes(lancamento)
-    }
-
     
     var lancamentosAgrupados: [(date: Date, items: [LancamentoItem])] {
         

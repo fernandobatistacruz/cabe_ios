@@ -17,7 +17,7 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             // Fundo
-            Color(.systemGroupedBackground)
+            Color(.secondarySystemBackground)
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
@@ -50,7 +50,7 @@ struct LoginView: View {
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
                         .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
+                        .background(Color(.systemBackground))
                         .cornerRadius(12)
                         .foregroundColor(.primary)
                         .onChange(of: auth.email) { _ in
@@ -61,7 +61,7 @@ struct LoginView: View {
                     SecureField("Senha", text: $auth.password)
                         .textContentType(.password)
                         .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
+                        .background(Color(.systemBackground))
                         .cornerRadius(12)
                         .foregroundColor(.primary)
                         .onChange(of: auth.password) {_ in
@@ -126,9 +126,9 @@ struct LoginView: View {
                         Text("Criar conta com e-mail")
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity, minHeight: 50)
-                    .background(.white)
+                    .background(.black)
                     .cornerRadius(22)
                     .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
                 }
@@ -143,7 +143,7 @@ struct LoginView: View {
                         }
                     }
                 )
-                .signInWithAppleButtonStyle(.white)
+                .signInWithAppleButtonStyle(.black)
                 .frame(height: 50)
                 .cornerRadius(22)
                               
@@ -160,9 +160,9 @@ struct LoginView: View {
                         Text("Continuar com o Google")
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity, minHeight: 50)
-                    .background(.white)
+                    .background(.black)
                     .cornerRadius(22)
                     .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
                 }

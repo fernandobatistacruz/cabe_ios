@@ -98,7 +98,9 @@ struct InicioView: View {
                             .frame(width: 48, height: 48)
                             .background(Color.accentColor)
                             .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
                     }
+                    .buttonStyle(FloatingButtonStyle())
                     .padding(.trailing, 20)
                     .padding(.bottom, 20)
                 }
@@ -163,6 +165,14 @@ struct InicioView: View {
     }
 }
 
+struct FloatingButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.92 : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.6),
+                       value: configuration.isPressed)
+    }
+}
 
 struct FavoritosView: View{
     let balanco: Decimal

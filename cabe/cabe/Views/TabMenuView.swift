@@ -30,7 +30,7 @@ struct TabMenuView: View {
                     }
             }
             .tabItem {
-                Label("Início", systemImage: "square.stack.fill")
+                Label("Início", systemImage: "house.fill")
             }
             .tag(Tab.inicio)
             

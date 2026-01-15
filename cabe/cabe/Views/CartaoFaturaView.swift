@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CartaoFaturaView: View {
+    let viewModel: LancamentoListViewModel
     let cartao: CartaoModel
     let lancamentos: [LancamentoModel]
     let total: Decimal
@@ -17,6 +18,8 @@ struct CartaoFaturaView: View {
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
+    @State private var lancamentoParaExcluir: LancamentoModel?
+    @State private var mostrarDialogExclusao = false
     
     var filtroLancamentos: [LancamentoModel] {
         searchText.isEmpty
@@ -64,6 +67,14 @@ struct CartaoFaturaView: View {
                                 mostrarPagamento: false,
                                 mostrarValores: true
                             )
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    lancamentoParaExcluir = lancamento
+                                    mostrarDialogExclusao = true
+                                } label: {
+                                    Label("Excluir", systemImage: "trash")
+                                }
+                            }
                         }
                     }
                     .listRowInsets(
@@ -153,6 +164,35 @@ struct CartaoFaturaView: View {
                         .scaleEffect(1.2)
                 }
             }
+        }
+        .confirmationDialog(
+            "Excluir lançamento?",
+            isPresented: $mostrarDialogExclusao,
+            titleVisibility: .visible
+        ) {
+            if let lancamento = lancamentoParaExcluir {
+                
+                if lancamento.tipoRecorrente == .nunca {
+                    Button("Confirmar exclusão", role: .destructive) {
+                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
+                    }
+                } else {
+                    Button("Excluir somente este", role: .destructive) {
+                        Task { await viewModel.removerSomenteEste(lancamento)}
+                    }
+                    
+                    Button("Excluir este e os próximos", role: .destructive) {
+                        Task { await viewModel.removerEsteEProximos(lancamento) }
+                    }
+                    
+                    Button("Excluir todos", role: .destructive) {
+                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
+                    }
+                }
+            }
+        }
+        message: {
+            Text("Essa ação não poderá ser desfeita.")
         }
     }
     
