@@ -33,6 +33,8 @@ struct cabeApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate
     
+    private let notificationService = NotificationService()
+    
     @Environment(\.scenePhase)
     private var scenePhase
 
@@ -56,10 +58,20 @@ struct cabeApp: App {
                 }
             }
             .onChange(of: scenePhase) { phase in
-                if phase == .background {
+                switch phase {
+                    
+                case .active:
+                    Task.detached(priority: .utility) {
+                        await notificationService.atualizarNotificacoes()
+                    }
+                    
+                case .background:
                     if BackupPolicy.deveFazerBackupAutomatico() {
                         backupVM.fazerBackupManual()
                     }
+                    
+                default:
+                    break
                 }
             }
             .environmentObject(subscriptionManager)
