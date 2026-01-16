@@ -54,7 +54,7 @@ struct PerfilUsuarioView: View {
             }
             .buttonStyle(.bordered)
             .padding()
-            .alert("Remover conta", isPresented: $showConfirmation) {
+            .alert("Remover Conta", isPresented: $showConfirmation) {
                 Button("Cancelar", role: .cancel) { }
                 Button("Confirmar", role: .destructive) {
                     Task {
@@ -73,7 +73,7 @@ struct PerfilUsuarioView: View {
             Button {
                 auth.signOut()
             } label: {
-                Text("Finalizar sessão")
+                Text("Finalizar Sessão")
                     .font(.headline)
                     .frame(maxWidth: .infinity, minHeight: 40)
             }

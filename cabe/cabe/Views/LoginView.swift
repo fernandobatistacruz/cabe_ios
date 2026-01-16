@@ -104,7 +104,7 @@ struct LoginView: View {
                     Button {
                         Task { await auth.signInWithEmail() }
                     } label: {
-                        Text("Iniciar sessão")
+                        Text("Iniciar Sessão")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -123,7 +123,7 @@ struct LoginView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "envelope.fill")
                             .font(.footnote)
-                        Text("Criar conta com e-mail")
+                        Text("Criar Conta com E-mail")
                             .font(.system(size: 17, weight: .semibold))
                     }
                     .foregroundColor(.white)

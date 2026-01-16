@@ -341,32 +341,6 @@ struct NotificacoesSettingsView: View {
     }
 }
 
-/*
-struct BackupSettingsView: View {
-
-    @State private var backupAtivo = false
-
-    var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    Toggle(isOn: $backupAtivo) {
-                        Text("Backup do iCloud")
-                    }
-                } footer: {
-                    Text("Quando ativado, seus dados serão salvos automaticamente no iCloud.")
-                }
-            }
-            .navigationTitle("Backup")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.hidden, for: .tabBar)
-            .listStyle(.insetGrouped)
-        }
-    }
-}
- */
-
-
 struct BackupView: View {
 
     @AppStorage(AppSettings.backupAtivo)
@@ -381,15 +355,15 @@ struct BackupView: View {
         Form {
 
             Section {
-                Toggle("Ativar backup automático", isOn: $backupAtivo)
+                Toggle("Backup Automático", isOn: $backupAtivo)
             }
             footer: {
-                Text("Quando ativado, seus dados serão salvos automaticamente no iCloud.")
+                Text("Quando ativado, seus dados serão salvos automaticamente no iCloud periódicamente.")
             }
 
             Section {
                 HStack {
-                    Text("Último backup")
+                    Text("Último Backup")
                     Spacer()
                     Text(ultimoBackupTexto)
                         .foregroundStyle(.secondary)
@@ -397,11 +371,11 @@ struct BackupView: View {
             }
 
             Section {
-                Button("Fazer backup agora") {
+                Button("Fazer Backup Agora") {
                     vm.fazerBackupManual()
                 }
 
-                Button("Apagar backup do iCloud", role: .destructive) {
+                Button("Apagar Backup do iCloud", role: .destructive) {
                     vm.apagarBackup()
                 }
             }

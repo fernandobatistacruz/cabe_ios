@@ -87,7 +87,7 @@ struct CategoriaFormView: View {
                                 }
                                 
                                 TextField(
-                                    categoriaPai == nil ? "Nome da categoria" : "Nome da subcategoria",
+                                    categoriaPai == nil ? "Nome da Categoria" : "Nome da Subcategoria",
                                     text: $nome
                                 )
                                 .padding()
@@ -152,7 +152,10 @@ struct CategoriaFormView: View {
                                             .frame(width: 32, height: 32)
                                             .overlay(
                                                 Circle()
-                                                    .stroke(.gray, lineWidth: cor.id == corSelecionada.id ? 3 : 0)
+                                                    .stroke(
+                                                        Color.accentColor,
+                                                        lineWidth: cor.id == corSelecionada.id ? 3 : 0
+                                                    )
                                             )
                                             .onTapGesture { corSelecionada = cor }
                                     }
@@ -177,7 +180,7 @@ struct CategoriaFormView: View {
                                             .padding(8)
                                             .background(
                                                 icone.id == iconeSelecionado.id
-                                                ? Color(.systemGray)
+                                                ? Color.accentColor
                                                 : Color.clear
                                             )
                                             .cornerRadius(8)
@@ -330,7 +333,7 @@ struct SubcategoriaSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Nome da subcategoria", text: $nome)
+                    TextField("Nome da Subcategoria", text: $nome)
                 }
             }
             .navigationTitle(subcategoria == nil ? "Nova Subcategoria" : "Editar Subcategoria")

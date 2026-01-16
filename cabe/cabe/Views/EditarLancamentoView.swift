@@ -165,7 +165,7 @@ struct EditarLancamentoView: View {
                     }
                 }
             }
-            .navigationTitle("Editar")
+            .navigationTitle("Editar Lançamento")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $sheetAtivo) { sheet in
                 NavigationStack {
