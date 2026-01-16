@@ -63,6 +63,12 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         )
     }
     
+    func listarLancamentosParaNotificacao() async throws -> [LancamentoModel] {
+        try await db.dbQueue.read { db in
+            try self.listarLancamentosParaNotificacao(db: db)
+        }
+    }
+    
     private nonisolated func listarLancamentosParaNotificacao(
         db: Database
     ) throws -> [LancamentoModel] {
@@ -82,7 +88,11 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
             WHERE
                 l.notificado = 0
-                AND l.pago = 0
+            AND l.pago = 0
+            AND
+                DATE(
+                    printf('%04d-%02d-%02d', l.ano, l.mes, l.dia)
+                ) <= DATE('now', 'localtime')
             ORDER BY
                 l.ano ASC,
                 l.mes ASC,
