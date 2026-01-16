@@ -12,7 +12,10 @@ struct LancamentoListView: View {
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
     @State private var lancamentoParaExcluir: LancamentoModel?
+    
+    //TODO: Já tem na InicioView, verifcar se pode usar ObservedObject
     @StateObject private var viewModel: LancamentoListViewModel
+    
     @State private var showCalendar = false
     @State private var mostrarDialogExclusao = false
     @EnvironmentObject var sub: SubscriptionManager

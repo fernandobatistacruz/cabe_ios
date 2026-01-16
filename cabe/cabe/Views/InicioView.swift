@@ -53,7 +53,8 @@ struct InicioView: View {
                         constas: vmContas.saldoTotal,
                         despesas: vmLancamentos.totalDespesas,
                         mostrarValores: mostrarValores,
-                        moeda: vmContas.contas.first?.currencyCode ?? "USD"
+                        moeda: vmContas.contas.first?.currencyCode ?? "USD",
+                        vmLancamentos: vmLancamentos
                     )
                     
                     if !sub.isSubscribed {
@@ -181,6 +182,7 @@ struct FavoritosView: View{
     let despesas: Decimal
     let mostrarValores: Bool
     let moeda: String
+    let vmLancamentos: LancamentoListViewModel
     
     var body: some View {
         VStack(alignment: .leading){
@@ -200,7 +202,7 @@ struct FavoritosView: View{
                     moeda: moeda
                 )
                 NavigationLink {
-                    FaturaListView()
+                    FaturaListView(viewModel: vmLancamentos)
                 } label: {
                     CardItem(
                         title: String(localized: "Cartões"),

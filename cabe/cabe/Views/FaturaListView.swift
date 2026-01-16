@@ -9,19 +9,11 @@ import SwiftUI
 
 struct FaturaListView: View {
     
-    @State private var searchText = ""
+    @ObservedObject var viewModel: LancamentoListViewModel
+   
     @State private var mostrarNovoLancamento = false
-    @State private var lancamentoParaExcluir: LancamentoModel?
-    @StateObject private var viewModel: LancamentoListViewModel
     @State private var showCalendar = false
-    @State private var mostrarDialogExclusao = false
-    @EnvironmentObject var sub: SubscriptionManager
-    @State private var showingPaywall = false
-    @State private var mostrarTransferencia = false
-    @State private var exportURL: URL?
-    @State private var isExporting = false
-    @State private var shareItem: ShareItem?
-    
+       
     private var selectedDate: Date {
         Calendar.current.date(
             from: DateComponents(
@@ -30,29 +22,6 @@ struct FaturaListView: View {
                 day: 1
             )
         ) ?? Date()
-    }
-    
-    init() {
-        let repository = LancamentoRepository()
-        let mesAtual = Calendar.current.component(.month, from: Date())
-        let anoAtual = Calendar.current.component(.year, from: Date())
-        
-        _viewModel = StateObject(
-            wrappedValue: LancamentoListViewModel(
-                repository: repository,
-                mes: mesAtual,
-                ano: anoAtual
-            )
-        )
-    }
-    
-    var lancamentosFiltrados: [LancamentoModel] {
-        let texto = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !texto.isEmpty else { return viewModel.lancamentos }
-        
-        return viewModel.lancamentos.filter {
-            $0.descricao.localizedCaseInsensitiveContains(texto)
-        }
     }
     
     var body: some View {
@@ -132,83 +101,29 @@ struct FaturaListView: View {
                 }
             }
         }
-        .navigationTitle(
-            Text(selectedDate, format: .dateTime.month(.wide))
-        )
+        .navigationTitle("Faturas")
         .navigationBarTitleDisplayMode(.large)
         .toolbar(.hidden, for: .tabBar)
-        .searchable(text: $searchText, prompt: "Buscar")
         .toolbar {
-            
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showCalendar = true
                 } label: {
-                    //Image(systemName: "chevron.left")
                     Text(selectedDate, format: .dateTime.year())
                 }
             }
-            
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button {
-                        if sub.isSubscribed {
-                            Task {
-                                await exportarCSV()
-                            }
-                        } else {
-                            showingPaywall = true
-                        }
+                    NavigationLink {
+                        CartaoListView()
                     } label: {
-                        if isExporting {
-                            ProgressView()
-                        } else {
-                            Label("Exportar", systemImage: "square.and.arrow.up")
-                        }
-                    }
-                    .disabled(isExporting)
-                   
-                    Divider()
-                   
-                    Button {
-                        mostrarTransferencia = true
-                    } label: {
-                        Label("Transferência entre Contas", systemImage: "arrow.left.arrow.right")
+                        Label("Gerenciar Cartões", systemImage: "creditcard")
                     }
                     
                 } label: {
                     Image(systemName: "ellipsis")
                 }
             }
-        }
-        .confirmationDialog(
-            "Excluir lançamento?",
-            isPresented: $mostrarDialogExclusao,
-            titleVisibility: .visible
-        ) {
-            if let lancamento = lancamentoParaExcluir {
-                
-                if lancamento.tipoRecorrente == .nunca {
-                    Button("Confirmar exclusão", role: .destructive) {
-                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
-                    }
-                } else {
-                    Button("Excluir somente este", role: .destructive) {
-                        Task { await viewModel.removerSomenteEste(lancamento)}
-                    }
-                    
-                    Button("Excluir este e os próximos", role: .destructive) {
-                        Task { await viewModel.removerEsteEProximos(lancamento) }
-                    }
-                    
-                    Button("Excluir todos", role: .destructive) {
-                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
-                    }
-                }
-            }
-        }
-        message: {
-            Text("Essa ação não poderá ser desfeita.")
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView()
@@ -222,61 +137,11 @@ struct FaturaListView: View {
             )
             .presentationDetents([.medium, .large])
         }
-        .sheet(isPresented: $showingPaywall) {
-            NavigationStack {
-                PaywallView()
-            }
-        }
-        .sheet(isPresented: $mostrarTransferencia) {
-            NavigationStack {
-                TransferenciaView()
-            }
-        }
-        .sheet(item: $shareItem) { item in
-            ActivityView(activityItems: [item.url])
-        }
-        .overlay {
-            if isExporting {
-                ZStack {
-                    Color.black.opacity(0.15)
-                        .ignoresSafeArea()
-
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .scaleEffect(1.2)
-                }
-            }
-        }
-    }
-        
-    private func exportarCSV() async {
-        guard !isExporting else { return }
-
-        isExporting = true
-
-        defer { isExporting = false }
-
-        do {
-            let mesPorExtenso = selectedDate.formatted(
-                .dateTime
-                    .month(.wide)
-                    .locale(Locale(identifier: "pt_BR"))
-            )
-            
-            let url = try await ExportarLancamentos.export(
-                lancamentos: viewModel.lancamentos,
-                fileName: "lancamentos_\(mesPorExtenso).csv"
-            )
-
-            shareItem = ShareItem(url: url)
-        } catch {
-            print("Erro ao exportar CSV:", error)
-        }
     }
     
     var lancamentosAgrupados: [(date: Date, items: [LancamentoItem])] {
 
-        let porData = Dictionary(grouping: lancamentosFiltrados) {
+        let porData = Dictionary(grouping: viewModel.lancamentos) {
             Calendar.current.startOfDay(for: $0.dataAgrupamento)
         }
 
@@ -305,10 +170,5 @@ struct FaturaListView: View {
         }
 
         return resultado.sorted { $0.0 > $1.0 }
-    }
-    
-    
-    private func excluir(_ lancamento: LancamentoModel) async {
-        await viewModel.remover(id: lancamento.id ?? 0, uuid: lancamento.uuid)
     }
 }

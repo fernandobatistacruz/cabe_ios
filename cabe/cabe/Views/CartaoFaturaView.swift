@@ -163,7 +163,7 @@ struct CartaoFaturaView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                    Section("Ordem por Data") {
+                    Section {
                         ForEach(OrdemData.allCases, id: \.self) { ordem in
                             Button {
                                 ordemData = ordem
@@ -181,7 +181,7 @@ struct CartaoFaturaView: View {
                         }
                     }
 
-                    Section("Filtrar por") {
+                    Section {
                         ForEach(FiltroLancamento.allCases) { filtro in
                             Button {
                                 filtroSelecionado = filtro
