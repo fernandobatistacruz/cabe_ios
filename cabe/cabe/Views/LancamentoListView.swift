@@ -9,13 +9,11 @@ import SwiftUI
 
 struct LancamentoListView: View {
     
+    @ObservedObject var viewModel: LancamentoListViewModel
+    
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
     @State private var lancamentoParaExcluir: LancamentoModel?
-    
-    //TODO: Já tem na InicioView, verifcar se pode usar ObservedObject
-    @StateObject private var viewModel: LancamentoListViewModel
-    
     @State private var showCalendar = false
     @State private var mostrarDialogExclusao = false
     @EnvironmentObject var sub: SubscriptionManager
@@ -33,20 +31,6 @@ struct LancamentoListView: View {
                 day: 1
             )
         ) ?? Date()
-    }
-    
-    init() {
-        let repository = LancamentoRepository()
-        let mesAtual = Calendar.current.component(.month, from: Date())
-        let anoAtual = Calendar.current.component(.year, from: Date())
-        
-        _viewModel = StateObject(
-            wrappedValue: LancamentoListViewModel(
-                repository: repository,
-                mes: mesAtual,
-                ano: anoAtual
-            )
-        )
     }
     
     var lancamentosFiltrados: [LancamentoModel] {

@@ -32,6 +32,7 @@ final class NovoLancamentoViewModel: ObservableObject {
     /// Cadastro
     init() {
         configurarValorInicial(0)
+        sugerirDataFaturaSeNecessario()
     }
 
     /// Edição
@@ -220,6 +221,28 @@ final class NovoLancamentoViewModel: ObservableObject {
         lancamento.categoriaID = categoria?.id ?? lancamento.categoriaID
         lancamento.cartaoUuid = pagamentoSelecionado?.cartaoModel?.uuid ?? ""
         lancamento.contaUuid = pagamentoSelecionado?.contaModel?.uuid ?? ""
+    }
+    
+    func sugerirDataFaturaSeNecessario() {
+        guard case let .cartao(cartao) = pagamentoSelecionado else { return }
+
+        let calendar = Calendar.current
+        let hoje = Date()
+
+        let diaHoje = calendar.component(.day, from: hoje)
+
+        var componentes = calendar.dateComponents([.year, .month], from: hoje)
+
+        if diaHoje > cartao.fechamento {
+            // Fatura já fechou → próximo mês
+            componentes.month = (componentes.month ?? 1) + 1
+        }
+
+        componentes.day = cartao.vencimento
+
+        if let dataSugerida = calendar.date(from: componentes) {
+            self.dataFatura = dataSugerida
+        }
     }
 }
 

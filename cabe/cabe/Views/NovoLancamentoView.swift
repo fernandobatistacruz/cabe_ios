@@ -257,6 +257,9 @@ struct NovoLancamentoView: View {
                 )
             }
         }
+        .onChange(of: vm.pagamentoSelecionado) { _ in
+            vm.sugerirDataFaturaSeNecessario()
+        }
     }
 
     private func salvar() async {

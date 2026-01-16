@@ -35,7 +35,7 @@ struct TabMenuView: View {
             .tag(Tab.inicio)
             
             NavigationStack {
-                LancamentoListView()
+                LancamentoListView(viewModel: vmLancamentos)
             }
             .tabItem {
                 Label("Lançamentos", systemImage: "square.stack.fill")

@@ -228,6 +228,9 @@ struct EditarLancamentoView: View {
                 )
             }
         }
+        .onChange(of: vm.pagamentoSelecionado) { _ in
+            vm.sugerirDataFaturaSeNecessario()
+        }
     }
 
     // MARK: - Salvar edição

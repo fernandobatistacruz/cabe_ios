@@ -133,7 +133,7 @@ struct AjustesView: View {
                     } label: {
                         HStack {
                             Image(systemName: "wallet.bifold.fill")
-                                .foregroundStyle(.indigo)
+                                .foregroundStyle(.green)
                             Text("Pagamento Padrão")
                             Spacer()
                             if let pagamento = pagamentoPadrao {
