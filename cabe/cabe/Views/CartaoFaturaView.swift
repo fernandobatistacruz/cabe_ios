@@ -163,7 +163,7 @@ struct CartaoFaturaView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                    Section("Ordem por data") {
+                    Section("Ordem por Data") {
                         ForEach(OrdemData.allCases, id: \.self) { ordem in
                             Button {
                                 ordemData = ordem

@@ -17,24 +17,28 @@ struct NotificacoesView: View {
             if !vm.vencemHoje.isEmpty || !vm.cartoesVenceHoje.isEmpty {
                 Section("Vence Hoje") {
                     ForEach(vm.vencemHoje) { lancamento in
-                        LancamentoRow(
-                            lancamento: lancamento,
-                            mostrarPagamento: false,
-                            mostrarValores: true
-                        )
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
-                            Button() {
-                                Task {
-                                    await vm.marcarLancamentosComoLidos([lancamento])
+                        NavigationLink {
+                            LancamentoDetalheView(lancamento: lancamento)
+                        } label: {
+                            LancamentoRow(
+                                lancamento: lancamento,
+                                mostrarPagamento: false,
+                                mostrarValores: true
+                            )
+                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                Button() {
+                                    Task {
+                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                    }
+                                } label: {
+                                    Label ("Lido", systemImage: "checklist")
                                 }
-                            } label: {
-                                Label ("Lido", systemImage: "checklist")
+                                .tint(.accentColor)
                             }
-                            .tint(.accentColor)
                         }
                     }
                     ForEach(vm.cartoesVenceHoje) { cartao in
+                        //TODO: Mostrar detalhada para cartão
                         CartaoRowNotification(cartaoNotificacao: cartao)
                             .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                             .swipeActions(edge: .trailing,allowsFullSwipe: false) {
@@ -50,30 +54,42 @@ struct NotificacoesView: View {
                             }
                     }
                 }
+                .listRowInsets(
+                    EdgeInsets(
+                        top: 8,
+                        leading: 16,
+                        bottom: 8,
+                        trailing: 16
+                    )
+                )
             }
             
             if !vm.vencidos.isEmpty || !vm.cartoesVencidos.isEmpty {
                 Section("Vencidos") {
                     ForEach(vm.vencidos) { lancamento in
-                        LancamentoRow(
-                            lancamento: lancamento,
-                            mostrarPagamento: false,
-                            mostrarValores: true
-                        )
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                        .swipeActions(edge: .trailing,allowsFullSwipe: false) {
-                            Button() {
-                                Task {
-                                    await vm.marcarLancamentosComoLidos([lancamento])
+                        NavigationLink {
+                            LancamentoDetalheView(lancamento: lancamento)
+                        } label: {
+                            LancamentoRow(
+                                lancamento: lancamento,
+                                mostrarPagamento: false,
+                                mostrarValores: true
+                            )
+                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                Button() {
+                                    Task {
+                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                    }
+                                } label: {
+                                    Label ("Lido", systemImage: "checklist")
+                                    
                                 }
-                            } label: {
-                                Label ("Lido", systemImage: "checklist")
-                                
+                                .tint(.accentColor)
                             }
-                            .tint(.accentColor)
                         }
                     }
                     ForEach(vm.cartoesVencidos) { cartao in
+                        //TODO: Mostrar detalhada para cartão
                         CartaoRowNotification(cartaoNotificacao: cartao)
                             .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                             .swipeActions(edge: .trailing,allowsFullSwipe: false) {
@@ -88,7 +104,16 @@ struct NotificacoesView: View {
                                 .tint(.accentColor)
                             }
                     }
+                    
                 }
+                .listRowInsets(
+                    EdgeInsets(
+                        top: 8,
+                        leading: 16,
+                        bottom: 8,
+                        trailing: 16
+                    )
+                )
             }
         }
         .navigationTitle("Notificações")

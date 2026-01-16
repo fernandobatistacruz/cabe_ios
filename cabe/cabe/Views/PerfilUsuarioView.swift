@@ -47,14 +47,14 @@ struct PerfilUsuarioView: View {
             Button {
                 showConfirmation = true
             } label: {
-                Text("Remover conta")
+                Text("Remover Conta")
                     .font(.headline)
                     .foregroundColor(.red)
                     .frame(maxWidth: .infinity, minHeight: 40)
             }
             .buttonStyle(.bordered)
             .padding()
-            .alert("Remover Conta", isPresented: $showConfirmation) {
+            .alert("Remover conta", isPresented: $showConfirmation) {
                 Button("Cancelar", role: .cancel) { }
                 Button("Confirmar", role: .destructive) {
                     Task {
