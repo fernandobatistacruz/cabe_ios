@@ -133,7 +133,7 @@ struct AjustesView: View {
                     } label: {
                         HStack {
                             Image(systemName: "wallet.bifold.fill")
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(.indigo)
                             Text("Pagamento Padrão")
                             Spacer()
                             if let pagamento = pagamentoPadrao {
@@ -153,6 +153,16 @@ struct AjustesView: View {
                             Image(systemName: "square.split.2x2.fill")
                                 .foregroundStyle(.purple)
                             Text("Categorias")
+                        }
+                    }
+                    
+                    NavigationLink {
+                        CartaoListView()
+                    } label: {
+                        HStack (){
+                            Image(systemName: "creditcard.fill")
+                                .foregroundStyle(.orange)
+                            Text("Cartão de Crédito")
                         }
                     }
                 }

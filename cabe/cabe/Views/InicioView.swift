@@ -200,7 +200,7 @@ struct FavoritosView: View{
                     moeda: moeda
                 )
                 NavigationLink {
-                    CartaoListView()
+                    FaturaListView()
                 } label: {
                     CardItem(
                         title: String(localized: "Cartões"),
