@@ -43,17 +43,16 @@ struct PerfilUsuarioView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-
-            Spacer()
-            
-            Button(role: .destructive) {
+                       
+            Button {
                 showConfirmation = true
             } label: {
                 Text("Remover conta")
                     .font(.headline)
+                    .foregroundColor(.red)
                     .frame(maxWidth: .infinity, minHeight: 40)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.bordered)
             .padding()
             .alert("Remover conta", isPresented: $showConfirmation) {
                 Button("Cancelar", role: .cancel) { }
@@ -68,6 +67,8 @@ struct PerfilUsuarioView: View {
             } message: {
                 Text("Tem certeza que deseja remover sua conta? Essa ação não pode ser desfeita.")
             }
+            
+            Spacer()
            
             Button {
                 auth.signOut()

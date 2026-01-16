@@ -6,6 +6,7 @@
 //
 
 import GRDB
+import Foundation
 
 final class LancamentoRepository : LancamentoRepositoryProtocol{
         
@@ -45,6 +46,51 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             onError: { print("Erro DB:", $0) },
             onChange: onChange
         )
+    }
+    
+    func observeLancamentosParaNotificacao(
+        onChange: @escaping ([LancamentoModel]) -> Void
+    ) -> AnyDatabaseCancellable {
+
+        let observation = ValueObservation.tracking { db in
+            try self.listarLancamentosParaNotificacao(db: db)
+        }
+
+        return observation.start(
+            in: db.dbQueue,
+            onError: { print("Erro DB (notificação):", $0) },
+            onChange: onChange
+        )
+    }
+    
+    private nonisolated func listarLancamentosParaNotificacao(
+        db: Database
+    ) throws -> [LancamentoModel] {
+
+        let sql = """
+            SELECT
+                l.*,
+                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
+                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
+                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
+                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
+                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+            FROM lancamento l
+            LEFT JOIN conta c ON l.conta_uuid = c.uuid
+            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
+            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+            WHERE
+                l.notificado = 0
+                AND l.pago = 0
+            ORDER BY
+                l.ano ASC,
+                l.mes ASC,
+                l.dia ASC
+        """
+
+        let rows = try Row.fetchAll(db, sql: sql)
+        return mapRows(rows)
     }
     
     private func listarLancamentosRecentes(db: Database) throws -> [LancamentoModel] {
@@ -259,6 +305,9 @@ protocol LancamentoRepositoryProtocol {
     func observeLancamentos(
         mes: Int?,
         ano: Int?,
+        onChange: @escaping ([LancamentoModel]) -> Void
+    ) -> AnyDatabaseCancellable
+    func observeLancamentosParaNotificacao(
         onChange: @escaping ([LancamentoModel]) -> Void
     ) -> AnyDatabaseCancellable
     func salvar(_ lancamento: LancamentoModel) async throws

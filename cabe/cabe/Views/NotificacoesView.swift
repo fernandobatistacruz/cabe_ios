@@ -10,6 +10,7 @@ import Combine
 struct NotificacoesView: View {
 
     @ObservedObject var vm: NotificacaoViewModel
+    @State private var showConfirmMarcarLidos = false
 
     var body: some View {
         List {
@@ -97,18 +98,33 @@ struct NotificacoesView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    Task {
-                        await vm.marcarLancamentosComoLidos(
-                            vm.vencidos +
-                            vm.vencemHoje +
-                            vm.cartoesVencidos.flatMap(\.lancamentos) +
-                            vm.cartoesVenceHoje.flatMap( \.lancamentos)
-                        )
-                    }
+                    showConfirmMarcarLidos = true
                 } label: {
                     Image(systemName: "checklist")
                 }
             }
+        }
+        .confirmationDialog(
+            "Marcar tudo como lido?",
+            isPresented: $showConfirmMarcarLidos,
+            titleVisibility: .visible
+        ) {
+
+            Button("Marcar todos como lidos", role: .destructive) {
+                Task {
+                    await vm.marcarLancamentosComoLidos(
+                        vm.vencidos +
+                        vm.vencemHoje +
+                        vm.cartoesVencidos.flatMap(\.lancamentos) +
+                        vm.cartoesVenceHoje.flatMap(\.lancamentos)
+                    )
+                }
+            }
+
+            Button("Cancelar", role: .cancel) { }
+
+        } message: {
+            Text("Essa ação não pode ser desfeita.")
         }
 
     }

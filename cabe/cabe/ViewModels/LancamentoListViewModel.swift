@@ -22,6 +22,9 @@ final class LancamentoListViewModel: ObservableObject {
     
     var notificacoesAtivas: Bool = UserDefaults.standard.bool(forKey: AppSettings.notificacoesAtivas)
     
+    @Published private(set) var lancamentosNotificacao: [LancamentoModel] = []
+    private var dbCancellableNotificacao: AnyDatabaseCancellable?
+    
     @Published private(set) var mesAtual: Int
     @Published private(set) var anoAtual: Int
     
@@ -40,11 +43,20 @@ final class LancamentoListViewModel: ObservableObject {
 
         observarLancamentos()
         observarLancamentosRecentes()
+        observarLancamentosNotificacao()
     }
     
     deinit {
         dbCancellableLancamentos?.cancel()
         dbCancellableLancamentos?.cancel()
+        dbCancellableNotificacao?.cancel()
+    }
+    
+    var totalNotificacoes: Int {
+        notificacaoVM.vencidos.count +
+        notificacaoVM.vencemHoje.count +
+        notificacaoVM.cartoesVencidos.count +
+        notificacaoVM.cartoesVenceHoje.count
     }
     
     private func observarLancamentos() {
@@ -57,11 +69,6 @@ final class LancamentoListViewModel: ObservableObject {
             guard let self = self else { return }
 
             self.lancamentos = lancamentos
-            self.notificacaoVM.atualizar(lancamentos: lancamentos)
-            
-            if self.notificacoesAtivas {
-                self.agendarNotificacaoSeNecessario()
-            }
         }
     }
 
@@ -74,10 +81,28 @@ final class LancamentoListViewModel: ObservableObject {
         }
     }
     
+    private func observarLancamentosNotificacao() {
+        dbCancellableNotificacao?.cancel()
+
+        dbCancellableNotificacao = repository.observeLancamentosParaNotificacao {
+            [weak self] lancamentos in
+            guard let self else { return }
+
+            self.lancamentosNotificacao = lancamentos
+            self.notificacaoVM.atualizar(lancamentos: lancamentos)
+
+            if self.notificacoesAtivas {
+                self.agendarNotificacaoSeNecessario()
+            }
+        }
+    }
+    
     func agendarNotificacaoSeNecessario() {
         guard notificacoesAtivas else { return }
         
-        let cartoesNotificacao = gerarNotificacoesPorCartao(lancamentos: lancamentos)
+        let cartoesNotificacao = gerarNotificacoesPorCartao(
+            lancamentos: lancamentosNotificacao
+        )
 
         // 1️⃣ Cria lista de identificadores a remover
         var idsParaRemover: [String] = ["lancamentos-dia"]

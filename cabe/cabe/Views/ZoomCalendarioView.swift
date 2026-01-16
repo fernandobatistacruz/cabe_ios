@@ -96,8 +96,7 @@ private extension ZoomCalendarioView {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Hoje") {
                 selectToday()
-            }
-            .fontWeight(.semibold)
+            }          
         }
     }
 }

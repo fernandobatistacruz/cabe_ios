@@ -131,8 +131,8 @@ struct InicioView: View {
                     ZStack(alignment: .topTrailing) {
                         Image(systemName: "bell")
                         
-                        if vmLancamentos.notificacaoVM.total > 0 {
-                            Text("\(vmLancamentos.notificacaoVM.total)")
+                        if vmLancamentos.totalNotificacoes > 0 {
+                            Text("\(vmLancamentos.totalNotificacoes)")
                                 .font(.caption2)
                                 .foregroundColor(.white)
                                 .padding(5)
