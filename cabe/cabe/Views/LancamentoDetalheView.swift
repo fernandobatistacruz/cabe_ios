@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct LancamentoDetalheView: View {
 
@@ -82,6 +83,14 @@ struct LancamentoDetalheView: View {
                     Spacer()
                     Text(lancamento.tipoRecorrente.titulo)
                         .foregroundColor(.secondary)
+                }
+                if lancamento.recorrente == TipoRecorrente.parcelado.rawValue {
+                    HStack {
+                        Text("Parcela")
+                        Spacer()
+                        Text(lancamento.parcelaMes)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 if(lancamento.cartao != nil) {
@@ -165,4 +174,9 @@ struct LancamentoDetalheView: View {
             EditarLancamentoView(lancamento: lancamento)
         }
     }
+}
+
+final class LancamentoObservable: ObservableObject, Identifiable {
+    @Published var lancamento: LancamentoModel
+    init(_ lancamento: LancamentoModel) { self.lancamento = lancamento }
 }

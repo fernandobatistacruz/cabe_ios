@@ -183,6 +183,10 @@ final class NovoLancamentoViewModel: ObservableObject {
             return .recorrenciaInvalida
         }
         
+        if recorrente == .parcelado && parcelaTexto.isEmpty {
+            return .parcelaVazia
+        }
+        
         return nil
     }
     
@@ -264,7 +268,8 @@ final class NovoLancamentoViewModel: ObservableObject {
         lancamento.anotacao = anotacao
         lancamento.valor = valor
         lancamento.divididoRaw = dividida ? 1 : 0
-        lancamento.pagoRaw = pago ? 1 : 0        
+        lancamento.pagoRaw = pago ? 1 : 0
+        lancamento.recorrente = recorrente.rawValue
         lancamento.categoriaID = categoria?.id ?? lancamento.categoriaID
         lancamento.cartaoUuid = pagamentoSelecionado?.cartaoModel?.uuid ?? ""
         lancamento.contaUuid = pagamentoSelecionado?.contaModel?.uuid ?? ""

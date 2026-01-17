@@ -125,6 +125,10 @@ struct EditarLancamentoView: View {
                                 }
                             }
                             
+                            if vm.recorrente == .parcelado {
+                                TextField("Número de parcelas", text: $vm.parcelaTexto)
+                                    .keyboardType(.numberPad)
+                            }
 
                             TextField("Valor", text: $vm.valorTexto)
                             .keyboardType(.numberPad)
@@ -290,7 +294,6 @@ struct EditarLancamentoView: View {
             if lancamento.tipoRecorrente == .nunca && vm.recorrente != .nunca {
                 try await repository
                     .remover(id: lancamento.id ?? 0, uuid: lancamento.uuid)
-                
                 await vm.salvar()
             } else {
                 var editado = lancamento

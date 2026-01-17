@@ -128,6 +128,11 @@ struct NovoLancamentoView: View {
                                     }
                                 }
                             }
+                            
+                            if vm.recorrente == .parcelado {
+                                TextField("Número de parcelas", text: $vm.parcelaTexto)
+                                    .keyboardType(.numberPad)
+                            }
                           
                             TextField("Valor", text: $vm.valorTexto)
                             .keyboardType(.numberPad)

@@ -16,6 +16,7 @@ enum LancamentoValidacaoErro: LocalizedError, Identifiable {
     case pagamentoVazio
     case categoriaVazio
     case recorrenciaInvalida
+    case parcelaVazia
 
     var id: String { localizedDescription }
 
@@ -42,6 +43,9 @@ enum LancamentoValidacaoErro: LocalizedError, Identifiable {
             
         case .recorrenciaInvalida:
             return NSLocalizedString("Selecione uma recorrencia válida.", comment: "")
+            
+        case .parcelaVazia:
+            return NSLocalizedString("Informe o número de parcelas.", comment: "")
         }
     }
 }

@@ -19,7 +19,7 @@ final class NovoCartaoViewModel: ObservableObject {
     
     @Published var vencimentoTexto: String = ""
     @Published var fechamentoTexto: String = ""
-    @Published var limiteTexto: String = ""
+    @Published var limiteTexto: String = ""   
 
     // MARK: - Conversões (usando seu utils)
     

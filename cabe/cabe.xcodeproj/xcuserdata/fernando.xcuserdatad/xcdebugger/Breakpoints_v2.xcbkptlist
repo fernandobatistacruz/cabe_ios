@@ -14,8 +14,8 @@
             filePath = "cabe/ViewModels/NovoLancamentoViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "193"
-            endingLineNumber = "193"
+            startingLineNumber = "197"
+            endingLineNumber = "197"
             landmarkName = "NovoLancamentoViewModel"
             landmarkType = "3">
          </BreakpointContent>
@@ -167,82 +167,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1136CF90-A37D-4630-8C2F-54568B612FB5"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "cabe/Views/EditarLancamentoView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "296"
-            endingLineNumber = "296"
-            landmarkName = "salvarEdicao(escopo:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "AB15FD71-9B8D-4379-B192-25D7292821A2"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "cabe/Views/EditarLancamentoView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "291"
-            endingLineNumber = "291"
-            landmarkName = "salvarEdicao(escopo:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "AB15FD71-9B8D-4379-B192-25D7292821A2 - b55dbe29b0c91d5e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for cabe.EditarLancamentoView.salvarEdicao(escopo: cabe.EscopoEdicaoRecorrencia) async -&gt; ()"
-                  moduleName = "cabe.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fernando/Dev/cabe_ios/cabe/cabe/Views/EditarLancamentoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "292"
-                  endingLineNumber = "292">
-               </Location>
-               <Location
-                  uuid = "AB15FD71-9B8D-4379-B192-25D7292821A2 - cdfffd3b0b075335"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for cabe.EditarLancamentoView.salvarEdicao(escopo: cabe.EscopoEdicaoRecorrencia) async -&gt; ()"
-                  moduleName = "cabe.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fernando/Dev/cabe_ios/cabe/cabe/Views/EditarLancamentoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "292"
-                  endingLineNumber = "292">
-               </Location>
-               <Location
-                  uuid = "AB15FD71-9B8D-4379-B192-25D7292821A2 - 8f5ca5213ff8c14c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(8) suspend resume partial function for cabe.EditarLancamentoView.salvarEdicao(escopo: cabe.EscopoEdicaoRecorrencia) async -&gt; ()"
-                  moduleName = "cabe.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fernando/Dev/cabe_ios/cabe/cabe/Views/EditarLancamentoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "292"
-                  endingLineNumber = "292">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "4E9DBEBA-6111-4079-9A8C-D720A3066D3A"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -254,36 +178,6 @@
             endingLineNumber = "209"
             landmarkName = "editarUnico(_:db:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "4E9DBEBA-6111-4079-9A8C-D720A3066D3A - d1c04fede296e73"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "cabe.LancamentoRepository.editarUnico(_: cabe.LancamentoModel, db: GRDB.Database) throws -&gt; ()"
-                  moduleName = "cabe.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fernando/Dev/cabe_ios/cabe/cabe/Repositories/LancamentoRepository.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "209"
-                  endingLineNumber = "209">
-               </Location>
-               <Location
-                  uuid = "4E9DBEBA-6111-4079-9A8C-D720A3066D3A - d1c04fede296e73"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "cabe.LancamentoRepository.editarUnico(_: cabe.LancamentoModel, db: GRDB.Database) throws -&gt; ()"
-                  moduleName = "cabe.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fernando/Dev/cabe_ios/cabe/cabe/Repositories/LancamentoRepository.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "209"
-                  endingLineNumber = "209">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
