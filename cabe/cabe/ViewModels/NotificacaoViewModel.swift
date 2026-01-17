@@ -43,22 +43,23 @@ final class NotificacaoViewModel: ObservableObject {
         // 3️⃣ Lançamentos de cartão, agrupados por cartão
         let lancamentosCartao = naoLidos.filter { !$0.cartaoUuid.isEmpty }
 
-        cartoesVencidos = gerarNotificacoesPorCartao(
+        cartoesVencidos = agrupaCartaoLancamentos(
             lancamentos: lancamentosCartao.filter { $0.dataAgrupamento < hoje && !$0.pago }
         )
 
-        cartoesVenceHoje = gerarNotificacoesPorCartao(
+        cartoesVenceHoje = agrupaCartaoLancamentos(
             lancamentos: lancamentosCartao.filter { Calendar.current.isDate($0.dataAgrupamento, inSameDayAs: hoje) && !$0.pago }
         )
     }
+   
+    func marcarTodosComoLidos() async {
+        let todos: [LancamentoModel] =
+            vencidos +
+            vencemHoje +
+            cartoesVencidos.flatMap { $0.lancamentos } +
+            cartoesVenceHoje.flatMap { $0.lancamentos }
 
-    // MARK: - Mensagem para notificação do sistema
-    func mensagemNotificacao() -> String {
-        let simples = "\(vencidos.count) vencidos • \(vencemHoje.count) hoje"
-        let cartoes = "\(cartoesVencidos.count) cartões vencidos • \(cartoesVenceHoje.count) hoje"
-
-        let partes = [simples, cartoes].filter { !$0.hasPrefix("0") && !$0.contains("0 ") }
-        return partes.joined(separator: " • ")
+        await marcarLancamentosComoLidos(todos)
     }
 
     // MARK: - Marcar notificação como lida
@@ -85,24 +86,38 @@ final class NotificacaoViewModel: ObservableObject {
             print("Erro ao marcar notificações como lidas:", error)
         }
     }
-
-    // MARK: - Gerar notificações agrupadas por cartão
-    private func gerarNotificacoesPorCartao(lancamentos: [LancamentoModel]) -> [CartaoNotificacao] {
+    
+    private func agrupaCartaoLancamentos(lancamentos: [LancamentoModel]) -> [CartaoNotificacao] {
         let agrupados = Dictionary(grouping: lancamentos) { $0.cartaoUuid }
 
         return agrupados.compactMap { (_, itens) in
-            guard let primeiro = itens.first,
-                  let dataVencimento = primeiro.dataVencimentoCartao
-            else { return nil }
+            guard
+                let primeiro = itens.first,
+                let cartao = primeiro.cartao,
+                let dataVencimento = primeiro.dataVencimentoCartao
+            else {
+                return nil
+            }
 
             return CartaoNotificacao(
                 cartaoId: primeiro.cartaoUuid,
-                nomeCartao: primeiro.cartao?.nome ?? "Cartão",
+                cartao: cartao,
+                nomeCartao: cartao.nome,
                 quantidade: itens.count,
                 dataVencimento: dataVencimento,
                 lancamentos: itens
             )
         }
+    }
+}
+
+extension NotificacaoViewModel {
+    var temVenceHoje: Bool {
+        !vencemHoje.isEmpty || !cartoesVenceHoje.isEmpty
+    }
+
+    var temVencidos: Bool {
+        !vencidos.isEmpty || !cartoesVencidos.isEmpty
     }
 }
 

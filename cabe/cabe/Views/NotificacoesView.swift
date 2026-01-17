@@ -8,15 +8,193 @@ import SwiftUI
 import Combine
 
 struct NotificacoesView: View {
+    @ObservedObject var vmLancaentos: LancamentoListViewModel
+    @ObservedObject var vmNotificacao: NotificacaoViewModel
 
-    @ObservedObject var vm: NotificacaoViewModel
     @State private var showConfirmMarcarLidos = false
 
     var body: some View {
         List {
-            if !vm.vencemHoje.isEmpty || !vm.cartoesVenceHoje.isEmpty {
+            if vmNotificacao.temVenceHoje {
+                VenceHojeSection(
+                    vmLancamentos: vmLancaentos,
+                    vmNotificacao: vmNotificacao
+                )
+            }
+
+            if vmNotificacao.temVencidos {
+                VencidosSection(
+                    vmLancamentos: vmLancaentos,
+                    vmNotificacao: vmNotificacao
+                )
+            }
+        }
+        .navigationTitle("Notificações")
+        .listStyle(.insetGrouped)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showConfirmMarcarLidos = true
+                } label: {
+                    Image(systemName: "checklist")
+                }
+            }
+        }
+        .confirmationDialog(
+            "Marcar Tudo como Lido?",
+            isPresented: $showConfirmMarcarLidos,
+            titleVisibility: .visible
+        ) {
+            Button("Marcar Todos como Lidos", role: .destructive) {
+                Task {
+                    await vmNotificacao.marcarTodosComoLidos()
+                }
+            }
+
+            Button("Cancelar", role: .cancel) { }
+        } message: {
+            Text("Essa ação não pode ser desfeita.")
+        }
+    }
+}
+
+private struct VenceHojeSection: View {
+    let vmLancamentos: LancamentoListViewModel
+    let vmNotificacao: NotificacaoViewModel
+
+    var body: some View {
+        Section("Vence Hoje") {
+            ForEach(vmNotificacao.vencemHoje) { lancamento in
+                NavigationLink {
+                    LancamentoDetalheView(lancamento: lancamento)
+                } label: {
+                    LancamentoRow(
+                        lancamento: lancamento,
+                        mostrarPagamento: false,
+                        mostrarValores: true
+                    )
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button {
+                            Task {
+                                await vmNotificacao.marcarLancamentosComoLidos([lancamento])
+                            }
+                        } label: {
+                            Label("Lido", systemImage: "checklist")
+                        }
+                        .tint(.accentColor)
+                    }
+                }
+            }
+
+            ForEach(vmNotificacao.cartoesVenceHoje) { cartao in
+                NavigationLink {
+                    CartaoFaturaView(
+                        viewModel: vmLancamentos,
+                        cartao: cartao.cartao,
+                        lancamentos: cartao.lancamentos,
+                        total: 0,
+                        vencimento: cartao.dataVencimento
+                    )
+                } label: {
+                    CartaoRowNotification(cartaoNotificacao: cartao)
+                        .listRowInsets(
+                            EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16)
+                        )
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button {
+                                Task {
+                                    await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
+                                }
+                            } label: {
+                                Label("Lido", systemImage: "checklist")
+                            }
+                            .tint(.accentColor)
+                        }
+                }
+            }
+        }
+        .listRowInsets(
+            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        )
+    }
+}
+
+private struct VencidosSection: View {
+    let vmLancamentos: LancamentoListViewModel
+    let vmNotificacao: NotificacaoViewModel
+
+    var body: some View {
+        Section("Vencidos") {
+            ForEach(vmNotificacao.vencidos) { lancamento in
+                NavigationLink {
+                    LancamentoDetalheView(lancamento: lancamento)
+                } label: {
+                    LancamentoRow(
+                        lancamento: lancamento,
+                        mostrarPagamento: false,
+                        mostrarValores: true
+                    )
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button {
+                            Task {
+                                await vmNotificacao.marcarLancamentosComoLidos([lancamento])
+                            }
+                        } label: {
+                            Label("Lido", systemImage: "checklist")
+                        }
+                        .tint(.accentColor)
+                    }
+                }
+            }
+
+            ForEach(vmNotificacao.cartoesVencidos) { cartao in
+                NavigationLink {
+                    CartaoFaturaView(
+                        viewModel: vmLancamentos,
+                        cartao: cartao.cartao,
+                        lancamentos: cartao.lancamentos,
+                        total: 0,
+                        vencimento: cartao.dataVencimento
+                    )
+                } label: {
+                    CartaoRowNotification(cartaoNotificacao: cartao)
+                        .listRowInsets(
+                            EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16)
+                        )
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button {
+                                Task {
+                                    await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
+                                }
+                            } label: {
+                                Label("Lido", systemImage: "checklist")
+                            }
+                            .tint(.accentColor)
+                        }
+                }
+            }
+        }
+        .listRowInsets(
+            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        )
+    }
+}
+
+
+
+/*
+struct NotificacoesView: View {
+    @ObservedObject var vmLancaentos: LancamentoListViewModel
+    @ObservedObject var vmNotificacao: NotificacaoViewModel
+    
+    @State private var showConfirmMarcarLidos = false
+
+    var body: some View {
+        List {
+            if !vmNotificacao.vencemHoje.isEmpty || !vmNotificacao.cartoesVenceHoje.isEmpty {
                 Section("Vence Hoje") {
-                    ForEach(vm.vencemHoje) { lancamento in
+                    ForEach(vmNotificacao.vencemHoje) { lancamento in
                         NavigationLink {
                             LancamentoDetalheView(lancamento: lancamento)
                         } label: {
@@ -28,7 +206,7 @@ struct NotificacoesView: View {
                             .swipeActions(edge: .trailing,allowsFullSwipe: false) {
                                 Button() {
                                     Task {
-                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                        await vmNotificacao.marcarLancamentosComoLidos([lancamento])
                                     }
                                 } label: {
                                     Label ("Lido", systemImage: "checklist")
@@ -37,21 +215,31 @@ struct NotificacoesView: View {
                             }
                         }
                     }
-                    ForEach(vm.cartoesVenceHoje) { cartao in
+                    ForEach(vmNotificacao.cartoesVenceHoje) { cartao in
                         //TODO: Mostrar detalhada para cartão
-                        CartaoRowNotification(cartaoNotificacao: cartao)
-                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
-                                Button() {
-                                    Task {
-                                        await vm.marcarLancamentosComoLidos(cartao.lancamentos)
+                        NavigationLink {
+                            CartaoFaturaView(
+                                viewModel: vmLancaentos,
+                                cartao: cartao,
+                                lancamentos: cartao.lancamentos,
+                                total: 0,
+                                vencimento: cartao.dataVencimento
+                            )
+                        } label: {
+                            CartaoRowNotification(cartaoNotificacao: cartao)
+                                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                    Button() {
+                                        Task {
+                                            await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
+                                        }
+                                    } label: {
+                                        Label ("Lido", systemImage: "checklist")
+                                        
                                     }
-                                } label: {
-                                    Label ("Lido", systemImage: "checklist")
-                                    
+                                    .tint(.accentColor)
                                 }
-                                .tint(.accentColor)
-                            }
+                        }
                     }
                 }
                 .listRowInsets(
@@ -64,9 +252,9 @@ struct NotificacoesView: View {
                 )
             }
             
-            if !vm.vencidos.isEmpty || !vm.cartoesVencidos.isEmpty {
+            if !vmNotificacao.vencidos.isEmpty || !vmNotificacao.cartoesVencidos.isEmpty {
                 Section("Vencidos") {
-                    ForEach(vm.vencidos) { lancamento in
+                    ForEach(vmNotificacao.vencidos) { lancamento in
                         NavigationLink {
                             LancamentoDetalheView(lancamento: lancamento)
                         } label: {
@@ -78,7 +266,7 @@ struct NotificacoesView: View {
                             .swipeActions(edge: .trailing,allowsFullSwipe: false) {
                                 Button() {
                                     Task {
-                                        await vm.marcarLancamentosComoLidos([lancamento])
+                                        await vmNotificacao.marcarLancamentosComoLidos([lancamento])
                                     }
                                 } label: {
                                     Label ("Lido", systemImage: "checklist")
@@ -88,21 +276,31 @@ struct NotificacoesView: View {
                             }
                         }
                     }
-                    ForEach(vm.cartoesVencidos) { cartao in
+                    ForEach(vmNotificacao.cartoesVencidos) { cartao in
                         //TODO: Mostrar detalhada para cartão
-                        CartaoRowNotification(cartaoNotificacao: cartao)
-                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                            .swipeActions(edge: .trailing,allowsFullSwipe: false) {
-                                Button() {
-                                    Task {
-                                        await vm.marcarLancamentosComoLidos(cartao.lancamentos)
+                        NavigationLink {
+                            CartaoFaturaView(
+                                viewModel: vmLancaentos,
+                                cartao: cartao,
+                                lancamentos: cartao.lancamentos,
+                                total: 0,
+                                vencimento: cartao.dataVencimento
+                            )
+                        } label: {
+                            CartaoRowNotification(cartaoNotificacao: cartao)
+                                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                .swipeActions(edge: .trailing,allowsFullSwipe: false) {
+                                    Button() {
+                                        Task {
+                                            await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
+                                        }
+                                    } label: {
+                                        Label ("Lido", systemImage: "checklist")
+                                        
                                     }
-                                } label: {
-                                    Label ("Lido", systemImage: "checklist")
-                                    
+                                    .tint(.accentColor)
                                 }
-                                .tint(.accentColor)
-                            }
+                        }
                     }
                     
                 }
@@ -134,17 +332,23 @@ struct NotificacoesView: View {
             isPresented: $showConfirmMarcarLidos,
             titleVisibility: .visible
         ) {
-
             Button("Marcar Todos como Lidos", role: .destructive) {
                 Task {
-                    await vm.marcarLancamentosComoLidos(
-                        vm.vencidos +
-                        vm.vencemHoje +
-                        vm.cartoesVencidos.flatMap(\.lancamentos) +
-                        vm.cartoesVenceHoje.flatMap(\.lancamentos)
+                    await vmNotificacao.marcarTodosComoLidos()
+                }
+            }
+            /*
+            Button("Marcar Todos como Lidos", role: .destructive) {
+                Task {
+                    await vmNotificacao.marcarLancamentosComoLidos(
+                        vmNotificacao.vencidos +
+                        vmNotificacao.vencemHoje +
+                        vmNotificacao.cartoesVencidos.flatMap(\.lancamentos) +
+                        vmNotificacao.cartoesVenceHoje.flatMap(\.lancamentos)
                     )
                 }
             }
+             */
 
             Button("Cancelar", role: .cancel) { }
 
@@ -154,6 +358,7 @@ struct NotificacoesView: View {
 
     }
 }
+ */
 
 struct CartaoRowNotification: View {
     let cartaoNotificacao: CartaoNotificacao
