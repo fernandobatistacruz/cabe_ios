@@ -117,7 +117,7 @@ struct InicioView: View {
         .navigationDestination(isPresented: $mostrarDetalheRecente) {
             if let lancamento = selectedLancamentoRecente {
                 LancamentoDetalheView(lancamento: lancamento)
-            }             
+            }
         }
         .navigationBarTitleDisplayMode(.large)
         .toolbar {

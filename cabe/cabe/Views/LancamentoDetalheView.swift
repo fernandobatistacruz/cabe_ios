@@ -175,8 +175,3 @@ struct LancamentoDetalheView: View {
         }
     }
 }
-
-final class LancamentoObservable: ObservableObject, Identifiable {
-    @Published var lancamento: LancamentoModel
-    init(_ lancamento: LancamentoModel) { self.lancamento = lancamento }
-}
