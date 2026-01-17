@@ -21,7 +21,8 @@ struct EditarLancamentoView: View {
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
     @State private var isSaving = false
-
+    @State private var escopoEdicao: EscopoEdicaoRecorrencia?
+    @State private var mostrarConfirmacaoEscopo = false
     // 🔹 Lançamento que será editado
     private let lancamento: LancamentoModel
 
@@ -31,6 +32,10 @@ struct EditarLancamentoView: View {
         _vm = StateObject(
             wrappedValue: NovoLancamentoViewModel(lancamento: lancamento)
         )
+    }
+    
+    private var valorAlterado: Bool {
+        vm.valor != lancamento.valor
     }
 
     var body: some View {
@@ -102,14 +107,24 @@ struct EditarLancamentoView: View {
                             if vm.tipo == .despesa {
                                 Toggle("Dividida", isOn: $vm.dividida)
                             }
-
-                            // 🔒 Recorrência NÃO editável
-                            HStack {
-                                Text("Repete")
-                                Spacer()
-                                Text(vm.recorrente.titulo)
-                                    .foregroundColor(.secondary)
+                            
+                            
+                            if vm.recorrenciaPolicy.podeAlterarTipo {
+                                Picker("Repete", selection: $vm.recorrente) {
+                                    ForEach(vm.recorrenciasDisponiveis, id: \.self) { tipo in
+                                        Text(tipo.titulo)
+                                            .tag(tipo)
+                                    }
+                                }
+                            } else {
+                                HStack {
+                                    Text("Repete")
+                                    Spacer()
+                                    Text(vm.recorrente.titulo)
+                                        .foregroundColor(.secondary)
+                                }
                             }
+                            
 
                             TextField("Valor", text: $vm.valorTexto)
                             .keyboardType(.numberPad)
@@ -200,18 +215,20 @@ struct EditarLancamentoView: View {
                         Image(systemName: "xmark")
                     }
                 }
-
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task {
-                            isSaving = true
-                            await salvarEdicao()
-                            isSaving = false
+                            if valorAlterado && vm.recorrenciaPolicy.requerConfirmacaoEscopoAoAlterarValor {
+                                mostrarConfirmacaoEscopo = true
+                                return
+                            }
+
+                            await salvarEdicao(escopo: .somenteEste)
                         }
                     } label: {
                         if isSaving {
-                            ProgressView()
-                                .tint(.white)
+                            ProgressView().tint(.white)
                         } else {
                             Image(systemName: "checkmark")
                                 .foregroundColor(.white)
@@ -231,26 +248,61 @@ struct EditarLancamentoView: View {
             }
         }
         .onChange(of: vm.pagamentoSelecionado) { _ in
+            vm.ajustarRecorrenciaSeNecessario()
             vm.sugerirDataFatura()
         }
+        .alert(
+            "Este lançamento faz parte de uma recorrência",
+            isPresented: $mostrarConfirmacaoEscopo
+        ) {
+            Button("Somente este") {
+                salvarAsync(.somenteEste)
+            }
+            Button("Este e próximos") {
+                salvarAsync(.esteEProximos)
+            }
+            Button("Todos") {
+                salvarAsync(.todos)
+            }
+            Button("Cancelar", role: .cancel) {}
+        }
+         
     }
+    
+    private func salvarAsync(_ escopo: EscopoEdicaoRecorrencia) {
+        Task {
+            await salvarEdicao(escopo: escopo)
+        }
+    }
+    
+    private func salvarEdicao(
+        escopo: EscopoEdicaoRecorrencia
+    ) async {
 
-    // MARK: - Salvar edição
-    private func salvarEdicao() async {
         do {
+            isSaving = true
+
+            try vm.validarRecorrencia()
+
             let repository = LancamentoRepository()
+           
+            //Se o lançamento é recorrencia igual a nunca e é alterado a recoreencia, apaga e recriar com recorrência
+            if lancamento.tipoRecorrente == .nunca && vm.recorrente != .nunca {
+                try await repository
+                    .remover(id: lancamento.id ?? 0, uuid: lancamento.uuid)
+                
+                await vm.salvar()
+            } else {
+                var editado = lancamento
+                try vm.aplicarEdicao(no: &editado)
+                
+                try await repository.editar(
+                    lancamento: editado,
+                    escopo: escopo
+                )
+            }
+            isSaving = false
 
-            var editado = lancamento
-            editado.descricao = vm.descricao
-            editado.anotacao = vm.anotacao
-            editado.valor = vm.valor
-            editado.pago = vm.pago
-            editado.dividido = vm.dividida
-            editado.categoriaID = vm.categoria?.id ?? editado.categoriaID
-            editado.cartaoUuid = vm.pagamentoSelecionado?.cartaoModel?.uuid ?? ""
-            editado.contaUuid = vm.pagamentoSelecionado?.contaModel?.uuid ?? ""
-
-            try await repository.editar(editado)
             dismiss()
 
         } catch let erro as LancamentoValidacaoErro {
@@ -258,5 +310,8 @@ struct EditarLancamentoView: View {
         } catch {
             debugPrint("Erro ao editar lançamento", error)
         }
+
+        
     }
 }
+

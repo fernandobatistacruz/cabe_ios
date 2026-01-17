@@ -180,6 +180,128 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
+    func editar(
+        lancamento: LancamentoModel,
+        escopo: EscopoEdicaoRecorrencia
+    ) async throws {
+
+        try await db.dbQueue.write { db in
+
+            switch escopo {
+
+            case .somenteEste:
+                try editarUnico(lancamento, db: db)
+
+            case .esteEProximos:
+                try editarEsteEProximos(lancamento, db: db)
+
+            case .todos:
+                try editarTodos(lancamento, db: db)
+            }
+        }
+    }
+    
+    private nonisolated func editarUnico(
+        _ lancamento: LancamentoModel,
+        db: Database
+    ) throws {
+
+        guard
+            let id = lancamento.id,
+            let antigo = try LancamentoModel
+                .filter(LancamentoModel.Columns.id == id)
+                .fetchOne(db)
+        else {
+            try lancamento.update(db)
+            return
+        }
+
+        try aplicarDeltaSaldo(
+            antigo: antigo,
+            novo: lancamento,
+            removendo: false,
+            db: db
+        )
+
+        try lancamento.update(db)
+    }
+    
+    private nonisolated func editarEsteEProximos(
+        _ lancamentoBase: LancamentoModel,
+        db: Database
+    ) throws {
+
+        let lancamentos = try LancamentoModel
+            .filter(
+                LancamentoModel.Columns.uuid == lancamentoBase.uuid &&
+                (
+                    LancamentoModel.Columns.ano > lancamentoBase.ano ||
+                    (
+                        LancamentoModel.Columns.ano == lancamentoBase.ano &&
+                        LancamentoModel.Columns.mes >= lancamentoBase.mes
+                    )
+                )
+            )
+            .fetchAll(db)
+
+        for antigo in lancamentos {
+
+            var novo = antigo
+
+            // 🔹 Campos que PODEM ser alterados
+            novo.descricao = lancamentoBase.descricao
+            novo.anotacao = lancamentoBase.anotacao
+            novo.valor = lancamentoBase.valor
+            novo.pagoRaw = lancamentoBase.pagoRaw
+            novo.divididoRaw = lancamentoBase.divididoRaw
+            novo.categoriaID = lancamentoBase.categoriaID
+            novo.cartaoUuid = lancamentoBase.cartaoUuid
+            novo.contaUuid = lancamentoBase.contaUuid
+
+            try aplicarDeltaSaldo(
+                antigo: antigo,
+                novo: novo,
+                removendo: false,
+                db: db
+            )
+
+            try novo.update(db)
+        }
+    }
+    
+    private nonisolated func editarTodos(
+        _ lancamentoBase: LancamentoModel,
+        db: Database
+    ) throws {
+
+        let lancamentos = try LancamentoModel
+            .filter(LancamentoModel.Columns.uuid == lancamentoBase.uuid)
+            .fetchAll(db)
+
+        for antigo in lancamentos {
+
+            var novo = antigo
+
+            novo.descricao = lancamentoBase.descricao
+            novo.anotacao = lancamentoBase.anotacao
+            novo.valor = lancamentoBase.valor
+            novo.pagoRaw = lancamentoBase.pagoRaw
+            novo.divididoRaw = lancamentoBase.divididoRaw
+            novo.categoriaID = lancamentoBase.categoriaID
+            novo.cartaoUuid = lancamentoBase.cartaoUuid
+            novo.contaUuid = lancamentoBase.contaUuid
+
+            try aplicarDeltaSaldo(
+                antigo: antigo,
+                novo: novo,
+                removendo: false,
+                db: db
+            )
+
+            try novo.update(db)
+        }
+    }
+    
     func editar(_ lancamento: LancamentoModel) async throws {
         try await db.dbQueue.write { db in
 

@@ -111,36 +111,22 @@ struct NovoLancamentoView: View {
                                 Toggle(isOn: $vm.dividida) {Text("Dividida")}
                             }
                             
-                            /* Quando precisar filtar a que aparece no menu
-                             
-                             var opcoesDisponiveis: [TipoRecorrente] {
-                                 if formaPagamento == .cartao {
-                                     return TipoRecorrente.allCases
-                                 } else {
-                                     return TipoRecorrente.allCases.filter { $0 != .parcelado }
-                                 }
-                             }
-                             
-                             Picker("Recorrência", selection: $tipoRecorrente) {
-                                 ForEach(opcoesDisponiveis) { item in
-                                     Text(item.titulo)
-                                         .tag(item)
-                                 }
-                             }
-                             .pickerStyle(.menu)
-                             .tint(.secondary)
-                             
-                             */
-                            
                             HStack {
-                                Picker("Repete", selection: $vm.recorrente) {
-                                    ForEach(TipoRecorrente.allCases) { item in
-                                        Text(item.titulo)
-                                            .tag(item)
+                                if vm.recorrenciaPolicy.podeAlterarTipo {
+                                    Picker("Repete", selection: $vm.recorrente) {
+                                        ForEach(vm.recorrenciasDisponiveis, id: \.self) { tipo in
+                                            Text(tipo.titulo)
+                                                .tag(tipo)
+                                        }
+                                    }
+                                } else {
+                                    HStack {
+                                        Text("Repete")
+                                        Spacer()
+                                        Text(vm.recorrente.titulo)
+                                            .foregroundColor(.secondary)
                                     }
                                 }
-                                .pickerStyle(.menu)
-                                .tint(.secondary)
                             }
                           
                             TextField("Valor", text: $vm.valorTexto)
@@ -236,8 +222,12 @@ struct NovoLancamentoView: View {
                     Button {
                         Task {
                             isSaving = true
-                            await salvar()
+                            await vm.salvar()
                             isSaving = false
+                            
+                            if vm.erroValidacao == nil {
+                                dismiss()
+                            }
                         }
                     } label: {
                         if isSaving {
@@ -265,219 +255,6 @@ struct NovoLancamentoView: View {
             vm.sugerirDataFatura()
         }
     }
-
-    private func salvar() async {
-        switch vm.recorrente {
-        case .mensal:
-            await mensal()
-            break
-        case .quinzenal:
-            await porDias(intervalo: 14)
-            break
-        case .semanal:
-            await porDias(intervalo: 7)
-            break
-        default:
-            await nuncoParcelado()
-            break
-        }
-    }
-    
-    private func mensal() async {
-        guard let meioPagamento = vm.pagamentoSelecionado else { return }
-
-        let calendar = Calendar.current
-        let repository = LancamentoRepository()
-        let dataInicial: Date
-        let diaVencimento: Int
-
-        switch meioPagamento {
-        case .cartao:
-            dataInicial = vm.dataFatura
-            diaVencimento = vm.pagamentoSelecionado?.cartaoModel?.vencimento ?? 1
-
-        case .conta:
-            dataInicial = vm.dataLancamento
-            diaVencimento = calendar.component(.day, from: vm.dataLancamento)
-        }
-
-        guard let dataFinal = calendar.date(
-            byAdding: .year,
-            value: 10,
-            to: dataInicial
-        ) else {
-            return
-        }
-
-        var dataAtual = dataInicial
-        let uuid = UUID().uuidString
-
-        do {
-            while dataAtual <= dataFinal {
-
-                var componentes = calendar.dateComponents([.year, .month], from: dataAtual)
-                componentes.day = diaVencimento
-
-                // Garante data válida (ex: fevereiro)
-                guard calendar.date(from: componentes) != nil else {
-                    dataAtual = calendar.date(byAdding: .month, value: 1, to: dataAtual)!
-                    continue
-                }
-
-                let compra = calendar.dateComponents(
-                    [.day, .month, .year],
-                    from: vm.dataLancamento
-                )
-
-                let lancamento = try vm.construirLancamento(
-                    uuid: uuid,
-                    dia: componentes.day!,
-                    mes: componentes.month!,
-                    ano: componentes.year!,
-                    diaCompra: compra.day!,
-                    mesCompra: compra.month!,
-                    anoCompra: compra.year!,
-                    parcelaMes: ""
-                )
-               
-                try await repository.salvar(lancamento)
-
-                dataAtual = calendar.date(
-                    byAdding: .month,
-                    value: 1,
-                    to: dataAtual
-                )!
-            }
-
-            dismiss()
-
-        } catch let erro as LancamentoValidacaoErro {
-            erroValidacao = erro
-        } catch {
-            debugPrint("Erro inesperado ao salvar lançamento", error)
-        }
-    }
-
-    
-    private func porDias(intervalo: Int) async {
-        let calendar = Calendar.current
-        let repository = LancamentoRepository()
-        var dataAtual = vm.dataLancamento
-
-        guard let dataFinal = calendar.date(
-            byAdding: .year,
-            value: 10,
-            to: vm.dataLancamento
-        ) else {
-            return
-        }
-        
-        let uuid = UUID().uuidString
-
-        do {
-            while dataAtual <= dataFinal {
-
-                let componentes = calendar.dateComponents(
-                    [.day, .month, .year],
-                    from: dataAtual
-                )
-
-                let lancamento = try vm.construirLancamento(
-                    uuid: uuid,
-                    dia: componentes.day ?? 0,
-                    mes: componentes.month ?? 0,
-                    ano: componentes.year ?? 0,
-                    diaCompra: componentes.day ?? 0,
-                    mesCompra: componentes.month ?? 0,
-                    anoCompra: componentes.year ?? 0,
-                    parcelaMes: ""
-                )
-
-                try await repository.salvar(lancamento)
-
-                dataAtual = calendar.date(
-                    byAdding: .day,
-                    value: intervalo,
-                    to: dataAtual
-                )!
-            }
-
-            dismiss()
-
-        } catch let erro as LancamentoValidacaoErro {
-            erroValidacao = erro
-        } catch {
-            debugPrint("Erro inesperado ao salvar lançamento", error)
-        }
-    }
-
-    
-    private func nuncoParcelado() async {
-        guard let meio = vm.pagamentoSelecionado else { return }
-
-        let calendar = Calendar.current
-        let repository = LancamentoRepository()
-
-        let dataInicial: Date
-
-        switch meio {
-        case .cartao:
-            var componentes = calendar.dateComponents(
-                [.year, .month],
-                from: vm.dataFatura
-            )
-            componentes.day = meio.cartaoModel?.vencimento ?? 1
-
-            guard let dataCartao = calendar.date(from: componentes) else {
-                return
-            }
-            dataInicial = dataCartao
-
-        case .conta:
-            dataInicial = vm.dataLancamento
-        }
-
-        let compra = calendar.dateComponents(
-            [.day, .month, .year],
-            from: vm.dataLancamento
-        )
-
-        var dataAtual = dataInicial
-        
-        let uuid = UUID().uuidString
-
-        do {
-            for parcela in 1...vm.parcelaInt {
-
-                let lancamento = try vm.construirLancamento(
-                    uuid: uuid,
-                    dia: calendar.component(.day, from: dataAtual),
-                    mes: calendar.component(.month, from: dataAtual),
-                    ano: calendar.component(.year, from: dataAtual),
-                    diaCompra: compra.day!,
-                    mesCompra: compra.month!,
-                    anoCompra: compra.year!,
-                    parcelaMes: "\(parcela)/\(vm.parcelaInt)"
-                )
-
-                try await repository.salvar(lancamento)
-
-                dataAtual = calendar.date(
-                    byAdding: .month,
-                    value: 1,
-                    to: dataAtual
-                )!
-            }
-
-            dismiss()
-
-        } catch let erro as LancamentoValidacaoErro {
-            erroValidacao = erro
-        } catch {
-            debugPrint("Erro inesperado ao salvar lançamento", error)
-        }
-    }
-
 }
 
 #Preview {
