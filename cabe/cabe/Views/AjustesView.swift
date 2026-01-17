@@ -337,10 +337,7 @@ struct NotificacoesSettingsView: View {
 
 
     private func cancelarNotificacoes() {
-        UNUserNotificationCenter.current()
-            .removePendingNotificationRequests(
-                withIdentifiers: ["lancamentos-dia"]
-            )
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
     private func abrirAjustesDoSistema() {

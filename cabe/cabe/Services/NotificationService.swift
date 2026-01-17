@@ -29,7 +29,7 @@ final class NotificationService {
 
         do {
             let lancamentos = try await repository
-                .listarLancamentosParaNotificacao()
+                .listarLancamentosFuturosParaAgendar()
 
             let payload = NotificacaoFactory
                 .gerar(lancamentos: lancamentos)

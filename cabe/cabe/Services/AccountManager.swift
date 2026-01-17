@@ -7,12 +7,11 @@
 
 import Foundation
 
-
+@MainActor
 final class AccountManager {
 
     static let shared = AccountManager()
-
-    @MainActor
+    
     func removerConta() async {
         do {
             // 1. Remover conta remota
