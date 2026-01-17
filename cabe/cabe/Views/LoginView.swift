@@ -123,7 +123,7 @@ struct LoginView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "envelope.fill")
                             .font(.footnote)
-                        Text("Criar Conta com E-mail")
+                        Text("Criar conta com E-mail")
                             .font(.system(size: 17, weight: .semibold))
                     }
                     .foregroundColor(.white)
@@ -157,7 +157,7 @@ struct LoginView: View {
                             .resizable()
                             .frame(width: 14, height: 14)
 
-                        Text("Continuar com o Google")
+                        Text("Iniciar sessão com o Google")
                             .font(.system(size: 17, weight: .semibold))
                     }
                     .foregroundColor(.white)
