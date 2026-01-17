@@ -90,7 +90,7 @@ struct ZoomPagamentoView: View {
         .overlay(
             Group {
                 if viewModel.cartoes.isEmpty && viewModel.contas.isEmpty {
-                    Text("Nenhum registro")
+                    Text("Nenhum Registro")
                         .font(.title2)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)

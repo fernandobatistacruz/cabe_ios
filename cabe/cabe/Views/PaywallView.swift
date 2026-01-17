@@ -48,7 +48,6 @@ struct PaywallView: View {
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
-                .accessibilityLabel("Restaurar compras")
             }
         }
     }

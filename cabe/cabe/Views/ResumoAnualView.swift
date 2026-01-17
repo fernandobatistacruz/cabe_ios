@@ -80,9 +80,6 @@ struct ResumoAnualView: View {
         .task {
             await vm.carregarDados()
         }
-        .refreshable {
-            await vm.carregarDados()
-        }
         .onChange(of: vm.anoSelecionado) { _ in
             Task {
                 await vm.carregarDados()
@@ -94,7 +91,7 @@ struct ResumoAnualView: View {
             }
         }
         .sheet(item: $shareItem) { item in
-            ActivityView(activityItems: [item.url])
+            ShareSheetView(activityItems: [item.url])
         }
         .overlay {
             if isExporting {
@@ -221,7 +218,7 @@ struct ResumoAnualView: View {
 
             if categoriasValidas.isEmpty {
                 CardContainer {
-                    Text("Nenhuma despesa registrada")
+                    Text("Nenhuma Despesa")
                         .foregroundColor(.secondary)
                         .frame(height: 120)
                         .frame(maxWidth: .infinity)

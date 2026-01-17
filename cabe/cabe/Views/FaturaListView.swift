@@ -136,6 +136,7 @@ struct FaturaListView: View {
                 }
             )
             .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
         }
     }
     

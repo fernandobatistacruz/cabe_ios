@@ -66,21 +66,9 @@ struct ZoomCategoriaView: View {
         .navigationTitle("Categorias")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            print("➡️ Tipo recebido:", tipo.rawValue)
-            
             guard categorias.isEmpty else { return }
             categorias = (try? repository.listar(tipo: tipo)) ?? []
-            
-            print("➡️ Categorias carregadas:", categorias.count)
         }
-        /*
-        .searchable(
-            text: $searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Buscar"
-        )
-         */
-       
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {

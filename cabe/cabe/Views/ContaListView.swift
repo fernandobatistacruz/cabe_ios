@@ -46,7 +46,7 @@ struct ContaListView: View {
         .overlay(
                 Group {
                     if contasFiltradas.isEmpty {
-                        Text("Nenhuma conta")
+                        Text("Nenhuma Conta")
                             .font(.title2)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -61,8 +61,8 @@ struct ContaListView: View {
             prompt: "Buscar"
         )
         .alert(
-            "Excluir conta?",
-            isPresented: $mostrarConfirmacao,          
+            "Excluir Conta?",
+            isPresented: $mostrarConfirmacao,
         )
         {
             Button("Excluir", role: .destructive) {
@@ -256,7 +256,7 @@ struct EditarContaView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Nome da conta", text: $nome)
+                TextField("Nome da Conta", text: $nome)
                 TextField("Saldo", text: $saldoText)
                     .keyboardType(.decimalPad)
                     .onChange(of: saldoText) { value in

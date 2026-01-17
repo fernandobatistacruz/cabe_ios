@@ -74,7 +74,7 @@ struct CategoriaListView: View {
             .overlay(
                 categoriasFiltradas.isEmpty ?
                     AnyView(
-                        Text("Nenhuma categoria encontrada")
+                        Text("Nenhuma Categoria")
                             .font(.title2)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -92,7 +92,7 @@ struct CategoriaListView: View {
             prompt: "Buscar"
         )
         .alert(
-            "Excluir categoria?",
+            "Excluir Categoria?",
             isPresented: $mostrarConfirmacao
         ) {
             Button("Excluir", role: .destructive) {

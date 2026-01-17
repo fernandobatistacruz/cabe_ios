@@ -187,6 +187,7 @@ struct EditarLancamentoView: View {
                             onConfirm: { vm.dataFatura = $0 }
                         )
                         .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.hidden)
                     }
                 }
             }
@@ -229,7 +230,7 @@ struct EditarLancamentoView: View {
             }
         }
         .onChange(of: vm.pagamentoSelecionado) { _ in
-            vm.sugerirDataFaturaSeNecessario()
+            vm.sugerirDataFatura()
         }
     }
 

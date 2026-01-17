@@ -130,12 +130,12 @@ struct NotificacoesView: View {
             }
         }
         .confirmationDialog(
-            "Marcar tudo como lido?",
+            "Marcar Tudo como Lido?",
             isPresented: $showConfirmMarcarLidos,
             titleVisibility: .visible
         ) {
 
-            Button("Marcar todos como lidos", role: .destructive) {
+            Button("Marcar Todos como Lidos", role: .destructive) {
                 Task {
                     await vm.marcarLancamentosComoLidos(
                         vm.vencidos +

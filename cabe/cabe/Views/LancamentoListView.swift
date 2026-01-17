@@ -198,26 +198,26 @@ struct LancamentoListView: View {
             }
         }
         .confirmationDialog(
-            "Excluir lançamento?",
+            "Excluir Lançamento?",
             isPresented: $mostrarDialogExclusao,
             titleVisibility: .visible
         ) {
             if let lancamento = lancamentoParaExcluir {
                 
                 if lancamento.tipoRecorrente == .nunca {
-                    Button("Confirmar exclusão", role: .destructive) {
+                    Button("Confirmar Exclusão", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 } else {
-                    Button("Excluir somente este", role: .destructive) {
+                    Button("Excluir Somente Este", role: .destructive) {
                         Task { await viewModel.removerSomenteEste(lancamento)}
                     }
                     
-                    Button("Excluir este e os próximos", role: .destructive) {
+                    Button("Excluir Este e os Próximos", role: .destructive) {
                         Task { await viewModel.removerEsteEProximos(lancamento) }
                     }
                     
-                    Button("Excluir todos", role: .destructive) {
+                    Button("Excluir Todos", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 }
@@ -237,6 +237,7 @@ struct LancamentoListView: View {
                 }
             )
             .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $showingPaywall) {
             NavigationStack {
@@ -249,8 +250,9 @@ struct LancamentoListView: View {
             }
         }
         .sheet(item: $shareItem) { item in
-            ActivityView(activityItems: [item.url])
+            ShareSheetView(activityItems: [item.url])
         }
+        
         .overlay {
             if isExporting {
                 ZStack {
@@ -449,44 +451,3 @@ struct LancamentoRow: View {
         }
     }
 }
-
-struct DialogoExclusaoLancamento: View {
-
-    let lancamento: LancamentoModel?
-    let removerSomenteEste: (LancamentoModel) -> Void
-    let removerEsteEProximos: (LancamentoModel) -> Void
-    let removerTodos: (LancamentoModel) -> Void
-
-    var body: some View {
-
-        if let lancamento {
-
-            if lancamento.tipoRecorrente == .nunca {
-
-                Button("Confirmar exclusão", role: .destructive) {
-                    removerTodos(lancamento)
-                }
-
-            } else {
-
-                Button("Remover somente este", role: .destructive) {
-                    removerSomenteEste(lancamento)
-                }
-
-                Button("Remover este e os próximos", role: .destructive) {
-                    removerEsteEProximos(lancamento)
-                }
-
-                Button("Remover todos", role: .destructive) {
-                    removerTodos(lancamento)
-                }
-            }
-        }
-        
-        Button("Cancelar", role: .cancel) { }
-    }
-}
-
-
-
-

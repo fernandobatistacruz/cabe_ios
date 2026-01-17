@@ -106,7 +106,7 @@ struct CategoriaFormView: View {
                         if isEditar {
                             Section {
                                 if subcategorias.isEmpty {
-                                    Text("Nenhuma subcategoria")
+                                    Text("Nenhuma Subcategoria")
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                         .frame(maxWidth: .infinity, alignment: .center)

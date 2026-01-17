@@ -9,6 +9,17 @@
 import SwiftUI
 import UIKit
 
+struct ShareSheetView: View {
+
+    let activityItems: [Any]
+
+    var body: some View {
+        ActivityView(activityItems: activityItems)
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
+    }
+}
+
 struct ActivityView: UIViewControllerRepresentable {
     
     let activityItems: [Any]

@@ -158,6 +158,7 @@ struct InicioView: View {
                 }
             )
             .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
             
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
@@ -364,7 +365,7 @@ struct ConsumoCardView: View {
     }
 
     private var emptyState: some View {
-        Text("Nenhum consumo")
+        Text("Nenhum Consumo")
             .font(.headline)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, minHeight: 100)

@@ -32,7 +32,7 @@ final class NovoLancamentoViewModel: ObservableObject {
     /// Cadastro
     init() {
         configurarValorInicial(0)
-        sugerirDataFaturaSeNecessario()
+        sugerirDataFatura()
     }
 
     /// Edição
@@ -223,7 +223,7 @@ final class NovoLancamentoViewModel: ObservableObject {
         lancamento.contaUuid = pagamentoSelecionado?.contaModel?.uuid ?? ""
     }
     
-    func sugerirDataFaturaSeNecessario() {
+    func sugerirDataFatura() {
         guard case let .cartao(cartao) = pagamentoSelecionado else { return }
 
         let calendar = Calendar.current

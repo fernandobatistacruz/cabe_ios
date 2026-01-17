@@ -73,7 +73,7 @@ struct LoginView: View {
                     Button {
                         Task { await auth.sendPasswordReset() }
                     } label: {
-                        Text("Esqueceu a senha?")
+                        Text("Esqueceu a Senha?")
                             .font(.footnote)
                             .foregroundColor(.accentColor)
                     }

@@ -217,6 +217,7 @@ struct NovoLancamentoView: View {
                             }
                         )
                         .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.hidden)
                     }
                 }
             }
@@ -258,7 +259,7 @@ struct NovoLancamentoView: View {
             }
         }
         .onChange(of: vm.pagamentoSelecionado) { _ in
-            vm.sugerirDataFaturaSeNecessario()
+            vm.sugerirDataFatura()
         }
     }
 

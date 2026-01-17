@@ -255,7 +255,7 @@ struct CartaoFaturaView: View {
 
         // 🔹 Share
         .sheet(item: $shareItem) { item in
-            ActivityView(activityItems: [item.url])
+            ShareSheetView(activityItems: [item.url])
         }
 
         // 🔹 Overlay exportação
@@ -270,22 +270,22 @@ struct CartaoFaturaView: View {
 
         // 🔹 Confirmação exclusão
         .confirmationDialog(
-            "Excluir lançamento?",
+            "Excluir Lançamento?",
             isPresented: $mostrarDialogExclusao
         ) {
             if let lancamento = lancamentoParaExcluir {
                 if lancamento.tipoRecorrente == .nunca {
-                    Button("Confirmar exclusão", role: .destructive) {
+                    Button("Confirmar Exclusão", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 } else {
-                    Button("Excluir somente este", role: .destructive) {
+                    Button("Excluir Somente Este", role: .destructive) {
                         Task { await viewModel.removerSomenteEste(lancamento) }
                     }
-                    Button("Excluir este e os próximos", role: .destructive) {
+                    Button("Excluir Este e os Próximos", role: .destructive) {
                         Task { await viewModel.removerEsteEProximos(lancamento) }
                     }
-                    Button("Excluir todos", role: .destructive) {
+                    Button("Excluir Todos", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 }

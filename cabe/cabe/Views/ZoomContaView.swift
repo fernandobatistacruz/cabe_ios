@@ -39,7 +39,7 @@ struct ZoomContaView: View {
         .overlay(
             Group {
                 if contas.isEmpty {
-                    Text("Nenhuma conta encontrado")
+                    Text("Nenhuma Conta")
                         .font(.title2)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)

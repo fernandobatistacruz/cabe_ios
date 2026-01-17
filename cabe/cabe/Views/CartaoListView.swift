@@ -84,7 +84,7 @@ struct CartaoListView: View {
                 .overlay(
                     Group {
                         if cartoesFiltrados.isEmpty {
-                            Text("Nenhum cartão")
+                            Text("Nenhum Cartão")
                                 .font(.title2)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
@@ -101,7 +101,7 @@ struct CartaoListView: View {
             placement: .navigationBarDrawer(displayMode: .automatic),
             prompt: "Buscar"
         )
-        .alert("Excluir cartão?", isPresented: $mostrarConfirmacao) {
+        .alert("Excluir Cartão?", isPresented: $mostrarConfirmacao) {
             Button("Excluir", role: .destructive) {
                 Task{
                     if let cartao = cartaoParaExcluir {
