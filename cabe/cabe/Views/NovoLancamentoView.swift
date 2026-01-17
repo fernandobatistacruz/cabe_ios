@@ -52,9 +52,9 @@ struct NovoLancamentoView: View {
                                     
                                     let nome = vm.categoria?.pai == nil
                                     ? vm.categoria?.nome ?? String(
-                                        localized: "Nenhuma"
+                                        localized: "Selecione"
                                     )
-                                        : vm.categoria?.nomeSubcategoria ?? String(localized: "Nenhuma")
+                                        : vm.categoria?.nomeSubcategoria ?? String(localized: "Selecione")
 
                                     Text(nome)
                                     .foregroundColor(.secondary)
@@ -73,7 +73,7 @@ struct NovoLancamentoView: View {
                                         .foregroundColor(.primary)
                                     Spacer()
                                     Text(vm.pagamentoSelecionado?.titulo ??  String(
-                                        localized: "Nenhuma")
+                                        localized: "Selecione")
                                     ).foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)
@@ -88,7 +88,7 @@ struct NovoLancamentoView: View {
                                     HStack {
                                         Text("Fatura")
                                             .foregroundColor(.primary)
-                                        Spacer()                                       
+                                        Spacer()
                                         Text(
                                             vm.dataFatura
                                                 .formatted(

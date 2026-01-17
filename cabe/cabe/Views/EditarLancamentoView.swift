@@ -54,7 +54,7 @@ struct EditarLancamentoView: View {
                                         .foregroundColor(.primary)
                                     Spacer()
                                     
-                                    Text(vm.categoria?.nome ?? "Nenhuma")
+                                    Text(vm.categoria?.nome ?? "Selecione")
                                         .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)
@@ -72,7 +72,7 @@ struct EditarLancamentoView: View {
                                     Text("Pagamento")
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text(vm.pagamentoSelecionado?.titulo ?? "Nenhuma")
+                                    Text(vm.pagamentoSelecionado?.titulo ?? "Selecione")
                                         .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)

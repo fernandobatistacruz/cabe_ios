@@ -10,6 +10,7 @@ struct ContaListView: View {
     @State private var contaParaExcluir: ContaModel?
     @EnvironmentObject var sub: SubscriptionManager
     @StateObject private var viewModel: ContaListViewModel
+    @State private var mostrarTransferencia = false
 
     init() {
         let repository = ContaRepository()
@@ -85,6 +86,13 @@ struct ContaListView: View {
                     Image(systemName: "plus")
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    mostrarTransferencia = true
+                } label: {
+                    Label("Transferência", systemImage: "arrow.left.arrow.right")
+                }
+            }
         }
         .sheet(isPresented: $mostrarNovaConta) {
             NavigationStack {
@@ -93,6 +101,11 @@ struct ContaListView: View {
                 } else {
                     PaywallView()
                 }
+            }
+        }
+        .sheet(isPresented: $mostrarTransferencia) {
+            NavigationStack {
+                TransferenciaView()
             }
         }
     }

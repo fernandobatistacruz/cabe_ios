@@ -39,6 +39,7 @@ struct NotificacoesView: View {
                 } label: {
                     Image(systemName: "checklist")
                 }
+                .disabled(!vmNotificacao.temVencidos && !vmNotificacao.temVenceHoje)
             }
         }
         .confirmationDialog(
@@ -55,6 +56,18 @@ struct NotificacoesView: View {
             Button("Cancelar", role: .cancel) { }
         } message: {
             Text("Essa ação não pode ser desfeita.")
+        }
+        .overlay{
+            if !vmNotificacao.temVencidos && !vmNotificacao.temVenceHoje
+            {
+                Group {
+                    Text("Nenhuma Notificação")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
+            }
         }
     }
 }

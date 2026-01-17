@@ -193,7 +193,7 @@ struct LancamentoListView: View {
                     Button {
                         mostrarTransferencia = true
                     } label: {
-                        Label("Transferência entre Contas", systemImage: "arrow.left.arrow.right")
+                        Label("Transferência", systemImage: "arrow.left.arrow.right")
                     }
                     
                 } label: {
