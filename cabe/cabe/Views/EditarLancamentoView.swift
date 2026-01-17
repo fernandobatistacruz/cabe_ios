@@ -92,6 +92,7 @@ struct EditarLancamentoView: View {
                                             vm.dataFatura.formatted(
                                                 .dateTime.month(.wide).year()
                                             )
+                                            .capitalizingFirstLetter()
                                         )
                                         .foregroundColor(.secondary)
                                     }

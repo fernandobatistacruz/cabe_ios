@@ -79,6 +79,17 @@ struct FaturaListView: View {
                     }
                 }
             }
+            .overlay{
+                if lancamentosAgrupados.isEmpty {
+                    Group {
+                        Text("Nenhuma Fatura")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    }
+                }                
+            }
             .listStyle(.insetGrouped)
             VStack {
                 Spacer()

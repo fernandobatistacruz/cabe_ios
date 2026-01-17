@@ -150,7 +150,11 @@ struct LancamentoListView: View {
             }
         }
         .navigationTitle(
-            Text(selectedDate, format: .dateTime.month(.wide))
+            Text(
+                selectedDate
+                    .formatted(.dateTime.month(.wide))
+                    .capitalized
+            )
         )
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Buscar")
@@ -252,7 +256,6 @@ struct LancamentoListView: View {
         .sheet(item: $shareItem) { item in
             ShareSheetView(activityItems: [item.url])
         }
-        
         .overlay {
             if isExporting {
                 ZStack {
@@ -262,6 +265,15 @@ struct LancamentoListView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .scaleEffect(1.2)
+                }
+            }          
+            if lancamentosFiltrados.isEmpty {
+                Group {
+                    Text("Nenhum Lançamento")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
                 }
             }
         }

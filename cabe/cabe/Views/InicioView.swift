@@ -108,7 +108,11 @@ struct InicioView: View {
             }
         }
         .navigationTitle(
-            Text(selectedDate, format: .dateTime.month(.wide))
+            Text(
+                selectedDate
+                    .formatted(.dateTime.month(.wide))
+                    .capitalized
+            )
         )
         .navigationDestination(isPresented: $mostrarDetalheRecente) {
             if let lancamento = selectedLancamentoRecente {

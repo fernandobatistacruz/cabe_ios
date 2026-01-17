@@ -88,15 +88,18 @@ struct NovoLancamentoView: View {
                                     HStack {
                                         Text("Fatura")
                                             .foregroundColor(.primary)
-                                        Spacer()
+                                        Spacer()                                       
                                         Text(
-                                            vm.dataFatura.formatted(
-                                                .dateTime
-                                                    .month(.wide)
-                                                    .year()
-                                            )
+                                            vm.dataFatura
+                                                .formatted(
+                                                    .dateTime
+                                                        .month(.wide)
+                                                        .year()
+                                                )
+                                                .capitalizingFirstLetter()
                                         )
                                         .foregroundColor(.secondary)
+                                        
                                         Image(systemName: "chevron.right")
                                             .foregroundColor(.gray)
                                             .font(.footnote)
