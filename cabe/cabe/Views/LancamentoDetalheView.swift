@@ -62,7 +62,7 @@ struct LancamentoDetalheView: View {
                     Text(
                         lancamento.valorComSinal,
                         format: .currency(
-                            code: lancamento.cartao?.conta?.currencyCode ?? "USD"
+                            code: lancamento.currencyCode
                         )
                     )
                     .font(.title2.bold())

@@ -289,21 +289,21 @@ struct EditarLancamentoView: View {
             try vm.validarRecorrencia()
 
             let repository = LancamentoRepository()
-           
-            //Se o lançamento é recorrencia igual a nunca e é alterado a recoreencia, apaga e recriar com recorrência
-            if lancamento.tipoRecorrente == .nunca && vm.recorrente != .nunca {
-                try await repository
-                    .remover(id: lancamento.id ?? 0, uuid: lancamento.uuid)
-                await vm.salvar()
-            } else {
-                var editado = lancamento
-                try vm.aplicarEdicao(no: &editado)
-                
-                try await repository.editar(
-                    lancamento: editado,
-                    escopo: escopo
-                )
+                       
+            var editado = lancamento
+            try vm.aplicarEdicao(no: &editado)
+
+            // Atualiza o lançamento atual e os recorrentes com base no escopo
+            try await repository.editar(
+                lancamento: editado,
+                escopo: escopo
+            )
+
+            // Se mudou recorrencia de nunca para outro tipo, cria os próximos lançamentos sem duplicar o atual
+            if vm.recorrente != .nunca && lancamento.recorrente != editado.recorrente {
+                await vm.salvar(desconsiderarPrimeiro: true)
             }
+            
             isSaving = false
 
             dismiss()

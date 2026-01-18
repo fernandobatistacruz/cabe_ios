@@ -227,7 +227,7 @@ struct NovoLancamentoView: View {
                     Button {
                         Task {
                             isSaving = true
-                            await vm.salvar()
+                            await vm.salvar(desconsiderarPrimeiro: false)
                             isSaving = false
                             
                             if vm.erroValidacao == nil {

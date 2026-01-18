@@ -29,6 +29,7 @@ final class NovoLancamentoViewModel: ObservableObject {
     @Published var erroValidacao: LancamentoValidacaoErro?
     
     private let contexto: RecorrenciaPolicy.Contexto
+    private var uuidEdicao: String = ""
     
     // MARK: - Init
 
@@ -263,6 +264,8 @@ final class NovoLancamentoViewModel: ObservableObject {
         if let erro = validar() {
             throw erro
         }
+        
+        uuidEdicao = lancamento.uuid
 
         lancamento.descricao = descricao
         lancamento.anotacao = anotacao
@@ -270,6 +273,7 @@ final class NovoLancamentoViewModel: ObservableObject {
         lancamento.divididoRaw = dividida ? 1 : 0
         lancamento.pagoRaw = pago ? 1 : 0
         lancamento.recorrente = recorrente.rawValue
+        lancamento.parcelas = parcelaInt
         lancamento.categoriaID = categoria?.id ?? lancamento.categoriaID
         lancamento.cartaoUuid = pagamentoSelecionado?.cartaoModel?.uuid ?? ""
         lancamento.contaUuid = pagamentoSelecionado?.contaModel?.uuid ?? ""
@@ -297,20 +301,20 @@ final class NovoLancamentoViewModel: ObservableObject {
         }
     }
     
-    func salvar() async {
-            switch recorrente {
-            case .mensal:
-                await salvarMensal()
-            case .quinzenal:
-                await salvarPorDias(intervalo: 14)
-            case .semanal:
-                await salvarPorDias(intervalo: 7)
-            default:
-                await salvarNuncaParcelado()
-            }
+    func salvar(desconsiderarPrimeiro: Bool) async {
+        switch recorrente {
+        case .mensal:
+            await salvarMensal(desconsiderarPrimeiro)
+        case .quinzenal:
+            await salvarPorDias(desconsiderarPrimeiro, intervalo: 14)
+        case .semanal:
+            await salvarPorDias(desconsiderarPrimeiro,intervalo: 7)
+        default:
+            await salvarNuncaParcelado(desconsiderarPrimeiro)
         }
+    }
 
-        private func salvarMensal() async {
+    private func salvarMensal(_ desconsiderarPrimeiro: Bool) async {
             guard let meioPagamento = pagamentoSelecionado else { return }
             let calendar = Calendar.current
             let repository = LancamentoRepository()
@@ -328,7 +332,8 @@ final class NovoLancamentoViewModel: ObservableObject {
 
             guard let dataFinal = calendar.date(byAdding: .year, value: 10, to: dataInicial) else { return }
             var dataAtual = dataInicial
-            let uuid = UUID().uuidString
+            let uuid = desconsiderarPrimeiro ? uuidEdicao : UUID().uuidString
+            var isPrimeiro: Bool = true
 
             do {
                 while dataAtual <= dataFinal {
@@ -351,13 +356,16 @@ final class NovoLancamentoViewModel: ObservableObject {
                         anoCompra: compra.year!,
                         parcelaMes: ""
                     )
-
-                    try await repository.salvar(lancamento)
+                    
                     dataAtual = calendar.date(byAdding: .month, value: 1, to: dataAtual)!
+                    
+                    if desconsiderarPrimeiro && isPrimeiro {
+                        isPrimeiro = false
+                        continue
+                    } else {
+                        try await repository.salvar(lancamento)
+                    }
                 }
-
-                // Aqui você pode disparar algum dismiss via closure na view
-
             } catch let erro as LancamentoValidacaoErro {
                 erroValidacao = erro
             } catch {
@@ -365,13 +373,14 @@ final class NovoLancamentoViewModel: ObservableObject {
             }
         }
 
-        private func salvarPorDias(intervalo: Int) async {
+        private func salvarPorDias(_ desconsiderarPrimeiro: Bool, intervalo: Int) async {
             let calendar = Calendar.current
             let repository = LancamentoRepository()
             var dataAtual = dataLancamento
 
             guard let dataFinal = calendar.date(byAdding: .year, value: 10, to: dataAtual) else { return }
-            let uuid = UUID().uuidString
+            let uuid = desconsiderarPrimeiro ? uuidEdicao : UUID().uuidString
+            var isPrimeiro: Bool = true
 
             do {
                 while dataAtual <= dataFinal {
@@ -387,9 +396,15 @@ final class NovoLancamentoViewModel: ObservableObject {
                         anoCompra: componentes.year ?? 0,
                         parcelaMes: ""
                     )
-
-                    try await repository.salvar(lancamento)
+                    
                     dataAtual = calendar.date(byAdding: .day, value: intervalo, to: dataAtual)!
+                    
+                    if desconsiderarPrimeiro && isPrimeiro {
+                        isPrimeiro = false
+                        continue
+                    } else {
+                        try await repository.salvar(lancamento)
+                    }
                 }
             } catch let erro as LancamentoValidacaoErro {
                 erroValidacao = erro
@@ -398,7 +413,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             }
         }
 
-        private func salvarNuncaParcelado() async {
+        private func salvarNuncaParcelado(_ desconsiderarPrimeiro: Bool) async {
             guard let meio = pagamentoSelecionado else { return }
             let calendar = Calendar.current
             let repository = LancamentoRepository()
@@ -416,7 +431,8 @@ final class NovoLancamentoViewModel: ObservableObject {
 
             let compra = calendar.dateComponents([.day, .month, .year], from: dataLancamento)
             var dataAtual = dataInicial
-            let uuid = UUID().uuidString
+            let uuid = desconsiderarPrimeiro ? uuidEdicao : UUID().uuidString
+            var isPrimeiro: Bool = true
 
             do {
                 for parcela in 1...parcelaInt {
@@ -430,9 +446,15 @@ final class NovoLancamentoViewModel: ObservableObject {
                         anoCompra: compra.year!,
                         parcelaMes: "\(parcela)/\(parcelaInt)"
                     )
-
-                    try await repository.salvar(lancamento)
+                    
                     dataAtual = calendar.date(byAdding: .month, value: 1, to: dataAtual)!
+                    
+                    if desconsiderarPrimeiro && isPrimeiro {
+                        isPrimeiro = false
+                        continue
+                    } else {
+                        try await repository.salvar(lancamento)
+                    }
                 }
             } catch let erro as LancamentoValidacaoErro {
                 erroValidacao = erro
