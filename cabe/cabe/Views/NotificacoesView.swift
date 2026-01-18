@@ -80,7 +80,10 @@ private struct VenceHojeSection: View {
         Section("Vence Hoje") {
             ForEach(vmNotificacao.vencemHoje) { lancamento in
                 NavigationLink {
-                    LancamentoDetalheView(lancamento: lancamento)
+                    LancamentoDetalheView(
+                        lancamentoID: lancamento.id ?? 0,
+                        viewModel: vmLancamentos
+                    )
                 } label: {
                     LancamentoRow(
                         lancamento: lancamento,
@@ -138,7 +141,10 @@ private struct VencidosSection: View {
         Section("Vencidos") {
             ForEach(vmNotificacao.vencidos) { lancamento in
                 NavigationLink {
-                    LancamentoDetalheView(lancamento: lancamento)
+                    LancamentoDetalheView(
+                        lancamentoID: lancamento.id ?? 0,
+                        viewModel: vmLancamentos
+                    )
                 } label: {
                     LancamentoRow(
                         lancamento: lancamento,

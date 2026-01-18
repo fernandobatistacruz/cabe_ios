@@ -115,7 +115,10 @@ struct CartaoFaturaView: View {
                             }
                         } else {
                             NavigationLink {
-                                LancamentoDetalheView(lancamento: lancamento)
+                                LancamentoDetalheView(
+                                    lancamentoID: lancamento.id ?? 0,
+                                    viewModel: viewModel
+                                )
                             } label: {
                                 LancamentoRow(
                                     lancamento: lancamento,
