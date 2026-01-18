@@ -128,7 +128,7 @@ struct ResumoAnualView: View {
 
     // MARK: - Cards
     func cardsResumo(_ resumo: ResumoAnualModel) -> some View {
-        let currentCode = vm.lancamentos.first?.currencyCode ?? "USD"
+        let currentCode = vm.lancamentos.first?.currencyCode ?? ""
         
         return HStack(spacing: 12) {
             CardResumoView(

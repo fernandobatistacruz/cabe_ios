@@ -35,7 +35,7 @@ struct ZoomPagamentoView: View {
                         } label: {
                             PagamentoRowView(
                                 titulo: cartao.nome,
-                                subtitulo: "Cartão",
+                                subtitulo: cartao.conta?.nome ?? "",
                                 leadingImage: Image(cartao.operadoraEnum.imageName),
                                 isSelected: meio == selecionado
                             )
@@ -62,7 +62,7 @@ struct ZoomPagamentoView: View {
                         } label: {
                             PagamentoRowView(
                                 titulo: conta.nome,
-                                subtitulo: "Conta",
+                                subtitulo: conta.saldoFormatado,
                                 leadingImage: Image(systemName: "building.columns"),
                                 isSelected: meio == selecionado
                             )
@@ -134,7 +134,7 @@ struct PagamentoRowView: View {
                 Text(titulo)
                     .foregroundColor(.primary)
                 Text(subtitulo)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundColor(.secondary)
             }
 

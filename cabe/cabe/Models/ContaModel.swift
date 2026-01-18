@@ -1,4 +1,5 @@
 import GRDB
+import Foundation
 
 struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     static let databaseTableName = "conta"
@@ -23,5 +24,17 @@ struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         static let nome = Column("nome")
         static let saldo = Column("saldo")
         static let currencyCode = Column("currency_code")
+    }
+}
+
+extension ContaModel {
+
+    var saldoFormatado: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currencyCode
+        formatter.locale = Locale.current
+
+        return formatter.string(from: saldo as NSNumber) ?? "-"
     }
 }

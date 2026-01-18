@@ -11,8 +11,25 @@ struct ConsumoDetalhadoView: View {
 
     @ObservedObject var vm: LancamentoListViewModel
     let items: [CategoriaResumo]
+    
+    private var isEmpty: Bool {
+        items.isEmpty
+    }
 
     var body: some View {
+        Group {
+            if isEmpty {
+                emptyState
+            } else {
+                content
+            }
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Consumo")
+        .toolbar(.hidden, for: .tabBar)
+    }
+    
+    private var content: some View {
         ScrollView {
             VStack(spacing: 16) {
 
@@ -22,7 +39,7 @@ struct ConsumoDetalhadoView: View {
                         items: items,
                         lineWidth: 22,
                         size: 180,
-                        detalhar: true,
+                        detalhar: true
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -73,9 +90,21 @@ struct ConsumoDetalhadoView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Consumo")
-        .toolbar(.hidden, for: .tabBar)
+    }
+    
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            
+            Text("Nenhum Consumo")
+                .font(.title2)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding()
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
