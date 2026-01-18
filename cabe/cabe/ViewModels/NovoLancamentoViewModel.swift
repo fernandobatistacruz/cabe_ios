@@ -245,7 +245,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             recorrente: recorrente.rawValue,
             parcelas: parcelaInt,
             parcelaMes: parcelaMes,
-            valor: valor,
+            valor: valor / Decimal(parcelaInt),
             pagoRaw: pago ? 1 : 0,
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
@@ -269,11 +269,12 @@ final class NovoLancamentoViewModel: ObservableObject {
 
         lancamento.descricao = descricao
         lancamento.anotacao = anotacao
-        lancamento.valor = valor
+        lancamento.valor = valor / Decimal(parcelaInt)
         lancamento.divididoRaw = dividida ? 1 : 0
         lancamento.pagoRaw = pago ? 1 : 0
         lancamento.recorrente = recorrente.rawValue
         lancamento.parcelas = parcelaInt
+        lancamento.parcelaMes = parcelaInt > 1 ? "1/\(parcelaInt)" : ""
         lancamento.categoriaID = categoria?.id ?? lancamento.categoriaID
         lancamento.cartaoUuid = pagamentoSelecionado?.cartaoModel?.uuid ?? ""
         lancamento.contaUuid = pagamentoSelecionado?.contaModel?.uuid ?? ""
@@ -433,7 +434,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             var dataAtual = dataInicial
             let uuid = desconsiderarPrimeiro ? uuidEdicao : UUID().uuidString
             var isPrimeiro: Bool = true
-
+           
             do {
                 for parcela in 1...parcelaInt {
                     let lancamento = try construirLancamento(
