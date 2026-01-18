@@ -122,13 +122,13 @@ extension AppDatabase {
 
             let categoriasPadrao: [CategoriaModel] = [
                 // Receitas
-                CategoriaModel(id: 0, nomeRaw: "", nomeKey: "category.estorno", tipo: 1, icone: 0, cor: 0, pai: nil),
-                CategoriaModel(id: 1, nomeRaw: "", nomeKey: "category.salario", tipo: 1, icone: 0, cor: 0, pai: nil),
-                CategoriaModel(id: 2, nomeRaw: "", nomeKey: "category.premio", tipo: 1, icone: 0, cor: 0, pai: nil),
+                CategoriaModel(id: 0, nomeRaw: "", nomeKey: "category.estorno", tipo: 1, icone: 5, cor: 0, pai: nil),
+                CategoriaModel(id: 1, nomeRaw: "", nomeKey: "category.salario", tipo: 1, icone: 5, cor: 0, pai: nil),
+                CategoriaModel(id: 2, nomeRaw: "", nomeKey: "category.premio", tipo: 1, icone: 5, cor: 0, pai: nil),
                 CategoriaModel(id: 3, nomeRaw: "", nomeKey: "category.investimento", tipo: 1, icone: 2, cor: 0, pai: nil),
                 CategoriaModel(id: 4, nomeRaw: "", nomeKey: "category.aluguel", tipo: 1, icone: 3, cor: 0, pai: nil),
-                CategoriaModel(id: 5, nomeRaw: "", nomeKey: "category.participacao_resultados", tipo: 1, icone: 0, cor: 0, pai: nil),
-                CategoriaModel(id: 6, nomeRaw: "", nomeKey: "category.decimo", tipo: 1, icone: 0, cor: 0, pai: nil),
+                CategoriaModel(id: 5, nomeRaw: "", nomeKey: "category.participacao_resultados", tipo: 1, icone: 5, cor: 0, pai: nil),
+                CategoriaModel(id: 6, nomeRaw: "", nomeKey: "category.decimo", tipo: 1, icone: 5, cor: 0, pai: nil),
 
                 // Despesas
                 CategoriaModel(id: 1, nomeRaw: "", nomeKey: "category.combustivel", tipo: 2, icone: 4, cor: 1, pai: nil),

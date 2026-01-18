@@ -96,7 +96,7 @@ struct IconeModel {
     let systemName: String
 
     static let icones: [IconeModel] = [
-        IconeModel(id: 0, systemName: "creditcard"),
+        IconeModel(id: 0, systemName: "creditcard.fill"),
         IconeModel(id: 1, systemName: "sun.max.fill"),
         IconeModel(id: 2, systemName: "chart.bar.fill"),
         IconeModel(id: 3, systemName: "building.2.fill"),
@@ -120,7 +120,7 @@ struct IconeModel {
         IconeModel(id: 21, systemName: "barcode"),
         IconeModel(id: 22, systemName: "gift.fill"),
         IconeModel(id: 23, systemName: "laptopcomputer"),
-        IconeModel(id: 24, systemName: "refrigerator"),
+        IconeModel(id: 24, systemName: "refrigerator.fill"),
         IconeModel(id: 25, systemName: "tv.music.note.fill"),
         IconeModel(id: 26, systemName: "lifepreserver.fill"),
         IconeModel(id: 27, systemName: "eye.fill"),
@@ -131,7 +131,7 @@ struct IconeModel {
         IconeModel(id: 32, systemName: "square.grid.2x2.fill"),
         IconeModel(id: 33, systemName: "gamecontroller.fill"),
         IconeModel(id: 34, systemName: "hammer.fill"),
-        IconeModel(id: 35, systemName: "guitars"),
+        IconeModel(id: 35, systemName: "guitars.fill"),
         IconeModel(id: 36, systemName: "bag.fill"),
         IconeModel(id: 37, systemName: "cloud.fill"),
         IconeModel(id: 38, systemName: "airplane"),
@@ -151,7 +151,7 @@ struct IconeModel {
         IconeModel(id: 52, systemName: "briefcase.fill"),
         IconeModel(id: 53, systemName: "camera.fill"),
         IconeModel(id: 54, systemName: "chart.pie.fill"),
-        IconeModel(id: 55, systemName: "film"),
+        IconeModel(id: 55, systemName: "film.fill"),
         IconeModel(id: 56, systemName: "hifispeaker.fill"),
         IconeModel(id: 57, systemName: "map.fill"),
         IconeModel(id: 58, systemName: "mic.fill"),

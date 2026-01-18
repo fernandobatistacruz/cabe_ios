@@ -292,7 +292,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Água / Esgoto"
+            "value" : "Água e Esgoto"
           }
         }
       }
@@ -360,7 +360,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Barbearia / Salão"
+            "value" : "Barbearia e Salão"
           }
         }
       }
@@ -615,7 +615,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imposto / Tarifa"
+            "value" : "Imposto e Tarifa"
           }
         }
       }
@@ -666,7 +666,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lazer / Hobby"
+            "value" : "Lazer e Hobby"
           }
         }
       }
@@ -819,7 +819,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Streaming / TV"
+            "value" : "Streaming e TV"
           }
         }
       }
