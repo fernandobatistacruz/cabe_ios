@@ -21,7 +21,7 @@ struct LancamentoDetalheView: View {
     var body: some View {
         Form {
             Section {
-                HStack(spacing: 16) {
+                HStack(spacing: 10) {
                     let systemName: String = {
                         if lancamento!.transferencia {
                             return "arrow.left.arrow.right"
@@ -46,6 +46,8 @@ struct LancamentoDetalheView: View {
                     
                     VStack (alignment: .leading){
                         Text(lancamento!.descricao)
+                            .lineLimit(2)
+                            .truncationMode(.tail)
                             .font(.title2.bold())
                         let subtitleText: String = {
                             if lancamento!.transferencia {
@@ -58,12 +60,12 @@ struct LancamentoDetalheView: View {
                                 }
                             }
                         }()
-
                         Text(subtitleText)
                             .font(.footnote)
                             .foregroundColor(.secondary)
                     }
-                    Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                   
                     Text(
                         lancamento!.valorComSinal,
                         format: .currency(
@@ -72,6 +74,7 @@ struct LancamentoDetalheView: View {
                     )
                     .font(.title2.bold())
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: true, vertical: false)
                 }
                 
             }

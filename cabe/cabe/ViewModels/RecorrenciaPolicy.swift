@@ -14,7 +14,9 @@ struct RecorrenciaPolicy {
     
     let meioPagamento: MeioPagamento?
     let tipoAtual: TipoRecorrente
+    let tipoAnterior: TipoRecorrente
     let contexto: Contexto
+    
 
     // MARK: - Recorrências permitidas
 
@@ -85,6 +87,20 @@ struct RecorrenciaPolicy {
         switch tipoAtual {
         case .mensal, .semanal, .quinzenal:
             return true
+        default:
+            return false
+        }
+    }
+    
+    var podeAlterarNoParcela: Bool {
+        switch tipoAtual {
+        case .parcelado:
+            if tipoAnterior == .nunca {
+                return true
+            }
+            else {
+                return false
+            }
         default:
             return false
         }

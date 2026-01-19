@@ -30,12 +30,14 @@ final class NovoLancamentoViewModel: ObservableObject {
     
     private let contexto: RecorrenciaPolicy.Contexto
     private var uuidEdicao: String = ""
+    private let lancamentoEdicao : LancamentoModel?
     
     // MARK: - Init
 
     /// Cadastro
     init() {
         self.contexto = .criacao
+        self.lancamentoEdicao = nil
         configurarValorInicial(0)
         sugerirDataFatura()
         
@@ -46,6 +48,7 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     /// Edição
     init(lancamento: LancamentoModel) {
+        self.lancamentoEdicao = lancamento
         self.contexto = .edicao
         self.descricao = lancamento.descricao
         self.anotacao = lancamento.anotacao
@@ -86,12 +89,18 @@ final class NovoLancamentoViewModel: ObservableObject {
         RecorrenciaPolicy(
             meioPagamento: pagamentoSelecionado,
             tipoAtual: recorrente,
+            tipoAnterior: lancamentoEdicao?.tipoRecorrente ?? .nunca,
             contexto: contexto
         )
     }
+    
 
     var recorrenciasDisponiveis: [TipoRecorrente] {
         recorrenciaPolicy.recorrenciasPermitidas
+    }
+    
+    var podeAlterarNoParcela: Bool {
+        recorrenciaPolicy.podeAlterarNoParcela
     }
     
     func ajustarRecorrenciaSeNecessario() {
@@ -266,10 +275,18 @@ final class NovoLancamentoViewModel: ObservableObject {
         }
         
         uuidEdicao = lancamento.uuid
+        
+        var valorParcela : Decimal = 0
+        
+        if lancamento.recorrente == TipoRecorrente.parcelado.rawValue && recorrente == .parcelado {
+            valorParcela = valor
+        } else {
+            valorParcela = valor / Decimal(parcelaInt)
+        }
 
         lancamento.descricao = descricao
         lancamento.anotacao = anotacao
-        lancamento.valor = valor / Decimal(parcelaInt)
+        lancamento.valor = valorParcela
         lancamento.divididoRaw = dividida ? 1 : 0
         lancamento.pagoRaw = pago ? 1 : 0
         lancamento.recorrente = recorrente.rawValue

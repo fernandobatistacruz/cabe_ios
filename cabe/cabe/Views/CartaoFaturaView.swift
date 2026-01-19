@@ -73,7 +73,7 @@ struct CartaoFaturaView: View {
     var body: some View {
         List {
             // 🔹 Card do cartão
-            HStack(spacing: 16) {
+            HStack(spacing: 10) {
                 Image(cartao.operadoraEnum.imageName)
                     .resizable()
                     .scaledToFit()
@@ -82,13 +82,14 @@ struct CartaoFaturaView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(cartao.nome)
                         .font(.title3.bold())
+                        .lineLimit(2)
+                        .truncationMode(.tail)
 
-                    Text(vencimento.formatted(date: .long, time: .omitted))
+                    Text(vencimento.formatted(date: .numeric, time: .omitted))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading) // 🔑 ocupa o espaço flexível
 
                 Text(
                     modoConferencia ? totalConferido : total,
@@ -100,6 +101,7 @@ struct CartaoFaturaView: View {
                 .foregroundStyle(
                     modoConferencia ? Color.accentColor : .secondary
                 )
+                .fixedSize(horizontal: true, vertical: false) // 🔒 nunca trunca
             }
 
             if !filtroLancamentos.isEmpty {

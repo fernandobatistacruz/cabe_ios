@@ -374,6 +374,8 @@ struct LancamentoCartaoRow: View {
                 Text(cartao.nome)
                     .font(.body)
                     .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 
                 Text("Fatura")
                     .font(.footnote)
@@ -426,10 +428,28 @@ struct LancamentoRow: View {
                 .foregroundColor(color)
             
             VStack(alignment: .leading) {
-                Text(lancamento.descricao)
-                    .font(.body)
-                    .foregroundColor(.primary)
+                HStack{
+                    Text(lancamento.descricao)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                    if lancamento.recorrente == TipoRecorrente.parcelado.rawValue {
+                        Text(lancamento.parcelaMes)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+                    if lancamento.recorrente == TipoRecorrente.mensal.rawValue ||
+                       lancamento.recorrente == TipoRecorrente.quinzenal.rawValue ||
+                       lancamento.recorrente == TipoRecorrente.semanal.rawValue
+                    {
+                        Image(systemName: "repeat")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 
+                    
                 let subtitleText: String = {
                     if lancamento.transferencia {
                         return lancamento.tipo == Tipo.despesa.rawValue ? "Saída" : "Entrada"
