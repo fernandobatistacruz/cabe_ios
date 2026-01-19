@@ -23,7 +23,6 @@ struct EditarLancamentoView: View {
     @State private var isSaving = false
     @State private var escopoEdicao: EscopoEdicaoRecorrencia?
     @State private var mostrarConfirmacaoEscopo = false
-    // 🔹 Lançamento que será editado
     private let lancamento: LancamentoModel
 
     // MARK: - Init
@@ -128,7 +127,7 @@ struct EditarLancamentoView: View {
                             if vm.podeAlterarNoParcela {
                                 TextField("Número de parcelas", text: $vm.parcelaTexto)
                                     .keyboardType(.numberPad)
-                            } 
+                            }
 
                             TextField("Valor", text: $vm.valorTexto)
                             .keyboardType(.numberPad)
