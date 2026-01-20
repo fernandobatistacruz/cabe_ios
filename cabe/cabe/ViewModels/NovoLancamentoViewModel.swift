@@ -275,18 +275,10 @@ final class NovoLancamentoViewModel: ObservableObject {
         }
         
         uuidEdicao = lancamento.uuid
-        
-        var valorParcela : Decimal = 0
-        
-        if lancamento.recorrente == TipoRecorrente.parcelado.rawValue && recorrente == .parcelado {
-            valorParcela = valor
-        } else {
-            valorParcela = valor / Decimal(parcelaInt)
-        }
 
         lancamento.descricao = descricao
         lancamento.anotacao = anotacao
-        lancamento.valor = valorParcela
+        lancamento.valor = lancamento.tipoRecorrente == recorrente ? valor : valor / Decimal(parcelaInt)
         lancamento.divididoRaw = dividida ? 1 : 0
         lancamento.pagoRaw = pago ? 1 : 0
         lancamento.recorrente = recorrente.rawValue
