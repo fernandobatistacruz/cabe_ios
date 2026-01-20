@@ -8,23 +8,25 @@
 import SwiftUI
 import StoreKit
 
-
 struct PaywallView: View {
 
     @EnvironmentObject var sub: SubscriptionManager
     @Environment(\.dismiss) private var dismiss
     var isModal: Bool = true
 
+    @State private var selectedPlan: SubscriptionManager.Plan = .basic
+
     var body: some View {
         ScrollView {
-            
             VStack(spacing: 24) {
-
                 header
                 planCards
                 footerText
             }
             .padding()
+        }
+        .onAppear {
+            selectedPlan = sub.currentPlan
         }
         .navigationTitle("Assinatura")
         .navigationBarTitleDisplayMode(.inline)
@@ -51,20 +53,30 @@ struct PaywallView: View {
             }
         }
     }
-    
+
+    // MARK: - Footer
+
     var footerText: some View {
-        Text("A assinatura será automaticamente renovada por \(sub.product?.displayPrice ?? "") por mês até ser cancelada.")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
+        Group {
+            if let product = sub.product {
+                Text("A assinatura será automaticamente renovada por \(product.displayPrice) por mês até ser cancelada.")
+            } else {
+                Text("Carregando informações da assinatura…")
+            }
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
     }
 }
+
+// MARK: - Header
 
 private extension PaywallView {
 
     var header: some View {
         VStack(spacing: 12) {
-            
+
             if sub.currentPlan == .complete {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 56))
@@ -76,7 +88,7 @@ private extension PaywallView {
             }
 
             Text(sub.currentPlan == .complete
-                 ? "Assinatura Ativa"
+                 ? "Assinatura Completa"
                  : "Assinatura Básica")
                 .font(.title.bold())
 
@@ -95,6 +107,8 @@ private extension PaywallView {
     }
 }
 
+// MARK: - Plans
+
 private extension PaywallView {
 
     var planCards: some View {
@@ -103,7 +117,7 @@ private extension PaywallView {
             completePlan
         }
     }
-    
+
     var basicPlan: some View {
         PlanCard(
             title: "Básica",
@@ -112,14 +126,21 @@ private extension PaywallView {
                 "Contas, cartões e categorias limitados",
                 "Com anúncios"
             ],
-            isSelected: sub.currentPlan == .basic
+            isSelected: selectedPlan == .basic,
+            showsButton: false,          // 👈 NÃO mostra botão
+            isPurchasing: false
         )
+        .onTapGesture {
+            selectedPlan = .basic
+        }
     }
-    
+
     var completePlan: some View {
         PlanCard(
             title: "Completa",
-            price: sub.product?.displayPrice ?? "R$ —/mês",
+            price: sub.isLoadingProduct
+                ? "Carregando…"
+                : sub.product?.displayPrice ?? "Indisponível",
             features: [
                 "Acesso ilimitado aos cadastros",
                 "Exportação de dados para CSV",
@@ -127,15 +148,26 @@ private extension PaywallView {
                 "Notificação de vencimento",
                 "Sem anúncios"
             ],
-            isSelected: sub.currentPlan == .complete,
+            isSelected: selectedPlan == .complete,
+            showsButton: true,           // 👈 Sempre mostra botão
             action: {
                 Task {
                     await sub.purchase()
                 }
-            }
+            },
+            isPurchasing: sub.isPurchasing,
+            isButtonEnabled:
+                selectedPlan == .complete &&
+                sub.product != nil &&
+                !sub.isPurchasing
         )
+        .onTapGesture {
+            selectedPlan = .complete
+        }
     }
 }
+
+// MARK: - PlanCard
 
 struct PlanCard: View {
 
@@ -143,7 +175,11 @@ struct PlanCard: View {
     let price: String
     let features: [String]
     let isSelected: Bool
+
+    let showsButton: Bool
     var action: (() -> Void)? = nil
+    let isPurchasing: Bool
+    var isButtonEnabled: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -177,15 +213,23 @@ struct PlanCard: View {
                 }
             }
 
-            if let action, !isSelected {
+            // 🔥 Botão só aparece se permitido
+            if showsButton {
                 Button {
-                    action()
+                    action?()
                 } label: {
-                    Text("Assinar")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, minHeight: 50)
+                    if isPurchasing {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, minHeight: 50)
+                    } else {
+                        Text("Assinar")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 50)
+                    }
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(!isButtonEnabled)
+                .opacity(isButtonEnabled ? 1.0 : 0.6)
             }
         }
         .padding()
@@ -197,6 +241,6 @@ struct PlanCard: View {
                     .stroke(.tint, lineWidth: 2)
             }
         }
+        .contentShape(Rectangle())
     }
 }
-

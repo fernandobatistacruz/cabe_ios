@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED5023882F1F932500395645 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED5023872F1F932500395645 /* StoreKit.framework */; };
 		ED5430F82F0DACB600F97E38 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430F72F0DACB600F97E38 /* FirebaseAnalytics */; };
 		ED5430FA2F0DACB600F97E38 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430F92F0DACB600F97E38 /* FirebaseAuth */; };
 		ED5430FC2F0DACB600F97E38 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = ED5430FB2F0DACB600F97E38 /* FirebaseCore */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		ED5023872F1F932500395645 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EDE9CC392EECD36E0009645B /* cabe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cabe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -46,6 +48,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EDB5A0A42F0F2B8600FAE84F /* GoogleMobileAds in Frameworks */,
+				ED5023882F1F932500395645 /* StoreKit.framework in Frameworks */,
 				ED5430FF2F0DADBA00F97E38 /* GoogleSignIn in Frameworks */,
 				ED5430F82F0DACB600F97E38 /* FirebaseAnalytics in Frameworks */,
 				ED5430FA2F0DACB600F97E38 /* FirebaseAuth in Frameworks */,
@@ -57,10 +60,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		ED5023862F1F932500395645 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ED5023872F1F932500395645 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EDE9CC302EECD36E0009645B = {
 			isa = PBXGroup;
 			children = (
 				EDE9CC3B2EECD36E0009645B /* cabe */,
+				ED5023862F1F932500395645 /* Frameworks */,
 				EDE9CC3A2EECD36E0009645B /* Products */,
 			);
 			sourceTree = "<group>";

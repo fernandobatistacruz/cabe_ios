@@ -22,6 +22,9 @@ final class SubscriptionManager: ObservableObject {
     
     @AppStorage("isSubscribed")
     private(set) var isSubscribed: Bool = false
+    
+    @Published var isLoadingProduct: Bool = false
+    @Published var isPurchasing: Bool = false
 
     var currentPlan: Plan {
         isSubscribed ? .complete : .basic
@@ -42,26 +45,46 @@ final class SubscriptionManager: ObservableObject {
     }
 
     init() {
+        observeTransactions()
+        
         Task {
             await loadProduct()
             await updateSubscriptionStatus()
-            observeTransactions()
         }
     }
 
     // MARK: - Produto
     func loadProduct() async {
+        isLoadingProduct = true
+        defer { isLoadingProduct = false }
+        
+        print("Entou no loadProduct")
+
         do {
             let products = try await Product.products(for: [productId])
             self.product = products.first
+            
+            print("Produto:", product?.id ?? "falha")
+            try await print(
+                "Estado:",
+                product?.subscription?.status ?? "sem status"
+            )
+            
         } catch {
             print("Erro ao carregar produto:", error)
+            self.product = nil
         }
+        
+       
+        
     }
 
     // MARK: - Compra
     func purchase() async {
         guard let product else { return }
+
+        isPurchasing = true
+        defer { isPurchasing = false }
 
         do {
             let result = try await product.purchase()
@@ -78,7 +101,7 @@ final class SubscriptionManager: ObservableObject {
             case .pending:
                 break
 
-            default:
+            @unknown default:
                 break
             }
         } catch {
@@ -96,9 +119,11 @@ final class SubscriptionManager: ObservableObject {
             isSubscribed = statuses.contains { status in
                 status.state == .subscribed
             }
+            /*
             #if DEBUG
             isSubscribed = true
             #endif
+             */
         } catch {
             print("Erro ao verificar assinatura:", error)
             isSubscribed = false
