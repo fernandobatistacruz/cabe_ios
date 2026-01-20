@@ -57,26 +57,14 @@ final class SubscriptionManager: ObservableObject {
     func loadProduct() async {
         isLoadingProduct = true
         defer { isLoadingProduct = false }
-        
-        print("Entou no loadProduct")
 
         do {
             let products = try await Product.products(for: [productId])
             self.product = products.first
-            
-            print("Produto:", product?.id ?? "falha")
-            try await print(
-                "Estado:",
-                product?.subscription?.status ?? "sem status"
-            )
-            
         } catch {
             print("Erro ao carregar produto:", error)
             self.product = nil
         }
-        
-       
-        
     }
 
     // MARK: - Compra

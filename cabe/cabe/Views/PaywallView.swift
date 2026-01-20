@@ -127,7 +127,7 @@ private extension PaywallView {
                 "Com anúncios"
             ],
             isSelected: selectedPlan == .basic,
-            showsButton: false,          // 👈 NÃO mostra botão
+            showsButton: false,
             isPurchasing: false
         )
         .onTapGesture {
@@ -149,7 +149,7 @@ private extension PaywallView {
                 "Sem anúncios"
             ],
             isSelected: selectedPlan == .complete,
-            showsButton: true,           // 👈 Sempre mostra botão
+            showsButton: true,
             action: {
                 Task {
                     await sub.purchase()
