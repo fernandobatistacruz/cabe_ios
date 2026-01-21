@@ -15,10 +15,6 @@ struct InicioView: View {
     @StateObject private var vmContas: ContaListViewModel
     @EnvironmentObject var deepLinkManager: DeepLinkManager
     @EnvironmentObject var sub: SubscriptionManager
-    
-    @State private var mostrarDetalheRecente = false
-    @State private var selectedLancamentoRecente: LancamentoModel?
-    
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     
     private var selectedDate: Date {
@@ -78,9 +74,7 @@ struct InicioView: View {
                     
                     RecentesListView(
                         viewModel: vmLancamentos,
-                        mosttrarValores: mostrarValores,
-                        mostrarDetalhe: $mostrarDetalheRecente,
-                        selectedLancamento: $selectedLancamentoRecente
+                        mosttrarValores: mostrarValores
                     )
 
                 }
@@ -114,14 +108,6 @@ struct InicioView: View {
                     .capitalized
             )
         )
-        .navigationDestination(isPresented: $mostrarDetalheRecente) {
-            if let lancamento = selectedLancamentoRecente {
-                LancamentoDetalheView(
-                    lancamento: lancamento,
-                    repository: vmLancamentos.repository
-                )
-            }
-        }
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -393,12 +379,10 @@ struct RecentesListView: View {
     @ObservedObject var viewModel: LancamentoListViewModel
     let mosttrarValores: Bool
     
-    @Binding var mostrarDetalhe: Bool
-    @Binding var selectedLancamento: LancamentoModel?
-    
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 12) {
             //TODO: Avaliar se faz sentido mostrar o titulo recentes
+            
             /*
             Text("Recentes")
                 .font(.title3)
@@ -407,37 +391,52 @@ struct RecentesListView: View {
             
             ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
                 
-                Text(grupo.date, format: .dateTime.day().month(.wide))
-                    .foregroundStyle(.secondary)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 6)
-                    .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                HStack{
+                    Text(grupo.date, format: .dateTime.day().month(.wide))
+                        .foregroundStyle(.secondary)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 6)
+                        .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                    
+                    let total = grupo.items.reduce(.zero) { $0 + $1.valorComSinal }
+                    
+                    Spacer()
+                    
+                    Text(total, format: .currency(code: grupo.items.first?.currencyCode ?? "USD"))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 6)
+                        .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                }
                 
                 VStack(spacing: 0) {
-                    ForEach(grupo.items.indices, id: \.self) { index in
-                        
-                        Button {
-                            selectedLancamento = grupo.items[index]
-                            mostrarDetalhe = true
-                        } label: {
-                            HStack {
-                                LancamentoRow(
-                                    lancamento: grupo.items[index],
-                                    mostrarPagamento: false,
-                                    mostrarValores: mosttrarValores                                  
+                    ForEach(grupo.items) { lancamento in
+                       
+                        HStack {
+                            NavigationLink {
+                                LancamentoDetalheView(
+                                    lancamento: lancamento,
+                                    repository: viewModel.repository
                                 )
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
+                            } label: {
+                                LancamentoRow(
+                                    lancamento: lancamento,
+                                    mostrarPagamento: false,
+                                    mostrarValores: mosttrarValores
+                                )
                             }
-                            .padding(.vertical, 8)
-                            .background(Color(uiColor: .secondarySystemGroupedBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
                         }
-                        .buttonStyle(.plain)
-                        
-                        if index != grupo.items.count - 1 {
+                        .padding(.vertical, 8)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+
+                        if lancamento.id != grupo.items.last?.id {
                             Divider()
                                 .padding(.leading, 35)
                         }

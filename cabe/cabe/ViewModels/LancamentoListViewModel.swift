@@ -303,11 +303,6 @@ extension LancamentoListViewModel {
 
         // Evita duplicidade de UUID, pega os 10 mais recentes
         var vistos: Set<String> = []
-        
-        lancamentosRecentes.forEach {
-            print($0.dataCriacaoDate)
-        }
-
 
         let recentes = lancamentosRecentes
             .sorted { $0.dataCriacaoDate > $1.dataCriacaoDate }
@@ -317,10 +312,6 @@ extension LancamentoListViewModel {
                 return true
             }
             .prefix(10)
-        
-        recentes.forEach {
-            print($0.dataCriacaoDate)
-        }
 
         // Agrupa por dia
         let porData = Dictionary(grouping: recentes) { lancamento in

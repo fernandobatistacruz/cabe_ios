@@ -95,7 +95,7 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
         static let dataCriacao = Column("dataCriacao")
         static let notificacaoLidaRaw = Column("notificado")
         static let currencyCode = Column("currency_code")
-    }
+    }    
 }
 
 extension LancamentoModel {
