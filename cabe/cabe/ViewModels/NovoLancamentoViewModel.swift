@@ -31,11 +31,13 @@ final class NovoLancamentoViewModel: ObservableObject {
     private let contexto: RecorrenciaPolicy.Contexto
     private var uuidEdicao: String = ""
     private let lancamentoEdicao : LancamentoModel?
+    let repository: LancamentoRepository
     
     // MARK: - Init
 
     /// Cadastro
-    init() {
+    init(repository: LancamentoRepository) {
+        self.repository = repository
         self.contexto = .criacao
         self.lancamentoEdicao = nil
         configurarValorInicial(0)
@@ -47,7 +49,8 @@ final class NovoLancamentoViewModel: ObservableObject {
     }
 
     /// Edição
-    init(lancamento: LancamentoModel) {
+    init(lancamento: LancamentoModel, repository: LancamentoRepository) {
+        self.repository = repository
         self.lancamentoEdicao = lancamento
         self.contexto = .edicao
         self.descricao = lancamento.descricao
@@ -327,7 +330,6 @@ final class NovoLancamentoViewModel: ObservableObject {
     private func salvarMensal(_ desconsiderarPrimeiro: Bool) async {
             guard let meioPagamento = pagamentoSelecionado else { return }
             let calendar = Calendar.current
-            let repository = LancamentoRepository()
             let dataInicial: Date
             let diaVencimento: Int
 
@@ -385,7 +387,6 @@ final class NovoLancamentoViewModel: ObservableObject {
 
         private func salvarPorDias(_ desconsiderarPrimeiro: Bool, intervalo: Int) async {
             let calendar = Calendar.current
-            let repository = LancamentoRepository()
             var dataAtual = dataLancamento
 
             guard let dataFinal = calendar.date(byAdding: .year, value: 10, to: dataAtual) else { return }
@@ -426,7 +427,6 @@ final class NovoLancamentoViewModel: ObservableObject {
         private func salvarNuncaParcelado(_ desconsiderarPrimeiro: Bool) async {
             guard let meio = pagamentoSelecionado else { return }
             let calendar = Calendar.current
-            let repository = LancamentoRepository()
             let dataInicial: Date
 
             switch meio {

@@ -28,7 +28,7 @@ final class LancamentoListViewModel: ObservableObject {
     @Published private(set) var mesAtual: Int
     @Published private(set) var anoAtual: Int
     
-    private let repository: LancamentoRepository
+    let repository: LancamentoRepository
     
     init(
         repository: LancamentoRepository,
@@ -48,7 +48,7 @@ final class LancamentoListViewModel: ObservableObject {
     
     deinit {
         dbCancellableLancamentos?.cancel()
-        dbCancellableLancamentos?.cancel()
+        dbCancellableRecentes?.cancel()
         dbCancellableNotificacao?.cancel()
     }
     

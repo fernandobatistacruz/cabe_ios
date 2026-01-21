@@ -14,7 +14,6 @@ import SwiftUI
 struct EditarLancamentoView: View {
 
     let lancamento: LancamentoModel
-    let onSave: ((LancamentoModel) -> Void)?
     
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm: NovoLancamentoViewModel
@@ -24,14 +23,14 @@ struct EditarLancamentoView: View {
     @State private var isSaving = false
     @State private var escopoEdicao: EscopoEdicaoRecorrencia?
     @State private var mostrarConfirmacaoEscopo = false
-    
 
     // MARK: - Init
-    init(lancamento: LancamentoModel, onSave: ((LancamentoModel) -> Void)? = nil) {
+    init(lancamento: LancamentoModel, repository: LancamentoRepository) {
         self.lancamento = lancamento
-        self.onSave = onSave
         _vm = StateObject(
-            wrappedValue: NovoLancamentoViewModel(lancamento: lancamento)
+            wrappedValue: NovoLancamentoViewModel(
+                lancamento: lancamento,
+                repository: repository)
         )
     }
     
@@ -288,14 +287,12 @@ struct EditarLancamentoView: View {
             isSaving = true
 
             try vm.validarRecorrencia()
-
-            let repository = LancamentoRepository()
                        
             var editado = lancamento
             try vm.aplicarEdicao(no: &editado)
 
             // Atualiza o lançamento atual e os recorrentes com base no escopo
-            try await repository.editar(
+            try await vm.repository.editar(
                 lancamento: editado,
                 escopo: escopo
             )
@@ -306,8 +303,6 @@ struct EditarLancamentoView: View {
             }
             
             isSaving = false
-
-            onSave?(editado)
             dismiss()
 
         } catch let erro as LancamentoValidacaoErro {

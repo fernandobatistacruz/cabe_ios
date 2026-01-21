@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CartaoFaturaView: View {
-    //let viewModel: LancamentoListViewModel
+    let viewModel: LancamentoListViewModel
     let cartao: CartaoModel
     let lancamentos: [LancamentoModel]
     let total: Decimal
@@ -117,7 +117,10 @@ struct CartaoFaturaView: View {
                             }
                         } else {
                             NavigationLink {
-                                LancamentoDetalheView(lancamento: lancamento)
+                                LancamentoDetalheView(
+                                    lancamento: lancamento,
+                                    repository: viewModel.repository
+                                )
                             } label: {
                                 LancamentoRow(
                                     lancamento: lancamento,

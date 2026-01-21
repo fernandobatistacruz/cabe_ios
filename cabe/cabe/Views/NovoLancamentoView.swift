@@ -10,13 +10,19 @@ import SwiftUI
 struct NovoLancamentoView: View {
    
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var vm = NovoLancamentoViewModel()
+    @StateObject private var vm: NovoLancamentoViewModel
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
     @State private var mostrarZoomCategoria = false
     @State private var showCalendar = false
     @State private var isSaving = false
+    
+    init(repository: LancamentoRepository) {
+        _vm = StateObject(
+            wrappedValue: NovoLancamentoViewModel(repository: repository)
+        )
+    }
    
     var body: some View {
         NavigationStack{
@@ -260,10 +266,6 @@ struct NovoLancamentoView: View {
             vm.sugerirDataFatura()
         }
     }
-}
-
-#Preview {
-    NovoLancamentoView()
 }
 
 enum NovoLancamentoSheet: Identifiable {

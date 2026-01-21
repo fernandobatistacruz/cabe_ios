@@ -32,7 +32,8 @@ struct FaturaListView: View {
                         ForEach(section.items) { item in
                             if case .cartaoAgrupado(let cartao, let total, let lancamentos) = item {
                                 NavigationLink {
-                                    CartaoFaturaView(                                       
+                                    CartaoFaturaView(
+                                        viewModel: viewModel,
                                         cartao: cartao,
                                         lancamentos: lancamentos,
                                         total: total,
@@ -136,7 +137,7 @@ struct FaturaListView: View {
             }
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
-            NovoLancamentoView()
+            NovoLancamentoView(repository: viewModel.repository)
         }
         .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(

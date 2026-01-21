@@ -9,17 +9,22 @@ import Combine
 
 struct NotificacoesView: View {
     @ObservedObject var vmNotificacao: NotificacaoViewModel
-
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
     @State private var showConfirmMarcarLidos = false
 
     var body: some View {
         List {
             if vmNotificacao.temVenceHoje {
-                VenceHojeSection(vmNotificacao: vmNotificacao)
+                VenceHojeSection(
+                    vmNotificacao: vmNotificacao,
+                    vmLancamentos: vmLancamentos
+                )
             }
-
             if vmNotificacao.temVencidos {
-                VencidosSection(vmNotificacao: vmNotificacao)
+                VencidosSection(
+                    vmNotificacao: vmNotificacao,
+                    vmLancamentos: vmLancamentos
+                )
             }
         }
         .navigationTitle("Notificações")
@@ -66,31 +71,16 @@ struct NotificacoesView: View {
 }
 
 private struct VenceHojeSection: View {
-    let vmNotificacao: NotificacaoViewModel
+    @ObservedObject var vmNotificacao: NotificacaoViewModel
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
 
     var body: some View {
         Section("Vence Hoje") {
             ForEach(vmNotificacao.vencemHoje) { lancamento in
-                LancamentoRow(
-                    lancamento: lancamento,
-                    mostrarPagamento: false,
-                    mostrarValores: true
-                )
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button {
-                        Task {
-                            await vmNotificacao.marcarLancamentosComoLidos([lancamento])
-                        }
-                    } label: {
-                        Label("Lido", systemImage: "checklist")
-                    }
-                    .tint(.accentColor)
-                }
-                /*
                 NavigationLink {
                     LancamentoDetalheView(
-                        lancamentoID: lancamento.id ?? 0,
-                        viewModel: vmLancamentos
+                        lancamento: lancamento,
+                        repository: vmLancamentos.repository
                     )
                 } label: {
                     LancamentoRow(
@@ -109,26 +99,10 @@ private struct VenceHojeSection: View {
                         .tint(.accentColor)
                     }
                 }
-                 */
+                 
             }
 
             ForEach(vmNotificacao.cartoesVenceHoje) { cartao in
-                
-                CartaoRowNotification(cartaoNotificacao: cartao)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button {
-                            Task {
-                                await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
-                            }
-                        } label: {
-                            Label("Lido", systemImage: "checklist")
-                        }
-                        .tint(.accentColor)
-                    }
-                
-                //TODO: Implementar o detalhar
-                
-                /*
                 NavigationLink {
                     CartaoFaturaView(
                         viewModel: vmLancamentos,
@@ -150,7 +124,6 @@ private struct VenceHojeSection: View {
                             .tint(.accentColor)
                         }
                 }
-                 */
             }
         }
         .listRowInsets(
@@ -160,34 +133,16 @@ private struct VenceHojeSection: View {
 }
 
 private struct VencidosSection: View {
-    let vmNotificacao: NotificacaoViewModel
+    @ObservedObject var vmNotificacao: NotificacaoViewModel
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
 
     var body: some View {
         Section("Vencidos") {
             ForEach(vmNotificacao.vencidos) { lancamento in
-                
-                LancamentoRow(
-                    lancamento: lancamento,
-                    mostrarPagamento: false,
-                    mostrarValores: true
-                )
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button {
-                        Task {
-                            await vmNotificacao.marcarLancamentosComoLidos([lancamento])
-                        }
-                    } label: {
-                        Label("Lido", systemImage: "checklist")
-                    }
-                    .tint(.accentColor)
-                }
-                
-                /*
-                
                 NavigationLink {
                     LancamentoDetalheView(
-                        lancamentoID: lancamento.id ?? 0,
-                        viewModel: vmLancamentos
+                        lancamento: lancamento,
+                        repository: vmLancamentos.repository
                     )
                 } label: {
                     LancamentoRow(
@@ -206,23 +161,9 @@ private struct VencidosSection: View {
                         .tint(.accentColor)
                     }
                 }
-                 */
             }
 
             ForEach(vmNotificacao.cartoesVencidos) { cartao in
-                
-                CartaoRowNotification(cartaoNotificacao: cartao)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button {
-                            Task {
-                                await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
-                            }
-                        } label: {
-                            Label("Lido", systemImage: "checklist")
-                        }
-                        .tint(.accentColor)
-                    }
-                /*
                 NavigationLink {
                     CartaoFaturaView(
                         viewModel: vmLancamentos,
@@ -244,7 +185,6 @@ private struct VencidosSection: View {
                             .tint(.accentColor)
                         }
                 }
-                 */
             }
         }
         .listRowInsets(

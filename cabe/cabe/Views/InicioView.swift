@@ -116,7 +116,10 @@ struct InicioView: View {
         )
         .navigationDestination(isPresented: $mostrarDetalheRecente) {
             if let lancamento = selectedLancamentoRecente {
-                LancamentoDetalheView(lancamento: lancamento)
+                LancamentoDetalheView(
+                    lancamento: lancamento,
+                    repository: vmLancamentos.repository
+                )
             }
         }
         .navigationBarTitleDisplayMode(.large)
@@ -166,7 +169,7 @@ struct InicioView: View {
             
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
-            NovoLancamentoView()
+            NovoLancamentoView(repository: vmLancamentos.repository)
         }
     }
 }

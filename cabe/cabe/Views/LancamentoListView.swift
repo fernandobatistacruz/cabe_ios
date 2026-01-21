@@ -52,7 +52,10 @@ struct LancamentoListView: View {
                             switch item {
                             case .simples(let lancamento):
                                 NavigationLink {
-                                    LancamentoDetalheView(lancamento: lancamento)
+                                    LancamentoDetalheView(
+                                        lancamento: lancamento,
+                                        repository: viewModel.repository
+                                    )
                                 } label: {
                                     LancamentoRow(
                                         lancamento: lancamento,
@@ -81,7 +84,7 @@ struct LancamentoListView: View {
                             case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                 NavigationLink {
                                     CartaoFaturaView(
-                                        //viewModel: viewModel,
+                                        viewModel: viewModel,
                                         cartao: cartao,
                                         lancamentos: lancamentos,
                                         total: total,
@@ -231,7 +234,7 @@ struct LancamentoListView: View {
             Text("Essa ação não poderá ser desfeita.")
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
-            NovoLancamentoView()
+            NovoLancamentoView(repository: viewModel.repository)
         }
         .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(

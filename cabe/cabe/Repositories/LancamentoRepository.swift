@@ -63,6 +63,61 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         )
     }
     
+    func observeLancamento(
+        id: Int64,
+        uuid: String,
+        onChange: @escaping (LancamentoModel?) -> Void
+    ) -> AnyDatabaseCancellable {
+
+        let observation = ValueObservation.tracking { db in
+            try self.listarLancamentoPorIdUUID(
+                db: db,
+                id: id,
+                uuid: uuid
+            )
+        }
+
+        return observation.start(
+            in: db.dbQueue,
+            onError: { print("Erro DB (detalhe):", $0) },
+            onChange: onChange
+        )
+    }
+    
+    private nonisolated func listarLancamentoPorIdUUID(
+        db: Database,
+        id: Int64,
+        uuid: String
+    ) throws -> LancamentoModel? {
+
+        let sql = """
+            SELECT
+                l.*,
+                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
+                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
+                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
+                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
+                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+            FROM lancamento l
+            LEFT JOIN conta c ON l.conta_uuid = c.uuid
+            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
+            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+            WHERE l.id = ? AND l.uuid = ?
+            LIMIT 1
+        """
+
+        guard let row = try Row.fetchOne(
+            db,
+            sql: sql,
+            arguments: [id, uuid]
+        ) else {
+            return nil
+        }
+
+        return mapRows([row]).first
+    }
+    
     func listarLancamentosVencidosVenceHoje() async throws -> [LancamentoModel] {
         try await db.dbQueue.read { db in
             try self.listarLancamentosVencidosVenceHoje(db: db)
