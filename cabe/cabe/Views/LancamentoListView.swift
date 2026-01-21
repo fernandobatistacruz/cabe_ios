@@ -46,10 +46,11 @@ struct LancamentoListView: View {
         ZStack {
             List {
                 ForEach(lancamentosAgrupados, id: \.date) { section in
-                    
+
                     Section {
                         ForEach(section.items) { item in
                             switch item {
+
                             case .simples(let lancamento):
                                 NavigationLink {
                                     LancamentoDetalheView(
@@ -60,27 +61,10 @@ struct LancamentoListView: View {
                                     LancamentoRow(
                                         lancamento: lancamento,
                                         mostrarPagamento: true,
-                                        mostrarValores: true                                           
+                                        mostrarValores: true
                                     )
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                        Button(role: .destructive) {
-                                            lancamentoParaExcluir = lancamento
-                                            mostrarDialogExclusao = true
-                                        } label: {
-                                            Label("Excluir", systemImage: "trash")
-                                        }
-                                    }
-                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
-                                        Button() {
-                                            Task{
-                                                await viewModel.togglePago([lancamento])
-                                            }
-                                        } label: {
-                                            Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
-                                        }.tint(.accentColor)
-                                    }
                                 }
-                                
+
                             case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                 NavigationLink {
                                     CartaoFaturaView(
@@ -96,37 +80,27 @@ struct LancamentoListView: View {
                                         lancamentos: lancamentos,
                                         total: total
                                     )
-                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
-                                        Button() {
-                                            Task{
-                                                await viewModel.togglePago(lancamentos)
-                                            }
-                                        } label: {
-                                            var temPendentes: Bool {
-                                                lancamentos.contains { !$0.pago }
-                                            }
-                                            Label(
-                                                temPendentes ? String(
-                                                    localized: "Pago"
-                                                ): String(localized: "Não Pago"),
-                                                systemImage: temPendentes ?
-                                                "checklist.checked" : "checklist.unchecked"
-                                            )
-                                        }.tint(.accentColor)
-                                    }
                                 }
                             }
                         }
                         .listRowInsets(
-                            EdgeInsets(
-                                top: 8,
-                                leading: 16,
-                                bottom: 8,
-                                trailing: 16
-                            )
+                            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
                         )
+
                     } header: {
-                        Text(section.date, format: .dateTime.day().month(.wide))
+                        HStack {
+                            Text(section.date, format: .dateTime.day().month(.wide))
+
+                            Spacer()
+
+                            Text(
+                                section.saldoAcumulado,
+                                format: .currency(
+                                    code: viewModel.lancamentos.first?.currencyCode ?? "USD"
+                                )
+                            )
+                            .font(.subheadline)                           
+                        }
                     }
                 }
             }
@@ -281,6 +255,18 @@ struct LancamentoListView: View {
             }
         }
     }
+    
+    private func totalDaSection(_ items: [LancamentoItem]) -> Decimal {
+        items.reduce(.zero) { parcial, item in
+            switch item {
+            case .simples(let lancamento):
+                return parcial + lancamento.valorComSinal
+
+            case .cartaoAgrupado(_, let total, _):
+                return parcial + total
+            }
+        }
+    }
         
     private func exportarCSV() async {
         guard !isExporting else { return }
@@ -307,40 +293,59 @@ struct LancamentoListView: View {
         }
     }
     
-    var lancamentosAgrupados: [(date: Date, items: [LancamentoItem])] {
-        
+    var lancamentosAgrupados: [LancamentoSectionAcumulada] {
+
         let porData = Dictionary(grouping: lancamentosFiltrados) {
             Calendar.current.startOfDay(for: $0.dataAgrupamento)
         }
-        
-        let resultado = porData.map { (date, lancamentosDoDia) in
-            
-            let itensSimples = lancamentosDoDia
-                .filter { $0.cartao == nil }
-                .map { LancamentoItem.simples($0) }
-            
-            let comCartao = lancamentosDoDia.filter { $0.cartao != nil }
-            
-            let porCartao = Dictionary(grouping: comCartao) {
-                $0.cartao!.id!
+
+        // 1️⃣ monta as sections base
+        let sectionsBase: [(date: Date, items: [LancamentoItem])] =
+            porData.map { (date, lancamentosDoDia) in
+
+                let itensSimples = lancamentosDoDia
+                    .filter { $0.cartao == nil }
+                    .map { LancamentoItem.simples($0) }
+
+                let comCartao = lancamentosDoDia.filter { $0.cartao != nil }
+
+                let porCartao = Dictionary(grouping: comCartao) {
+                    $0.cartao!.id!
+                }
+
+                let itensCartao = porCartao.map { (_, lancamentos) in
+                    let cartao = lancamentos.first!.cartao!
+                    let total = lancamentos.reduce(.zero) { $0 + $1.valorComSinal }
+
+                    return LancamentoItem.cartaoAgrupado(
+                        cartao: cartao,
+                        total: total,
+                        lancamentos: lancamentos
+                    )
+                }
+
+                return (date: date, items: itensSimples + itensCartao)
             }
-            
-            let itensCartao = porCartao.map { (_, lancamentos) in
-                let cartao = lancamentos.first!.cartao!
-                
-                let total = lancamentos.reduce(.zero) { $0 + $1.valorComSinal }
-                
-                return LancamentoItem.cartaoAgrupado(
-                    cartao: cartao,
-                    total: total,
-                    lancamentos: lancamentos
+
+        // 2️⃣ ordena CRESCENTE para calcular o fluxo
+        let ordenadasParaCalculo = sectionsBase.sorted { $0.date < $1.date }
+
+        var saldo: Decimal = .zero
+
+        let comSaldoCalculado: [LancamentoSectionAcumulada] =
+            ordenadasParaCalculo.map { section in
+                let totalDoDia = totalDaSection(section.items)
+                saldo += totalDoDia
+
+                return LancamentoSectionAcumulada(
+                    date: section.date,
+                    items: section.items,
+                    saldoAcumulado: saldo
                 )
             }
-            
-            return (date: date, items: itensSimples + itensCartao)
-        }
-        
-        return resultado.sorted { $0.date > $1.date }
+
+        // 3️⃣ reordena para exibição (DECRESCENTE)
+        return comSaldoCalculado.sorted { $0.date > $1.date }
     }
     
     private func excluir(_ lancamento: LancamentoModel) async {
@@ -485,4 +490,10 @@ struct LancamentoRow: View {
             }
         }
     }
+}
+
+struct LancamentoSectionAcumulada {
+    let date: Date
+    let items: [LancamentoItem]
+    let saldoAcumulado: Decimal
 }
