@@ -110,9 +110,12 @@ final class LancamentoListViewModel: ObservableObject {
                 $0 + ($1.valor as NSDecimalNumber).doubleValue
             }
             
+            let cat = primeiro.categoria
+            let catNome = cat?.isSub ?? false ? cat?.nomeSubcategoria ?? "" : cat?.nome ?? "Sem categoria"
+            
             return (
                 categoriaID: categoriaID,
-                nome: primeiro.categoria?.nome ?? "Sem categoria",
+                nome: catNome,
                 valor: total,
                 cor: primeiro.categoria?.getCor().cor ?? .gray
             )
@@ -170,10 +173,13 @@ final class LancamentoListViewModel: ObservableObject {
             let valor = lancamentos.reduce(0.0) {
                 $0 + ($1.valor as NSDecimalNumber).doubleValue
             }
+            
+            let cat = primeiro.categoria
+            let catNome = cat?.isSub ?? false ? cat?.nomeSubcategoria ?? "" : cat?.nome ?? "Sem categoria"
 
             return (
                 categoriaID: categoriaID,
-                nome: primeiro.categoria?.nome ?? "Sem categoria",
+                nome: catNome,
                 valor: valor,
                 cor: primeiro.categoria?.getCor().cor ?? .gray
             )

@@ -131,7 +131,9 @@ private extension PaywallView {
             isPurchasing: false
         )
         .onTapGesture {
-            selectedPlan = .basic
+            if sub.currentPlan != .complete {
+                selectedPlan = .basic
+            }
         }
     }
 

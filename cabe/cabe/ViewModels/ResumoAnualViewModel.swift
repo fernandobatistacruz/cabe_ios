@@ -134,7 +134,9 @@ private extension ResumoAnualViewModel {
 
         // Despesas recorrentes
         let despesas = lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
-        let recorrentes = despesas.filter { $0.tipoRecorrente != .nunca }
+        let recorrentes = despesas.filter {
+            $0.tipoRecorrente == .mensal || $0.tipoRecorrente == .quinzenal || $0.tipoRecorrente == .semanal
+        }
 
         if !despesas.isEmpty {
             let totalDespesas = despesas.map(\.valor).reduce(0, +)

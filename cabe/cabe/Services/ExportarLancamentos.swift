@@ -15,7 +15,7 @@ struct ExportarLancamentos {
         fileName: String = "lancamentos"
     ) async throws -> URL {
 
-        let csv = makeCSV(from: lancamentos)
+        let csv = "\u{FEFF}" + makeCSV(from: lancamentos)
 
         let fileURL = FileManager.default
             .temporaryDirectory

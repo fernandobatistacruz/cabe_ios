@@ -211,8 +211,11 @@ struct ResumoAnualView: View {
     }
     
     var graficoCategorias: some View {
-        let categoriasValidas = vm.despesasPorCategoria
-            .filter { $0.total > 0 && !$0.categoria.nome.isEmpty }
+        let categoriasValidas = Array(
+            vm.despesasPorCategoria
+                .filter { $0.total > 0 && !$0.categoria.nome.isEmpty }
+                .prefix(9)
+        )
 
         return VStack(spacing: 16) {
 
