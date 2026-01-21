@@ -25,10 +25,7 @@ struct TabMenuView: View {
                     .navigationDestination(for: DeepLink.self) { destination in
                         switch destination {
                         case .notificacoes:
-                            NotificacoesView(
-                                vmLancaentos: vmLancamentos,
-                                vmNotificacao: vmLancamentos.notificacaoVM
-                            )
+                            NotificacoesView(vmNotificacao: vmLancamentos.notificacaoVM)
                         }
                     }
             }

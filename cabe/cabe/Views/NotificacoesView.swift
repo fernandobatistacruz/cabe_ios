@@ -8,7 +8,6 @@ import SwiftUI
 import Combine
 
 struct NotificacoesView: View {
-    @ObservedObject var vmLancaentos: LancamentoListViewModel
     @ObservedObject var vmNotificacao: NotificacaoViewModel
 
     @State private var showConfirmMarcarLidos = false
@@ -16,17 +15,11 @@ struct NotificacoesView: View {
     var body: some View {
         List {
             if vmNotificacao.temVenceHoje {
-                VenceHojeSection(
-                    vmLancamentos: vmLancaentos,
-                    vmNotificacao: vmNotificacao
-                )
+                VenceHojeSection(vmNotificacao: vmNotificacao)
             }
 
             if vmNotificacao.temVencidos {
-                VencidosSection(
-                    vmLancamentos: vmLancaentos,
-                    vmNotificacao: vmNotificacao
-                )
+                VencidosSection(vmNotificacao: vmNotificacao)
             }
         }
         .navigationTitle("Notificações")
@@ -73,7 +66,6 @@ struct NotificacoesView: View {
 }
 
 private struct VenceHojeSection: View {
-    let vmLancamentos: LancamentoListViewModel
     let vmNotificacao: NotificacaoViewModel
 
     var body: some View {
@@ -168,7 +160,6 @@ private struct VenceHojeSection: View {
 }
 
 private struct VencidosSection: View {
-    let vmLancamentos: LancamentoListViewModel
     let vmNotificacao: NotificacaoViewModel
 
     var body: some View {

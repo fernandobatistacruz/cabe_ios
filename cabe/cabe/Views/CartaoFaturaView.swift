@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CartaoFaturaView: View {
-    let viewModel: LancamentoListViewModel
+    //let viewModel: LancamentoListViewModel
     let cartao: CartaoModel
     let lancamentos: [LancamentoModel]
     let total: Decimal
@@ -117,10 +117,7 @@ struct CartaoFaturaView: View {
                             }
                         } else {
                             NavigationLink {
-                                LancamentoDetalheView(
-                                    lancamentoID: lancamento.id ?? 0,
-                                    viewModel: viewModel
-                                )
+                                LancamentoDetalheView(lancamento: lancamento)
                             } label: {
                                 LancamentoRow(
                                     lancamento: lancamento,
@@ -278,26 +275,41 @@ struct CartaoFaturaView: View {
             "Excluir Lançamento?",
             isPresented: $mostrarDialogExclusao
         ) {
+            let repository = LancamentoRepository()
+            
             if let lancamento = lancamentoParaExcluir {
                 if lancamento.tipoRecorrente == .nunca {
                     Button("Confirmar Exclusão", role: .destructive) {
-                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
+                        Task {
+                            try await repository.removerRecorrentes(uuid: lancamento.uuid)
+                        }
                     }
                 } else {
                     Button("Excluir Somente Este", role: .destructive) {
-                        Task { await viewModel.removerSomenteEste(lancamento) }
+                        Task {
+                            try await repository.remover(
+                                    id: lancamento.id ?? 0,
+                                    uuid: lancamento.uuid
+                                )
+                        }
                     }
                     Button("Excluir Este e os Próximos", role: .destructive) {
-                        Task { await viewModel.removerEsteEProximos(lancamento) }
+                        Task { try await repository.removerEsteEProximos(
+                            uuid: lancamento.uuid,
+                            mes: lancamento.mes,
+                            ano: lancamento.ano
+                            )
+                        }
                     }
                     Button("Excluir Todos", role: .destructive) {
-                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
+                        Task { try await repository.removerRecorrentes(uuid: lancamento.uuid)  }
                     }
                 }
             }
         } message: {
             Text("Essa ação não poderá ser desfeita.")
         }
+ 
     }
 
     // 🔹 Toggle seleção

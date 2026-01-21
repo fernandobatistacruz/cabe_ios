@@ -32,8 +32,7 @@ struct FaturaListView: View {
                         ForEach(section.items) { item in
                             if case .cartaoAgrupado(let cartao, let total, let lancamentos) = item {
                                 NavigationLink {
-                                    CartaoFaturaView(
-                                        viewModel: viewModel,
+                                    CartaoFaturaView(                                       
                                         cartao: cartao,
                                         lancamentos: lancamentos,
                                         total: total,

@@ -116,10 +116,7 @@ struct InicioView: View {
         )
         .navigationDestination(isPresented: $mostrarDetalheRecente) {
             if let lancamento = selectedLancamentoRecente {
-                LancamentoDetalheView(
-                    lancamentoID: lancamento.id ?? 0,
-                    viewModel: vmLancamentos
-                )
+                LancamentoDetalheView(lancamento: lancamento)
             }
         }
         .navigationBarTitleDisplayMode(.large)

@@ -52,10 +52,7 @@ struct LancamentoListView: View {
                             switch item {
                             case .simples(let lancamento):
                                 NavigationLink {
-                                    LancamentoDetalheView(
-                                        lancamentoID: lancamento.id ?? 0,
-                                        viewModel: viewModel
-                                    )
+                                    LancamentoDetalheView(lancamento: lancamento)
                                 } label: {
                                     LancamentoRow(
                                         lancamento: lancamento,
@@ -84,7 +81,7 @@ struct LancamentoListView: View {
                             case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                 NavigationLink {
                                     CartaoFaturaView(
-                                        viewModel: viewModel,
+                                        //viewModel: viewModel,
                                         cartao: cartao,
                                         lancamentos: lancamentos,
                                         total: total,

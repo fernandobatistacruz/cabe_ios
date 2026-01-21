@@ -13,21 +13,23 @@ import SwiftUI
 
 struct EditarLancamentoView: View {
 
+    let lancamento: LancamentoModel
+    let onSave: ((LancamentoModel) -> Void)?
+    
     @Environment(\.dismiss) private var dismiss
-
     @StateObject private var vm: NovoLancamentoViewModel
-
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
     @State private var isSaving = false
     @State private var escopoEdicao: EscopoEdicaoRecorrencia?
     @State private var mostrarConfirmacaoEscopo = false
-    private let lancamento: LancamentoModel
+    
 
     // MARK: - Init
-    init(lancamento: LancamentoModel) {
+    init(lancamento: LancamentoModel, onSave: ((LancamentoModel) -> Void)? = nil) {
         self.lancamento = lancamento
+        self.onSave = onSave
         _vm = StateObject(
             wrappedValue: NovoLancamentoViewModel(lancamento: lancamento)
         )
@@ -305,6 +307,7 @@ struct EditarLancamentoView: View {
             
             isSaving = false
 
+            onSave?(editado)
             dismiss()
 
         } catch let erro as LancamentoValidacaoErro {
