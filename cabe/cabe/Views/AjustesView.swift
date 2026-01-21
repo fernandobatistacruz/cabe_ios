@@ -49,7 +49,7 @@ struct AjustesView: View {
                             
                             VStack(alignment: .leading) {
                                 Text(auth.user?.name ?? "Conta")
-                                    .font(.title3)
+                                    .font(.headline)
                                     .fontWeight(.bold)
                                 Text(auth.user?.email ?? "")
                                     .font(.subheadline)

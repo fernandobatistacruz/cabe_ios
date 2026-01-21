@@ -272,8 +272,12 @@ struct CardItem: View {
     var body: some View {
         HStack() {
             Image(systemName: icone)
-                .font(.title3)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
                 .foregroundStyle(color)
+                .foregroundStyle(color)
+            
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.body)

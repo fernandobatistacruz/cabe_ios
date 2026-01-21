@@ -103,6 +103,7 @@ private struct VenceHojeSection: View {
             }
 
             ForEach(vmNotificacao.cartoesVenceHoje) { cartao in
+                /*
                 NavigationLink {
                     CartaoFaturaView(
                         viewModel: vmLancamentos,
@@ -124,6 +125,18 @@ private struct VenceHojeSection: View {
                             .tint(.accentColor)
                         }
                 }
+                 */
+                CartaoRowNotification(cartaoNotificacao: cartao)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button {
+                            Task {
+                                await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
+                            }
+                        } label: {
+                            Label("Lido", systemImage: "checklist")
+                        }
+                        .tint(.accentColor)
+                    }
             }
         }
         .listRowInsets(
@@ -164,6 +177,7 @@ private struct VencidosSection: View {
             }
 
             ForEach(vmNotificacao.cartoesVencidos) { cartao in
+                /*
                 NavigationLink {
                     CartaoFaturaView(
                         viewModel: vmLancamentos,
@@ -185,6 +199,18 @@ private struct VencidosSection: View {
                             .tint(.accentColor)
                         }
                 }
+                 */
+                CartaoRowNotification(cartaoNotificacao: cartao)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button {
+                            Task {
+                                await vmNotificacao.marcarLancamentosComoLidos(cartao.lancamentos)
+                            }
+                        } label: {
+                            Label("Lido", systemImage: "checklist")
+                        }
+                        .tint(.accentColor)
+                    }
             }
         }
         .listRowInsets(

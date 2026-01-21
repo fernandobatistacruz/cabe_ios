@@ -18,7 +18,10 @@ final class ZoomPagamentoViewModel: ObservableObject {
 
     func carregarDados() {
         do {
-            cartoes = try cartaoRepository.listar()
+            let todos = try cartaoRepository.listar()
+            //TODO: Deve vir filtrado do banco
+            cartoes = todos.filter { $0.arquivado == 0 }
+            
             contas = try contaRepository.listar()
         } catch {
             print("Erro ao carregar meios de pagamento: \(error)")

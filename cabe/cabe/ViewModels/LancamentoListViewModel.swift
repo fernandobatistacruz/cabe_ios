@@ -303,19 +303,28 @@ extension LancamentoListViewModel {
 
         // Evita duplicidade de UUID, pega os 10 mais recentes
         var vistos: Set<String> = []
+        
+        lancamentosRecentes.forEach {
+            print($0.dataCriacaoDate)
+        }
+
 
         let recentes = lancamentosRecentes
-            .sorted { $0.dataCriacao > $1.dataCriacao }
+            .sorted { $0.dataCriacaoDate > $1.dataCriacaoDate }
             .filter { lancamento in
                 guard !vistos.contains(lancamento.uuid) else { return false }
                 vistos.insert(lancamento.uuid)
                 return true
             }
             .prefix(10)
+        
+        recentes.forEach {
+            print($0.dataCriacaoDate)
+        }
 
         // Agrupa por dia
         let porData = Dictionary(grouping: recentes) { lancamento in
-            Calendar.current.startOfDay(for: lancamento.dataAgrupamentoRecentes)
+            Calendar.current.startOfDay(for: lancamento.dataCriacaoDate)
         }
 
         // Retorna já como [LancamentoModel]
