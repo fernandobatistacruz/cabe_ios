@@ -10,9 +10,13 @@ import FirebaseAuth
 import Combine
 import AuthenticationServices
 import GoogleSignIn
+import SwiftUI
 
 @MainActor
 final class AuthViewModel: ObservableObject {
+    
+    @AppStorage("isAdmin")
+    private(set) var isAdmin: Bool = false
 
     @Published private(set) var state: AuthState = .loading
     @Published var error: AuthError?
@@ -46,6 +50,8 @@ final class AuthViewModel: ObservableObject {
                         creationDate: firebaseUser.metadata.creationDate
                     )
                     self.state = .authenticated
+                    isAdmin = (firebaseUser.email == "fernandobatistacruz@gmail.com") ||
+                              (firebaseUser.email == "chelle.castro@gmail.com")
                 } else {
                     self.user = nil
                     self.state = .unauthenticated

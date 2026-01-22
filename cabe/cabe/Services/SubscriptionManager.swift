@@ -17,6 +17,9 @@ enum SubscriptionError: Error {
 @MainActor
 final class SubscriptionManager: ObservableObject {
     
+    @AppStorage("isAdmin")
+    private var isAdmin: Bool = false
+    
     @Published var product: Product?
     private let productId = "com.example.cabe.completa"
     
@@ -99,6 +102,11 @@ final class SubscriptionManager: ObservableObject {
 
     // MARK: - Status da assinatura
     func updateSubscriptionStatus() async {
+        if isAdmin {
+            isSubscribed = true
+            return
+        }
+        
         guard let product else { return }
 
         do {
@@ -110,7 +118,7 @@ final class SubscriptionManager: ObservableObject {
             
             #if DEBUG
             isSubscribed = true
-            #endif             
+            #endif            
              
         } catch {
             print("Erro ao verificar assinatura:", error)
