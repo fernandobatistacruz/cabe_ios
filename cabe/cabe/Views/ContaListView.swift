@@ -118,7 +118,7 @@ struct ContaRow: View {
     let conta: ContaModel
 
     private var iconColor: Color {
-        conta.saldo >= 0 ? .green : .red
+        conta.saldo >= 0 ? .blue : .red
     }
 
     var body: some View {

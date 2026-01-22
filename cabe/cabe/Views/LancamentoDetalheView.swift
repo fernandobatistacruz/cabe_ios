@@ -102,7 +102,7 @@ struct LancamentoDetalheView: View {
                         }
                     }
 
-                    if lancamento.cartao == nil {
+                    if lancamento.cartao != nil {
                         HStack {
                             Text("Pago com Cartão")
                             Spacer()

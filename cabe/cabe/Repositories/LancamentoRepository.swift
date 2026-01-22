@@ -221,8 +221,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 GROUP BY uuid
             )
             ORDER BY                 
-                l.dataCriacao DESC,
-                l.id DESC
+                l.id DESC,        
+                l.dataCriacao DESC                
             LIMIT 10
         """
         
