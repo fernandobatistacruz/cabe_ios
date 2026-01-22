@@ -63,8 +63,27 @@ struct LancamentoListView: View {
                                         mostrarPagamento: true,
                                         mostrarValores: true
                                     )
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            lancamentoParaExcluir = lancamento
+                                            mostrarDialogExclusao = true
+                                        } label: {
+                                            Label("Excluir", systemImage: "trash")
+                                        }
+                                    }
+                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
+                                        Button() {
+                                            Task{
+                                                await viewModel.togglePago([lancamento])
+                                            }
+                                        } label: {
+                                            Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
+                                                .tint(.accentColor)
+                                            
+                                        }
+                                    }
                                 }
-
+                                    
                             case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                 NavigationLink {
                                     CartaoFaturaView(
@@ -80,6 +99,24 @@ struct LancamentoListView: View {
                                         lancamentos: lancamentos,
                                         total: total
                                     )
+                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
+                                        Button() {
+                                            Task{
+                                                await viewModel.togglePago(lancamentos)
+                                            }
+                                        } label: {
+                                            var temPendentes: Bool {
+                                                lancamentos.contains { !$0.pago }
+                                            }
+                                            Label(
+                                                temPendentes ? String(
+                                                    localized: "Pago"
+                                                ): String(localized: "Não Pago"),
+                                                systemImage: temPendentes ?
+                                                "checklist.checked" : "checklist.unchecked"
+                                            )
+                                        }.tint(.accentColor)
+                                    }
                                 }
                             }
                         }
