@@ -21,6 +21,10 @@ enum SubcategoriaSheetMode: Identifiable {
     }
 }
 
+private enum CampoFoco {
+    case nome
+}
+
 struct CategoriaFormView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -41,6 +45,7 @@ struct CategoriaFormView: View {
 
     // MARK: - Sheet
     @State private var sheetSubcategoria: SubcategoriaSheetMode?
+    @FocusState private var campoFocado: CampoFoco?
 
     // MARK: - Init
     init(categoria: CategoriaModel? = nil, isEditar: Bool = false) {
@@ -94,6 +99,7 @@ struct CategoriaFormView: View {
                                 .background(Color(.systemGroupedBackground))
                                 .cornerRadius(22)
                                 .multilineTextAlignment(.center)
+                                .focused($campoFocado, equals: .nome)
                             }
                             .padding()
                             .background(Color(.secondarySystemGroupedBackground))
@@ -224,6 +230,11 @@ struct CategoriaFormView: View {
                     todasCategorias = try! CategoriaRepository().listar()
                     if let cat = categoria, isEditar {
                         subcategorias = todasCategorias.filter { $0.pai == cat.id }
+                    }
+                    if !isEditar{
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            campoFocado = .nome
+                        }
                     }
                 }
                 .sheet(item: $sheetSubcategoria) { mode in

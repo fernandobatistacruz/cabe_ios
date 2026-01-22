@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+private enum CampoFoco {
+    case descricao
+    case parcelas
+    case valor
+    case anotacao
+}
+
 struct NovoLancamentoView: View {
    
     @Environment(\.dismiss) private var dismiss
@@ -17,6 +24,7 @@ struct NovoLancamentoView: View {
     @State private var mostrarZoomCategoria = false
     @State private var showCalendar = false
     @State private var isSaving = false
+    @FocusState private var campoFocado: CampoFoco?
     
     init(repository: LancamentoRepository) {
         _vm = StateObject(
@@ -48,6 +56,11 @@ struct NovoLancamentoView: View {
                     Form {
                         Section{
                             TextField("Descrição", text: $vm.descricao)
+                                .focused($campoFocado, equals: .descricao)
+                                .submitLabel(.next)
+                                .onSubmit {
+                                    campoFocado = .valor
+                                }
                             Button {
                                 sheetAtivo = .categoria
                             } label: {
@@ -138,10 +151,12 @@ struct NovoLancamentoView: View {
                             if vm.recorrente == .parcelado {
                                 TextField("Número de parcelas", text: $vm.parcelaTexto)
                                     .keyboardType(.numberPad)
+                                    .focused($campoFocado, equals: .parcelas)
                             }
                           
                             TextField("Valor", text: $vm.valorTexto)
                             .keyboardType(.numberPad)
+                            .focused($campoFocado, equals: .valor)
                             .onChange(of: vm.valorTexto) { novoValor in
                                 vm.atualizarValor(novoValor)
                             }
@@ -260,6 +275,11 @@ struct NovoLancamentoView: View {
                     message: Text(erro.localizedDescription),
                     dismissButton: .default(Text("OK"))
                 )
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    campoFocado = .descricao
+                }
             }
         }
         .onChange(of: vm.pagamentoSelecionado) { _ in

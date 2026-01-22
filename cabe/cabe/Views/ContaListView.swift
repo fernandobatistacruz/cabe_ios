@@ -183,6 +183,10 @@ struct ContaDetalheView: View {
 
 // MARK: - Nova Conta
 
+private enum CampoFoco {
+    case nome
+    case saldo
+}
 
 struct NovaContaView: View {
 
@@ -191,14 +195,21 @@ struct NovaContaView: View {
     @State private var nome: String = ""
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal? = nil
+    @FocusState private var campoFocado: CampoFoco?
 
 
     var body: some View {
         Form {
             TextField("Nome", text: $nome)
+                .focused($campoFocado, equals: .nome)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        campoFocado = .saldo
+                    }
             
             TextField("Saldo", text: $saldoText)
                 .keyboardType(.decimalPad)
+                .focused($campoFocado, equals: .saldo)
                 .onChange(of: saldoText) { value in
                     saldoDecimal = NumberFormatter.decimalInput
                         .number(from: value) as? Decimal
@@ -228,6 +239,11 @@ struct NovaContaView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
                 .disabled(nome.isEmpty || saldoDecimal == nil)
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                campoFocado = .nome
             }
         }
     }

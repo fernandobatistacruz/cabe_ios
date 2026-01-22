@@ -242,17 +242,30 @@ enum NovoCartaoSheet: Identifiable {
     var id: Int { hashValue }
 }
 
+private enum CampoFoco {
+    case nome
+    case vencimento
+    case fechamento
+    case limite
+}
+
 struct NovoCartaoView: View {
    
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = NovoCartaoViewModel()
     @State private var sheetAtivo: NovoCartaoSheet?
     @State private var erroValidacao: CartaoValidacaoErro?
+    @FocusState private var campoFocado: CampoFoco?
 
     var body: some View {
         Form {
             Section{
                 TextField("Nome", text: $viewModel.nome)
+                    .focused($campoFocado, equals: .nome)
+                        .submitLabel(.next)
+                        .onSubmit {
+                            campoFocado = .vencimento
+                        }
                 Button {
                     sheetAtivo = .operadora
                 } label: {
@@ -286,12 +299,15 @@ struct NovoCartaoView: View {
             Section{
                 TextField("Dia do Vencimento", text: $viewModel.vencimentoTexto)
                     .keyboardType(.numberPad)
+                    .focused($campoFocado, equals: .vencimento)
                 
                 TextField("Dia do Fechamento", text: $viewModel.fechamentoTexto)
                     .keyboardType(.numberPad)
+                    .focused($campoFocado, equals: .fechamento)
                 
                 TextField("Limite", text: $viewModel.limiteTexto)
                     .keyboardType(.decimalPad)
+                    .focused($campoFocado, equals: .limite)
             }
             
         }
@@ -341,6 +357,11 @@ struct NovoCartaoView: View {
                 message: Text(erro.localizedDescription),
                 dismissButton: .default(Text("OK"))
             )
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                campoFocado = .nome
+            }
         }
     }
 

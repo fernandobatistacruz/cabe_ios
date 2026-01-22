@@ -138,7 +138,7 @@ struct LancamentoDetalheView: View {
                     }
                 }
 
-                if lancamento.cartao == nil {
+                if lancamento.cartao != nil {
                     Section(header: Text("Cartão de Crédito")) {
                         HStack {
                             Text("Fatura")
