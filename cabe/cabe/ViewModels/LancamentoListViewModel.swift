@@ -133,7 +133,8 @@ final class LancamentoListViewModel: ObservableObject {
                 nome: $0.nome,
                 valor: $0.valor,
                 percentual: ($0.valor / totalGeral) * 100,
-                cor: $0.cor
+                cor: $0.cor,
+                currencyCode: lancamentos.first?.currencyCode ?? "USD"
             )
         }
 
@@ -146,7 +147,8 @@ final class LancamentoListViewModel: ObservableObject {
                 nome: "Outros",
                 valor: outrosValor,
                 percentual: (outrosValor / totalGeral) * 100,
-                cor: .secondary
+                cor: .secondary,
+                currencyCode: lancamentos.first?.currencyCode ?? "USD"
             )
 
             return top2 + [outros]
@@ -197,7 +199,8 @@ final class LancamentoListViewModel: ObservableObject {
                     nome: $0.nome,
                     valor: $0.valor,
                     percentual: ($0.valor / totalGeral) * 100,
-                    cor: $0.cor
+                    cor: $0.cor,
+                    currencyCode: lancamentos.first?.currencyCode ?? "USD"
                 )
             }
 
@@ -295,10 +298,11 @@ struct CategoriaResumo: Identifiable {
     let valor: Double
     let percentual: Double
     let cor: Color
+    let currencyCode: String
 
     var valorFormatado: String {
         valor.formatted(
-            .currency(code: Locale.current.currency?.identifier ?? "USD")
+            .currency(code: currencyCode)
         )
     }
 }

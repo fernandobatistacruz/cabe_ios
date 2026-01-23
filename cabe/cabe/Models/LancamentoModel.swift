@@ -233,22 +233,25 @@ extension LancamentoModel {
 }
 
 extension LancamentoModel {
+
     var dataCriacaoDate: Date {
-        // 1️⃣ ISO8601 (Flutter moderno ou Swift futuro)
-        if let date = isoFormatter.date(from: dataCriacao) {
+
+        // 1️⃣ ISO8601 (padrão novo)
+        if let date = AppDateFormatter.iso8601.date(from: dataCriacao) {
             return date
         }
 
-        // 2️⃣ Legacy Date().description (Flutter antigo)
-        let legacyFormatter = DateFormatter()
-        legacyFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-        legacyFormatter.locale = Locale(identifier: "en_US_POSIX")
-        if let date = legacyFormatter.date(from: dataCriacao) {
+        // 2️⃣ Legacy Date().description
+        let legacy = DateFormatter()
+        legacy.locale = Locale(identifier: "en_US_POSIX")
+        legacy.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+
+        if let date = legacy.date(from: dataCriacao) {
             return date
         }
 
-        // 3️⃣ fallback
-        return .now
+        // 3️⃣ Fallback seguro
+        return .distantPast
     }
 }
 

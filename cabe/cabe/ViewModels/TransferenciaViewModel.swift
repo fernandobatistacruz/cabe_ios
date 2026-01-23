@@ -22,12 +22,6 @@ final class TransferenciaViewModel: ObservableObject {
     /// Texto formatado para digitação (UI)
     @Published var valorTexto: String = ""
 
-    /// ⚠️ Ideal que venha de Localizable.strings
-    @Published var descricao: String = NSLocalizedString(
-        "transfer.description",
-        comment: "Descrição padrão de transferência"
-    )
-
     @Published var contaOrigemUuid: String?
     @Published var contaDestinoUuid: String?
 
@@ -61,8 +55,7 @@ final class TransferenciaViewModel: ObservableObject {
         try useCase.transferir(
             origemUuid: origem,
             destinoUuid: destino,
-            valor: valor,
-            descricao: descricao
+            valor: valor
         )
 
         loadContas()
@@ -128,8 +121,7 @@ final class TransferenciaUseCase {
     func transferir(
         origemUuid: String,
         destinoUuid: String,
-        valor: Decimal,
-        descricao: String
+        valor: Decimal
     ) throws {
 
         guard origemUuid != destinoUuid, valor > 0 else {
@@ -168,7 +160,7 @@ final class TransferenciaUseCase {
             let saida = LancamentoModel(
                 id: nil,
                 uuid: UUID().uuidString,
-                descricao: descricao,
+                descricao: "Transferência",
                 anotacao: "",
                 tipo: Tipo.despesa.rawValue,
                 transferenciaRaw: 1,
@@ -196,7 +188,7 @@ final class TransferenciaUseCase {
             let entrada = LancamentoModel(
                 id: nil,
                 uuid: UUID().uuidString,
-                descricao: descricao,
+                descricao: "Transferência",
                 anotacao: "",
                 tipo: Tipo.receita.rawValue,
                 transferenciaRaw: 1,

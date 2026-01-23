@@ -209,18 +209,9 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     // MARK: - Reset (usado após salvar)
 
+    
     func reset() {
-        descricao = ""
-        anotacao = ""
-        valorTexto = ""
-        parcelaTexto = ""
         categoria = nil
-        pagamentoSelecionado = nil
-        dividida = false
-        pago = false
-        dataLancamento = Date()
-        dataFatura = Date()
-        recorrente = .nunca
     }
 
     // MARK: - Criação
@@ -239,7 +230,7 @@ final class NovoLancamentoViewModel: ObservableObject {
         if let erro = validar() {
             throw erro
         }
-
+        
         return LancamentoModel(
             uuid: uuid,
             descricao: descricao,
@@ -261,7 +252,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             pagoRaw: pago ? 1 : 0,
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
-            dataCriacao: Date().description,
+            dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
             notificacaoLidaRaw: 0,
             currencyCode: Locale.current.currency?.identifier ?? "USD"
         )

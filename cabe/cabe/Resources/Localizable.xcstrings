@@ -2214,6 +2214,7 @@
     },
     "transfer.description" : {
       "comment" : "Descrição padrão de transferência",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -351,7 +351,12 @@ struct ConsumoCardView: View {
                 .frame(maxWidth: .infinity, minHeight: 80)
                 .padding()
 
-            DonutChartView(items: dados, lineWidth: 18, size: 70)
+            DonutChartView(
+                items: dados,
+                lineWidth: 18,
+                size: 70,
+                currencyCode: dados.first?.currencyCode ?? "USD"
+            )
                 .padding(.trailing, 30)
         }
         .background(

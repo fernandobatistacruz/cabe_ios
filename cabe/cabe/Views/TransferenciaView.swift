@@ -63,12 +63,7 @@ struct TransferenciaView: View {
                 .onChange(of: vm.valorTexto) { novoValor in
                     vm.atualizarValor(novoValor)
                 }
-            }
-
-            // 🔹 Descrição
-            Section("Descrição") {
-                TextField("Descrição", text: $vm.descricao)
-            }
+            }           
         }
         .navigationTitle("Transferência")
         .navigationBarTitleDisplayMode(.inline)

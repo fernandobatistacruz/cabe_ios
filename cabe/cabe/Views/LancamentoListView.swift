@@ -410,7 +410,7 @@ struct LancamentoCartaoRow: View {
             Image(cartao.operadoraEnum.imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 24, height: 24)
+                .frame(width: 20, height: 20)
         
             VStack(alignment: .leading, spacing: 2) {
                 Text(cartao.nome)
@@ -494,7 +494,7 @@ struct LancamentoRow: View {
                     
                 let subtitleText: String = {
                     if lancamento.transferencia {
-                        return lancamento.tipo == Tipo.despesa.rawValue ? "Saída" : "Entrada"
+                        return lancamento.conta?.nome ?? ""
                     } else {
                         if lancamento.categoria?.isSub == true {
                             return lancamento.categoria?.nomeSubcategoria ?? ""

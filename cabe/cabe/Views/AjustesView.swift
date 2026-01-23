@@ -65,6 +65,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "sun.max.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.blue)
                             Text("Aparência")
                             Spacer()
@@ -79,6 +82,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "bell.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.red)
                             Text("Notificações")
                             Spacer()
@@ -92,6 +98,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "cloud.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.cyan)
                             Text("Backup")
                             Spacer()
@@ -105,6 +114,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "purchased")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.pink)
                             Text("Assinatura")
                             Spacer()
@@ -118,6 +130,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "iphone")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.gray)
                             Text("Sobre")
                         }
@@ -133,6 +148,9 @@ struct AjustesView: View {
                     } label: {
                         HStack {
                             Image(systemName: "wallet.bifold.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.green)
                             Text("Pagamento Padrão")
                             Spacer()
@@ -151,6 +169,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "square.split.2x2.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.purple)
                             Text("Categorias")
                         }
@@ -161,6 +182,9 @@ struct AjustesView: View {
                     } label: {
                         HStack (){
                             Image(systemName: "creditcard.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.orange)
                             Text("Cartão de Crédito")
                         }

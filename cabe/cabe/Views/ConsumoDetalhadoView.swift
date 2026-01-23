@@ -39,7 +39,8 @@ struct ConsumoDetalhadoView: View {
                         items: items,
                         lineWidth: 22,
                         size: 180,
-                        detalhar: true
+                        detalhar: true,
+                        currencyCode: vm.lancamentos.first?.currencyCode ?? "USD"
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -187,12 +188,14 @@ struct DonutChartView: View {
     var lineWidth: CGFloat
     var size: CGFloat
     let detalhar: Bool
+    let currencyCode: String
 
-    init(items: [CategoriaResumo], lineWidth: CGFloat, size: CGFloat, detalhar: Bool = false) {
+    init(items: [CategoriaResumo], lineWidth: CGFloat, size: CGFloat, detalhar: Bool = false, currencyCode: String) {
         self.items = items
         self.lineWidth = lineWidth
         self.size = size
         self.detalhar = detalhar
+        self.currencyCode = currencyCode
     }
 
     private var total: Double {
@@ -209,7 +212,7 @@ struct DonutChartView: View {
                         Circle()
                             .trim(from: start, to: end)
                             .stroke(items[index].cor,
-                                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
                             .rotationEffect(.degrees(-90))
                     }
                 }
@@ -217,7 +220,7 @@ struct DonutChartView: View {
             
             if detalhar && total > 0 {
                 VStack(spacing: -2) {
-                    Text(total, format: .currency(code: "USD"))
+                    Text(total, format: .currency(code: currencyCode))
                         .font(.headline)
                         .fontWeight(.bold)
                 }
