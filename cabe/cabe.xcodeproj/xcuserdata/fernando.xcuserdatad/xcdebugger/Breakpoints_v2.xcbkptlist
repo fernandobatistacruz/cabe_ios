@@ -30,8 +30,8 @@
             filePath = "cabe/ViewModels/ResumoAnualViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "191"
+            endingLineNumber = "191"
             landmarkName = "gerarInsights(_:)"
             landmarkType = "7">
          </BreakpointContent>

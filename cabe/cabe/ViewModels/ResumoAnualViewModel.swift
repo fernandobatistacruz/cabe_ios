@@ -103,16 +103,66 @@ private extension ResumoAnualViewModel {
     }
 
     func calcularDespesasPorCategoria(_ lancamentos: [LancamentoModel]) {
-        let despesas = lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
 
-        let agrupado = Dictionary(grouping: despesas, by: { $0.categoriaID })
-
-        despesasPorCategoria = agrupado.compactMap { _, itens in
-            guard let categoria = itens.first?.categoria else { return nil }
-            let total = itens.map(\.valor).reduce(0, +)
-            return DespesaPorCategoriaModel(categoria: categoria, total: total)
+        let despesas = lancamentos.filter {
+            $0.tipo == Tipo.despesa.rawValue
         }
-        .sorted { $0.total > $1.total }
+
+        // 🔹 Mapa de todas as categorias envolvidas nos lançamentos
+        let categoriasPorID: [Int64: CategoriaModel] = Dictionary(
+            despesas.compactMap { $0.categoria }.compactMap {
+                guard let id = $0.id else { return nil }
+                return (id, $0)
+            },
+            uniquingKeysWith: { first, _ in first }
+        )
+
+        // 🔹 Acumulador: categoriaPaiID -> total
+        var acumulado: [Int64: (categoria: CategoriaModel, total: Decimal)] = [:]
+
+        for lancamento in despesas {
+
+            guard let categoria = lancamento.categoria,
+                  let categoriaID = categoria.id
+            else { continue }
+
+            // 🔹 Resolve a categoria pai
+            let categoriaPai: CategoriaModel
+            let categoriaPaiID: Int64
+
+            if let paiID = categoria.pai,
+               let pai = categoriasPorID[paiID] {
+                // subcategoria → soma no pai
+                categoriaPai = pai
+                categoriaPaiID = paiID
+            } else {
+                // já é categoria pai
+                categoriaPai = categoria
+                categoriaPaiID = categoriaID
+            }
+
+            // 🔹 Soma os valores
+            if let existente = acumulado[categoriaPaiID] {
+                acumulado[categoriaPaiID] = (
+                    categoria: existente.categoria,
+                    total: existente.total + lancamento.valor
+                )
+            } else {
+                acumulado[categoriaPaiID] = (
+                    categoria: categoriaPai,
+                    total: lancamento.valor
+                )
+            }
+        }
+
+        despesasPorCategoria = acumulado.values
+            .map {
+                DespesaPorCategoriaModel(
+                    categoria: $0.categoria,
+                    total: $0.total
+                )
+            }
+            .sorted { $0.total > $1.total }
     }
 
     func gerarInsights(_ lancamentos: [LancamentoModel]) {
