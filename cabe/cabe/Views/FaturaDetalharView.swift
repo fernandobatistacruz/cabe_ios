@@ -33,8 +33,7 @@ struct FaturaDetalharView: View {
             : lancamentos.filter {
                 $0.descricao.localizedCaseInsensitiveContains(searchText)
             }
-
-        // 🔹 Filtro por tipo
+      
         switch filtroSelecionado {
         case .todos:
             break
@@ -73,7 +72,7 @@ struct FaturaDetalharView: View {
     var totalConferido: Decimal {
         lancamentos
             .filter { lancamentosConferidos.contains($0.id) }
-            .map(\.valor)
+            .map(\.valorComSinal)
             .reduce(0, +)
     }
 
@@ -132,7 +131,8 @@ struct FaturaDetalharView: View {
                                 LancamentoRow(
                                     lancamento: lancamento,
                                     mostrarPagamento: false,
-                                    mostrarValores: true
+                                    mostrarValores: true,
+                                    mostrarData: true
                                 )
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -232,6 +232,8 @@ struct FaturaDetalharView: View {
                     } label: {
                         Label("Conferência", systemImage: "doc.text.magnifyingglass")
                     }
+                    
+                    Divider()
 
                     Button {
                         Task { await exportarCSV() }
@@ -374,32 +376,5 @@ enum OrdemData: CaseIterable {
 
     var icon: String {
         self == .crescente ? "arrow.up" : "arrow.down"
-    }
-}
-
-enum FiltroLancamento: String, CaseIterable, Identifiable {
-    case todos
-    case parcelados
-    case divididos
-    case recorrentes
-
-    var id: String { rawValue }
-
-    var titulo: String {
-        switch self {
-        case .todos: return "Todos"
-        case .parcelados: return "Parcelados"
-        case .divididos: return "Divididos"
-        case .recorrentes: return "Recorrentes"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .todos: return "tray.full"
-        case .parcelados: return "calendar"
-        case .divididos: return "person.2"
-        case .recorrentes: return "repeat"
-        }
     }
 }

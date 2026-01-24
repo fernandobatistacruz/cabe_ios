@@ -145,7 +145,7 @@ struct EditarLancamentoView: View {
                                 mostrarCalendario.toggle()
                             } label: {
                                 HStack {
-                                    Text(vm.pagamentoSelecionado?.cartaoModel == nil ? "Vencimento" : "Data da Compra")
+                                    Text(vm.pagamentoSelecionado?.cartaoModel == nil ? "Vencimento" : "Lançamento")
                                         .foregroundColor(.primary)
                                     Spacer()
                                     Text("\(vm.data.formatted(date: .abbreviated, time: .omitted))")

@@ -127,6 +127,14 @@ struct LancamentoDetalheView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    if lancamento.cartao == nil {
+                        HStack {
+                            Text("Data do Lançamento")
+                            Spacer()
+                            Text(lancamento.dataCriacaoFormatada)
+                                .foregroundColor(.secondary)
+                        }
+                    }
 
                     if lancamento.dividido {
                         HStack {
@@ -151,7 +159,7 @@ struct LancamentoDetalheView: View {
                         }
 
                         HStack {
-                            Text("Data da Compra")
+                            Text("Data do Lançamento")
                             Spacer()
                             Text(lancamento.dataCompraFormatada)
                                 .foregroundColor(.secondary)
@@ -190,7 +198,7 @@ struct LancamentoDetalheView: View {
                     Button {
                         mostrarDialogExclusao = true
                     } label: {
-                        Text("Excluir")                            
+                        Text("Excluir")
                     }
                     .padding(.trailing)
                 }

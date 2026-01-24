@@ -22,6 +22,8 @@ struct LancamentoListView: View {
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
+    @State private var filtroSelecionado: FiltroLancamento = .todos
+    @State private var filtroTipo: FiltroTipo = .todos
     
     private var selectedDate: Date {
         Calendar.current.date(
@@ -33,20 +35,57 @@ struct LancamentoListView: View {
         ) ?? Date()
     }
     
+    private var filtroAtivo: Bool {
+        filtroSelecionado != .todos || filtroTipo != .todos
+    }
+    
     var lancamentosFiltrados: [LancamentoModel] {
-        let texto = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !texto.isEmpty else { return viewModel.lancamentos }
-        
-        return viewModel.lancamentos.filter {
-            $0.descricao.localizedCaseInsensitiveContains(texto)
+        var resultado = searchText.isEmpty
+            ? viewModel.lancamentos
+        : viewModel.lancamentos.filter {
+            $0.descricao.localizedCaseInsensitiveContains(searchText.trimmingCharacters(in: .whitespacesAndNewlines))
         }
+        
+        switch filtroTipo {
+        case .todos:
+            break
+        case .receita:
+            resultado = resultado.filter { $0.tipo == Tipo.receita.rawValue }
+            break
+        case .despesa:
+            resultado = resultado.filter { $0.tipo == Tipo.despesa.rawValue }
+            break
+        }
+        
+        switch filtroSelecionado {
+        case .todos:
+            break
+
+        case .recorrentes:
+            resultado = resultado.filter {
+                $0.tipoRecorrente == .semanal ||
+                $0.tipoRecorrente == .quinzenal ||
+                $0.tipoRecorrente == .mensal
+            }
+
+        case .parcelados:
+            resultado = resultado.filter {
+                $0.tipoRecorrente == .parcelado
+            }
+
+        case .divididos:
+            resultado = resultado.filter {
+                $0.dividido
+            }
+        }
+
+        return resultado
     }
     
     var body: some View {
         ZStack {
             List {
                 ForEach(lancamentosAgrupados, id: \.date) { section in
-
                     Section {
                         ForEach(section.items) { item in
                             switch item {
@@ -187,7 +226,6 @@ struct LancamentoListView: View {
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Buscar")
         .toolbar {
-            
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     showCalendar = true
@@ -197,6 +235,50 @@ struct LancamentoListView: View {
                 }
             }
             
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Section {
+                        ForEach(FiltroTipo.allCases) { filtro in
+                            Button {
+                                filtroTipo = filtro
+                            } label: {
+                                HStack {
+                                    Text(filtro.titulo)
+                                    
+                                    Spacer()
+                                    
+                                    if filtroTipo == filtro {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    Section {
+                        ForEach(FiltroLancamento.allCases) { filtro in
+                            Button {
+                                filtroSelecionado = filtro
+                            } label: {
+                                HStack {
+                                    Text(filtro.titulo)
+                                    
+                                    Spacer()
+                                    
+                                    if filtroSelecionado == filtro {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Image(systemName: filtroAtivo
+                          ? "line.3.horizontal.decrease.circle.fill"
+                          : "line.3.horizontal.decrease")
+                    
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button {
@@ -305,6 +387,17 @@ struct LancamentoListView: View {
                 }
             }
         }
+    }
+    
+    private var textoFiltro: String? {
+        let filtros = [
+            filtroTipo == .todos ? nil : filtroTipo.titulo,
+            filtroSelecionado == .todos ? nil : filtroSelecionado.titulo
+        ]
+        .compactMap { $0 }
+        .joined(separator: " + ")
+
+        return filtros.isEmpty ? nil : filtros
     }
     
     private func totalDaSection(_ items: [LancamentoItem]) -> Decimal {
@@ -453,6 +546,19 @@ struct LancamentoRow: View {
     let lancamento: LancamentoModel   
     let mostrarPagamento: Bool
     let mostrarValores: Bool
+    let mostrarData: Bool
+    
+    init(
+        lancamento: LancamentoModel,
+        mostrarPagamento: Bool,
+        mostrarValores: Bool,
+        mostrarData: Bool = false
+    ) {
+        self.lancamento = lancamento
+        self.mostrarPagamento = mostrarPagamento
+        self.mostrarValores = mostrarValores
+        self.mostrarData = mostrarData
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -505,22 +611,28 @@ struct LancamentoRow: View {
                     }
                 }
                 
-                    
-                let subtitleText: String = {
-                    if lancamento.transferencia {
-                        return lancamento.conta?.nome ?? ""
-                    } else {
-                        if lancamento.categoria?.isSub == true {
-                            return lancamento.categoria?.nomeSubcategoria ?? ""
+                if mostrarData {
+                    Text(lancamento.dataCompraFormatada)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                else{
+                    let subtitleText: String = {
+                        if lancamento.transferencia {
+                            return lancamento.conta?.nome ?? ""
                         } else {
-                            return lancamento.categoria?.nome ?? ""
+                            if lancamento.categoria?.isSub == true {
+                                return lancamento.categoria?.nomeSubcategoria ?? ""
+                            } else {
+                                return lancamento.categoria?.nome ?? ""
+                            }
                         }
-                    }
-                }()
+                    }()
 
-                Text(subtitleText)
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                    Text(subtitleText)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
             }
 
             Spacer()

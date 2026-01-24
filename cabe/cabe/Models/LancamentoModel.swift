@@ -255,6 +255,17 @@ extension LancamentoModel {
     }
 }
 
+extension LancamentoModel {
+    var dataCriacaoFormatada: String {
+        return dataCriacaoDate.formatted(
+            .dateTime
+                .day(.twoDigits)
+                .month(.twoDigits)
+                .year()
+        )
+    }
+}
+
 private let isoFormatter: ISO8601DateFormatter = {
     let f = ISO8601DateFormatter()
     f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
