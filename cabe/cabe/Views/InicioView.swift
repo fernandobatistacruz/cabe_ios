@@ -382,9 +382,7 @@ struct ConsumoCardView: View {
 struct RecentesListView: View {
     
     @ObservedObject var viewModel: LancamentoListViewModel
-    let mosttrarValores: Bool
-    @State private var lancamentoParaExcluir: LancamentoModel?
-    @State private var mostrarDialogExclusao = false
+    let mosttrarValores: Bool    
     
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 12) {
@@ -431,14 +429,6 @@ struct RecentesListView: View {
                                     mostrarPagamento: false,
                                     mostrarValores: mosttrarValores
                                 )
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        lancamentoParaExcluir = lancamento
-                                        mostrarDialogExclusao = true
-                                    } label: {
-                                        Label("Excluir", systemImage: "trash")
-                                    }
-                                }
                             }
                             
                             Spacer()
@@ -463,35 +453,6 @@ struct RecentesListView: View {
             }
         }
         .padding(.horizontal)
-        .confirmationDialog(
-            "Excluir Lançamento?",
-            isPresented: $mostrarDialogExclusao,
-            titleVisibility: .visible
-        ) {
-            if let lancamento = lancamentoParaExcluir {
-                
-                if lancamento.tipoRecorrente == .nunca {
-                    Button("Confirmar Exclusão", role: .destructive) {
-                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
-                    }
-                } else {
-                    Button("Excluir Somente Este", role: .destructive) {
-                        Task { await viewModel.removerSomenteEste(lancamento)}
-                    }
-                    
-                    Button("Excluir Este e os Próximos", role: .destructive) {
-                        Task { await viewModel.removerEsteEProximos(lancamento) }
-                    }
-                    
-                    Button("Excluir Todos", role: .destructive) {
-                        Task { await viewModel.removerTodosRecorrentes(lancamento) }
-                    }
-                }
-            }
-        }
-        message: {
-            Text("Essa ação não poderá ser desfeita.")
-        }
     }
 }
     
