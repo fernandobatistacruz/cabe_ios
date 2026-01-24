@@ -10,19 +10,22 @@ import Combine
 
 
 struct LancamentoDetalheView: View {
-
-    private let repository: LancamentoRepository
+    
     @State private var mostrarEdicao = false
+    @State private var mostrarDialogExclusao = false
+    @Environment(\.dismiss) private var dismiss
+    
     @StateObject private var vm: LancamentoDetalheViewModel
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
 
-    init(lancamento: LancamentoModel, repository: LancamentoRepository) {
-        self.repository = repository
-
+    init(lancamento: LancamentoModel,  vmLancamentos: LancamentoListViewModel) {
+        self.vmLancamentos = vmLancamentos
+        
         _vm = StateObject(
             wrappedValue: LancamentoDetalheViewModel(
                 id: lancamento.id ?? 0,
                 uuid: lancamento.uuid,
-                repository: repository
+                repository: vmLancamentos.repository
             )
         )
     }
@@ -173,12 +176,71 @@ struct LancamentoDetalheView: View {
                             }
                     }
                 }
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                        mostrarDialogExclusao = true                        
+                    } label: {
+                        Text("Excluir")
+                            .foregroundColor(.red)
+                    }
+                    .padding(.leading)
+                }
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                        Task{
+                            await vmLancamentos.togglePago([lancamento])
+                        }
+                    } label: {
+                        Text(lancamento.pago ? "Desfazer Pagamento" : "Pago")
+                    }
+                    .padding(.trailing)
+                }
             }
             .sheet(isPresented: $mostrarEdicao) {
                 EditarLancamentoView(
                     lancamento: lancamento,
-                    repository: repository
+                    repository: vmLancamentos.repository
                 )
+            }
+            .confirmationDialog(
+                "Excluir Lançamento?",
+                isPresented: $mostrarDialogExclusao,
+                titleVisibility: .visible
+            ) {
+                
+                if lancamento.tipoRecorrente == .nunca {
+                    Button("Confirmar Exclusão", role: .destructive) {
+                        Task {
+                            await vmLancamentos.removerTodosRecorrentes(lancamento)
+                            dismiss()
+                        }
+                    }
+                } else {
+                    Button("Excluir Somente Este", role: .destructive) {
+                        Task {
+                            await vmLancamentos.removerSomenteEste(lancamento)
+                            dismiss()
+                        }
+                    }
+                    
+                    Button("Excluir Este e os Próximos", role: .destructive) {
+                        Task {
+                            await vmLancamentos.removerEsteEProximos(lancamento)
+                            dismiss()
+                        }
+                    }
+                    
+                    Button("Excluir Todos", role: .destructive) {
+                        Task {
+                            await vmLancamentos.removerTodosRecorrentes(lancamento)
+                            dismiss()
+                        }
+                    }
+                }
+                
+            }
+            message: {
+                Text("Essa ação não poderá ser desfeita.")
             }
 
         } else {

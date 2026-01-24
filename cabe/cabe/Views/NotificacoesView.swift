@@ -80,7 +80,7 @@ private struct VenceHojeSection: View {
                 NavigationLink {
                     LancamentoDetalheView(
                         lancamento: lancamento,
-                        repository: vmLancamentos.repository
+                        vmLancamentos: vmLancamentos
                     )
                 } label: {
                     LancamentoRow(
@@ -155,7 +155,7 @@ private struct VencidosSection: View {
                 NavigationLink {
                     LancamentoDetalheView(
                         lancamento: lancamento,
-                        repository: vmLancamentos.repository
+                        vmLancamentos: vmLancamentos
                     )
                 } label: {
                     LancamentoRow(

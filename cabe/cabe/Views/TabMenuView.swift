@@ -42,6 +42,7 @@ struct TabMenuView: View {
                 Label("Lançamentos", systemImage: "square.stack.fill")
             }
             .tag(Tab.lancamentos)
+            .environmentObject(vmLancamentos)
 
             NavigationStack {
                 ResumoAnualView()

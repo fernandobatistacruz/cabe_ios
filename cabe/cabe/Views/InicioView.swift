@@ -421,7 +421,7 @@ struct RecentesListView: View {
                             NavigationLink {
                                 LancamentoDetalheView(
                                     lancamento: lancamento,
-                                    repository: viewModel.repository
+                                    vmLancamentos: viewModel
                                 )
                             } label: {
                                 LancamentoRow(
