@@ -155,8 +155,8 @@ struct LancamentosPorCategoriaView: View {
 
     private var lancamentosFiltrados: [LancamentoModel] {
         vm.lancamentos.filter {
-            $0.categoriaID == categoriaID &&
-            $0.tipo == Tipo.despesa.rawValue
+            ($0.categoriaID == categoriaID || $0.categoria?.pai == categoriaID)
+            && $0.tipo == Tipo.despesa.rawValue
         }
     }
 

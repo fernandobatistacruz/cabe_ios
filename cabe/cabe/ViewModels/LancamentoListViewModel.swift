@@ -100,62 +100,79 @@ final class LancamentoListViewModel: ObservableObject {
             !$0.transferencia
         }
 
-        let agrupado = Dictionary(grouping: despesas, by: \.categoriaID)
+        // 🔑 normaliza subcategoria → pai
+        let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
+            let info = categoriaPrincipalInfo(from: lancamento.categoria)
+            let valor = (lancamento.valor as NSDecimalNumber).doubleValue
 
-        var totais: [(categoriaID: Int64, nome: String, valor: Double, cor: Color)] =
-        agrupado.compactMap { (categoriaID, lancamentos) in
-            guard let primeiro = lancamentos.first else { return nil }
-            
-            let total = lancamentos.reduce(0.0) {
-                $0 + ($1.valor as NSDecimalNumber).doubleValue
-            }
-            
-            let cat = primeiro.categoria
-            let catNome = cat?.isSub ?? false ? cat?.nomeSubcategoria ?? "" : cat?.nome ?? "Sem categoria"
-            
             return (
-                categoriaID: categoriaID,
-                nome: catNome,
-                valor: total,
-                cor: primeiro.categoria?.getCor().cor ?? .gray
+                id: info.id,
+                nome: info.nome,
+                cor: info.cor,
+                valor: valor
             )
         }
 
-        totais.sort { $0.valor > $1.valor }
+        // 🔑 agrupa já com categoria final
+        let agrupado = Dictionary(grouping: normalizados, by: \.id)
+
+        let totais = agrupado.map { (_, itens) in
+            (
+                id: itens.first!.id,
+                nome: itens.first!.nome,
+                cor: itens.first!.cor,
+                valor: itens.reduce(0) { $0 + $1.valor }
+            )
+        }
+        .sorted { $0.valor > $1.valor }
 
         let totalGeral = totais.reduce(0) { $0 + $1.valor }
         guard totalGeral > 0 else { return [] }
 
-        // Top 2
-        let top2 = totais.prefix(2).map {
-            CategoriaResumo(
-                categoriaID: $0.categoriaID,
-                nome: $0.nome,
-                valor: $0.valor,
-                percentual: ($0.valor / totalGeral) * 100,
-                cor: $0.cor,
-                currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+        // ✅ regra: até 3 categorias, senão a 3ª vira "Outros"
+        var resultado: [CategoriaResumo] = []
+
+        if totais.count <= 3 {
+            resultado = totais.map {
+                CategoriaResumo(
+                    categoriaID: $0.id,
+                    nome: $0.nome,
+                    valor: $0.valor,
+                    percentual: ($0.valor / totalGeral) * 100,
+                    cor: $0.cor,
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                )
+            }
+        } else {
+            let principais = Array(totais.prefix(2))
+            let outros = Array(totais.dropFirst(2))
+
+            let valorOutros = outros.reduce(0) { $0 + $1.valor }
+
+            resultado = principais.map {
+                CategoriaResumo(
+                    categoriaID: $0.id,
+                    nome: $0.nome,
+                    valor: $0.valor,
+                    percentual: ($0.valor / totalGeral) * 100,
+                    cor: $0.cor,
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                )
+            }
+
+            resultado.append(
+                CategoriaResumo(
+                    categoriaID: -1,
+                    nome: "Outros",
+                    valor: valorOutros,
+                    percentual: (valorOutros / totalGeral) * 100,
+                    cor: .gray,
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                )
             )
         }
 
-        // Outros
-        if totais.count > 2 {
-            let outrosValor = totais.dropFirst(2).reduce(0) { $0 + $1.valor }
-
-            let outros = CategoriaResumo(
-                categoriaID: -1, // ⚠️ marcador especial
-                nome: "Outros",
-                valor: outrosValor,
-                percentual: (outrosValor / totalGeral) * 100,
-                cor: .secondary,
-                currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
-            )
-
-            return top2 + [outros]
-        }
-
-        return top2
-
+        return resultado
     }
     
     var gastosPorCategoriaDetalhado: [CategoriaResumo] {
@@ -165,28 +182,30 @@ final class LancamentoListViewModel: ObservableObject {
             !$0.transferencia
         }
 
-        let agrupado = Dictionary(grouping: despesas, by: \.categoriaID)
-
-        let totaisBase = agrupado.compactMap { (categoriaID, lancamentos)
-            -> (categoriaID: Int64, nome: String, valor: Double, cor: Color)? in
-
-            guard let primeiro = lancamentos.first else { return nil }
-
-            let valor = lancamentos.reduce(0.0) {
-                $0 + ($1.valor as NSDecimalNumber).doubleValue
-            }
-            
-            let cat = primeiro.categoria
-            let catNome = cat?.isSub ?? false ? cat?.nomeSubcategoria ?? "" : cat?.nome ?? "Sem categoria"
+        // 🔑 NORMALIZA antes de agrupar
+        let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
+            let info = categoriaPrincipalInfo(from: lancamento.categoria)
+            let valor = (lancamento.valor as NSDecimalNumber).doubleValue
 
             return (
-                categoriaID: categoriaID,
-                nome: catNome,
-                valor: valor,
-                cor: primeiro.categoria?.getCor().cor ?? .gray
+                id: info.id,
+                nome: info.nome,
+                cor: info.cor,
+                valor: valor
             )
         }
 
+        // 🔑 agora sim agrupa corretamente
+        let agrupado = Dictionary(grouping: normalizados, by: \.id)
+
+        let totaisBase = agrupado.map { (_, itens) in
+            (
+                categoriaID: itens.first!.id,
+                nome: itens.first!.nome,
+                valor: itens.reduce(0) { $0 + $1.valor },
+                cor: itens.first!.cor
+            )
+        }
 
         let totalGeral = totaisBase.reduce(0) { $0 + $1.valor }
         guard totalGeral > 0 else { return [] }
@@ -203,7 +222,24 @@ final class LancamentoListViewModel: ObservableObject {
                     currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                 )
             }
+    }
+    
+    private func categoriaPrincipalInfo(
+        from categoria: CategoriaModel?
+    ) -> (id: Int64, nome: String, cor: Color) {
+        if let categoria, categoria.isSub, let paiID = categoria.pai {
+            return (
+                id: paiID,
+                nome: categoria.nome,
+                cor: categoria.getCor().cor
+            )
+        }
 
+        return (
+            id: categoria?.id ?? 0,
+            nome: categoria?.nome ?? "",
+            cor: categoria?.getCor().cor ?? .gray
+        )
     }
     
     func selecionar(data: Date) {

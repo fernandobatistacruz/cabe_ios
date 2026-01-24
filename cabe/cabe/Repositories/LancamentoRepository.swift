@@ -535,7 +535,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             arguments.append(ano)
         }
         
-        sql += " ORDER BY l.ano DESC, l.mes DESC, l.dia DESC"
+        sql += " ORDER BY l.ano DESC, l.mes DESC, l.dia DESC, l.id DESC"
         
         let rows = try Row.fetchAll(
             db,

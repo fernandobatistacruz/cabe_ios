@@ -118,7 +118,8 @@ final class SubscriptionManager: ObservableObject {
             
             #if DEBUG
             isSubscribed = true
-            #endif            
+            #endif
+            
              
         } catch {
             print("Erro ao verificar assinatura:", error)

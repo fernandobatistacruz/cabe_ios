@@ -46,6 +46,9 @@ struct CategoriaFormView: View {
     // MARK: - Sheet
     @State private var sheetSubcategoria: SubcategoriaSheetMode?
     @FocusState private var campoFocado: CampoFoco?
+    
+    @EnvironmentObject var sub: SubscriptionManager
+    @State private var mostrarPaywall = false
 
     // MARK: - Init
     init(categoria: CategoriaModel? = nil, isEditar: Bool = false) {
@@ -140,7 +143,11 @@ struct CategoriaFormView: View {
                                     Text("Subcategorias")
                                     Spacer()
                                     Button {
-                                        sheetSubcategoria = .nova
+                                        if sub.isSubscribed {
+                                            sheetSubcategoria = .nova
+                                        } else {
+                                            mostrarPaywall = true
+                                        }
                                     } label: {
                                         Image(systemName: "plus")
                                     }
@@ -215,10 +222,13 @@ struct CategoriaFormView: View {
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            Task{
-                                await salvar()
+                            if sub.isSubscribed {
+                                Task{
+                                    await salvar()
+                                }
+                            } else {
+                                mostrarPaywall = true
                             }
-                            
                         } label: {
                             Image(systemName: "checkmark").foregroundColor(.white)
                         }
@@ -235,6 +245,11 @@ struct CategoriaFormView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             campoFocado = .nome
                         }
+                    }
+                }
+                .sheet(isPresented: $mostrarPaywall) {
+                    NavigationStack {
+                        PaywallView()
                     }
                 }
                 .sheet(item: $sheetSubcategoria) { mode in

@@ -14,8 +14,8 @@
             filePath = "cabe/ViewModels/LancamentoListViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "338"
-            endingLineNumber = "338"
+            startingLineNumber = "374"
+            endingLineNumber = "374"
             landmarkName = "lancamentosRecentesAgrupadosSimples"
             landmarkType = "24">
          </BreakpointContent>
