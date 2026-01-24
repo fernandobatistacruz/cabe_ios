@@ -20,7 +20,7 @@ final class NovoLancamentoViewModel: ObservableObject {
     @Published var valor: Decimal = 0
     @Published var dividida: Bool = false
     @Published var pago: Bool = false
-    @Published var dataLancamento: Date = Date()
+    @Published var data: Date = Date()
     @Published var dataFatura: Date = Date()
     @Published var anotacao: String = ""
     @Published var recorrente: TipoRecorrente = .nunca    
@@ -61,19 +61,29 @@ final class NovoLancamentoViewModel: ObservableObject {
         
         self.categoria = lancamento.categoria
 
-        self.dataLancamento = Calendar.current.date(
+        if lancamento.cartao != nil {
+            self.data = Calendar.current.date(
+                from: DateComponents(
+                    year: lancamento.anoCompra,
+                    month: lancamento.mesCompra,
+                    day: lancamento.diaCompra
+                )
+            ) ?? Date()
+        } else {
+            self.data = Calendar.current.date(
+                from: DateComponents(
+                    year: lancamento.ano,
+                    month: lancamento.mes,
+                    day: lancamento.dia
+                )
+            ) ?? Date()
+        }
+
+        self.dataFatura = Calendar.current.date(
             from: DateComponents(
                 year: lancamento.ano,
                 month: lancamento.mes,
                 day: lancamento.dia
-            )
-        ) ?? Date()
-
-        self.dataFatura = Calendar.current.date(
-            from: DateComponents(
-                year: lancamento.anoCompra,
-                month: lancamento.mesCompra,
-                day: lancamento.diaCompra
             )
         ) ?? Date()
 
@@ -269,6 +279,30 @@ final class NovoLancamentoViewModel: ObservableObject {
         }
         
         uuidEdicao = lancamento.uuid
+        
+        guard let meioPagamento = pagamentoSelecionado else { return }
+        let calendar = Calendar.current
+        var componentesVencimento = calendar.dateComponents([.year, .month], from: Date())
+        var componentesDataCompra = calendar.dateComponents([.year, .month], from: Date())
+
+        switch meioPagamento {
+        case .cartao:
+            let diaVencimento = meioPagamento.cartaoModel?.vencimento ?? 1
+            componentesVencimento = calendar.dateComponents([.year, .month, .day], from: dataFatura)
+            componentesVencimento.day = diaVencimento            
+            componentesDataCompra = calendar.dateComponents([.year, .month, .day], from: data)
+        case .conta:
+            componentesVencimento = calendar.dateComponents([.year, .month, .day], from: data)
+            componentesDataCompra = calendar.dateComponents([.year, .month, .day], from: data)
+        }
+        
+        lancamento.dia = componentesVencimento.day ?? 1
+        lancamento.mes = componentesVencimento.month ?? 1
+        lancamento.ano = componentesVencimento.year ?? 1990
+                
+        lancamento.diaCompra = componentesDataCompra.day ?? 1
+        lancamento.mesCompra = componentesDataCompra.month ?? 1
+        lancamento.anoCompra = componentesDataCompra.year ?? 1990
 
         lancamento.descricao = descricao
         lancamento.anotacao = anotacao
@@ -329,8 +363,8 @@ final class NovoLancamentoViewModel: ObservableObject {
                 dataInicial = dataFatura
                 diaVencimento = meioPagamento.cartaoModel?.vencimento ?? 1
             case .conta:
-                dataInicial = dataLancamento
-                diaVencimento = calendar.component(.day, from: dataLancamento)
+                dataInicial = data
+                diaVencimento = calendar.component(.day, from: data)
             }
 
             guard let dataFinal = calendar.date(byAdding: .year, value: 10, to: dataInicial) else { return }
@@ -347,16 +381,16 @@ final class NovoLancamentoViewModel: ObservableObject {
                         continue
                     }
 
-                    let compra = calendar.dateComponents([.day, .month, .year], from: dataLancamento)
+                    let compra = calendar.dateComponents([.day, .month, .year], from: data)
 
                     let lancamento = try construirLancamento(
                         uuid: uuid,
-                        dia: componentes.day!,
-                        mes: componentes.month!,
-                        ano: componentes.year!,
-                        diaCompra: compra.day!,
-                        mesCompra: compra.month!,
-                        anoCompra: compra.year!,
+                        dia: componentes.day ?? 1,
+                        mes: componentes.month ?? 1,
+                        ano: componentes.year ?? 1990,
+                        diaCompra: compra.day ?? 1,
+                        mesCompra: compra.month ?? 1,
+                        anoCompra: compra.year ?? 1990,
                         parcelaMes: ""
                     )
                     
@@ -378,7 +412,7 @@ final class NovoLancamentoViewModel: ObservableObject {
 
         private func salvarPorDias(_ desconsiderarPrimeiro: Bool, intervalo: Int) async {
             let calendar = Calendar.current
-            var dataAtual = dataLancamento
+            var dataAtual = data
 
             guard let dataFinal = calendar.date(byAdding: .year, value: 10, to: dataAtual) else { return }
             let uuid = desconsiderarPrimeiro ? uuidEdicao : UUID().uuidString
@@ -390,12 +424,12 @@ final class NovoLancamentoViewModel: ObservableObject {
 
                     let lancamento = try construirLancamento(
                         uuid: uuid,
-                        dia: componentes.day ?? 0,
-                        mes: componentes.month ?? 0,
-                        ano: componentes.year ?? 0,
-                        diaCompra: componentes.day ?? 0,
-                        mesCompra: componentes.month ?? 0,
-                        anoCompra: componentes.year ?? 0,
+                        dia: componentes.day ?? 1,
+                        mes: componentes.month ?? 1,
+                        ano: componentes.year ?? 1990,
+                        diaCompra: componentes.day ?? 1,
+                        mesCompra: componentes.month ?? 1,
+                        anoCompra: componentes.year ?? 1990,
                         parcelaMes: ""
                     )
                     
@@ -427,10 +461,10 @@ final class NovoLancamentoViewModel: ObservableObject {
                 guard let dataCartao = calendar.date(from: componentes) else { return }
                 dataInicial = dataCartao
             case .conta:
-                dataInicial = dataLancamento
+                dataInicial = data
             }
 
-            let compra = calendar.dateComponents([.day, .month, .year], from: dataLancamento)
+            let compra = calendar.dateComponents([.day, .month, .year], from: data)
             var dataAtual = dataInicial
             let uuid = desconsiderarPrimeiro ? uuidEdicao : UUID().uuidString
             var isPrimeiro: Bool = true

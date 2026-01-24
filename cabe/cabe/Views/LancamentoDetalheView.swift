@@ -178,20 +178,19 @@ struct LancamentoDetalheView: View {
                 }
                 ToolbarItem(placement: .bottomBar) {
                     Button {
-                        mostrarDialogExclusao = true                        
-                    } label: {
-                        Text("Excluir")
-                            .foregroundColor(.red)
-                    }
-                    .padding(.leading)
-                }
-                ToolbarItem(placement: .bottomBar) {
-                    Button {
                         Task{
                             await vmLancamentos.togglePago([lancamento])
                         }
                     } label: {
                         Text(lancamento.pago ? "Desfazer Pagamento" : "Pago")
+                    }
+                    .padding(.leading)
+                }
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                        mostrarDialogExclusao = true
+                    } label: {
+                        Text("Excluir")                            
                     }
                     .padding(.trailing)
                 }

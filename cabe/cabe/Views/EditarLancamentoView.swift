@@ -100,6 +100,9 @@ struct EditarLancamentoView: View {
                                             .capitalizingFirstLetter()
                                         )
                                         .foregroundColor(.secondary)
+                                        Image(systemName: "chevron.right")
+                                            .foregroundColor(.gray)
+                                            .font(.footnote)
                                     }
                                 }
                             }
@@ -142,10 +145,10 @@ struct EditarLancamentoView: View {
                                 mostrarCalendario.toggle()
                             } label: {
                                 HStack {
-                                    Text("Data")
+                                    Text(vm.pagamentoSelecionado?.cartaoModel == nil ? "Vencimento" : "Data da Compra")
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text("\(vm.dataLancamento.formatted(date: .abbreviated, time: .omitted))")
+                                    Text("\(vm.data.formatted(date: .abbreviated, time: .omitted))")
                                         .foregroundColor(.primary)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
@@ -163,7 +166,7 @@ struct EditarLancamentoView: View {
                             if mostrarCalendario {
                                 DatePicker(
                                     "",
-                                    selection: $vm.dataLancamento,
+                                    selection: $vm.data,
                                     displayedComponents: [.date]
                                 )
                                 .datePickerStyle(.graphical)
