@@ -10,8 +10,6 @@ import SwiftUI
 struct FaturaListView: View {
     
     @ObservedObject var viewModel: LancamentoListViewModel
-   
-    @State private var mostrarNovoLancamento = false
     @State private var showCalendar = false
        
     private var selectedDate: Date {
@@ -32,7 +30,7 @@ struct FaturaListView: View {
                         ForEach(section.items) { item in
                             if case .cartaoAgrupado(let cartao, let total, let lancamentos) = item {
                                 NavigationLink {
-                                    CartaoFaturaView(
+                                    FaturaDetalharView(
                                         viewModel: viewModel,
                                         cartao: cartao,                                        
                                         total: total,
@@ -90,26 +88,6 @@ struct FaturaListView: View {
                 }                
             }
             .listStyle(.insetGrouped)
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button {
-                        mostrarNovoLancamento = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 48, height: 48)
-                            .background(Color.accentColor)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
-                    }
-                    .buttonStyle(FloatingButtonStyle())
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
-                }
-            }
         }
         .navigationTitle("Faturas")
         .navigationBarTitleDisplayMode(.large)
@@ -134,9 +112,6 @@ struct FaturaListView: View {
                     Image(systemName: "ellipsis")
                 }
             }
-        }
-        .sheet(isPresented: $mostrarNovoLancamento) {
-            NovoLancamentoView(repository: viewModel.repository)
         }
         .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(

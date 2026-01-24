@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct InicioView: View {
-    @State private var mostrarNovaDespesa = false
+    @State private var mostrarNovoLancamento = false
     @State private var showCalendar = false
     @StateObject private var vmLancamentos: LancamentoListViewModel
     @StateObject private var vmContas: ContaListViewModel
@@ -84,20 +84,35 @@ struct InicioView: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Button {
-                        mostrarNovaDespesa = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .foregroundStyle(.white)
-                            .frame(width: 48, height: 48)
-                            .background(Color.accentColor)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
+                    if #available(iOS 26.0, *) {
+                        Button {
+                            mostrarNovoLancamento = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .frame(width: 35, height: 35)
+                                .clipShape(Circle())
+                        }
+                        .buttonStyle(.glassProminent)
+                        .clipShape(Circle())
+                        .padding(.trailing)
+                        .padding(.bottom, 20)
+                    } else {
+                        Button {
+                            mostrarNovoLancamento = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 48, height: 48)
+                                .background(Color.accentColor)
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
+                        }
+                        .buttonStyle(FloatingButtonStyle())
+                        .padding(.trailing, 22)
+                        .padding(.bottom, 20)
                     }
-                    .buttonStyle(FloatingButtonStyle())
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
                 }
             }
         }
@@ -154,7 +169,7 @@ struct InicioView: View {
             .presentationDragIndicator(.hidden)
             
         }
-        .sheet(isPresented: $mostrarNovaDespesa) {
+        .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView(repository: vmLancamentos.repository)
         }
     }

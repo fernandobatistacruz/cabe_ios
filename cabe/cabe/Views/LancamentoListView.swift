@@ -86,7 +86,7 @@ struct LancamentoListView: View {
                                     
                             case .cartaoAgrupado(let cartao, let total, let lancamentos):
                                 NavigationLink {
-                                    CartaoFaturaView(
+                                    FaturaDetalharView(
                                         viewModel: viewModel,
                                         cartao: cartao,                                       
                                         total: total,
@@ -145,20 +145,35 @@ struct LancamentoListView: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Button {
-                        mostrarNovoLancamento = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .foregroundStyle(.white)
-                            .frame(width: 48, height: 48)
-                            .background(Color.accentColor)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
+                    if #available(iOS 26.0, *) {
+                        Button {
+                            mostrarNovoLancamento = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .frame(width: 35, height: 35)
+                                .clipShape(Circle())
+                        }
+                        .buttonStyle(.glassProminent)
+                        .clipShape(Circle())
+                        .padding(.trailing)
+                        .padding(.bottom, 20)
+                    } else {
+                        Button {
+                            mostrarNovoLancamento = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 48, height: 48)
+                                .background(Color.accentColor)
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
+                        }
+                        .buttonStyle(FloatingButtonStyle())
+                        .padding(.trailing, 22)
+                        .padding(.bottom, 20)
                     }
-                    .buttonStyle(FloatingButtonStyle())
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
                 }
             }
         }

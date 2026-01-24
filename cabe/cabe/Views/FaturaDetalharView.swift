@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CartaoFaturaView: View {
+struct FaturaDetalharView: View {
     @ObservedObject var viewModel: LancamentoListViewModel
     let cartao: CartaoModel
     let total: Decimal
@@ -15,6 +15,7 @@ struct CartaoFaturaView: View {
     @State private var ordemData: OrdemData = .decrescente
     @State private var filtroSelecionado: FiltroLancamento = .todos
     @Environment(\.dismiss) private var dismiss
+    @State private var mostrarNovaDespesa = false
     
     var lancamentos: [LancamentoModel] {
         viewModel.lancamentos.filter {
@@ -155,7 +156,6 @@ struct CartaoFaturaView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
 
-        // 🔹 Busca (mantida)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 HStack {
@@ -168,9 +168,17 @@ struct CartaoFaturaView: View {
                 .padding(.horizontal, 12)
                 .clipShape(Capsule())
             }
+            
+            ToolbarItemGroup(placement: .bottomBar) {
+                Spacer()
+                Button {
+                    mostrarNovaDespesa = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
         }
-
-        // 🔹 Toolbar superior
+        
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
@@ -239,8 +247,7 @@ struct CartaoFaturaView: View {
                     Image(systemName: "ellipsis")
                 }
             }
-
-            // 🔹 Botão OK no modo conferência
+           
             if modoConferencia {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("OK") {
@@ -252,8 +259,7 @@ struct CartaoFaturaView: View {
                 }
             }
         }
-
-        // 🔹 Estado vazio
+        
         .overlay {
             if filtroLancamentos.isEmpty {
                 Text("Nenhum lançamento")
@@ -263,13 +269,15 @@ struct CartaoFaturaView: View {
                     .padding()
             }
         }
-
-        // 🔹 Share
+       
         .sheet(item: $shareItem) { item in
             ShareSheetView(activityItems: [item.url])
         }
-
-        // 🔹 Overlay exportação
+        
+        .sheet(isPresented: $mostrarNovaDespesa) {
+            NovoLancamentoView(repository: viewModel.repository)
+        }
+       
         .overlay {
             if isExporting {
                 ZStack {
