@@ -235,7 +235,7 @@ struct ResumoAnualView: View {
                         graficoCategoriasHorizontal(
                             categoriasValidas,
                             vm.lancamentos
-                                .first?.currencyCode ?? "USD")
+                                .first?.currencyCode ?? Locale.systemCurrencyCode)
                     }
                 }
             }

@@ -40,7 +40,7 @@ struct ConsumoDetalhadoView: View {
                         lineWidth: 22,
                         size: 180,
                         detalhar: true,
-                        currencyCode: vm.lancamentos.first?.currencyCode ?? "USD"
+                        currencyCode: vm.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -171,7 +171,7 @@ struct LancamentosPorCategoriaView: View {
                     Text(
                         lancamento.valor,
                         format: .currency(
-                            code: lancamento.conta?.currencyCode ?? Locale.current.currency?.identifier ?? "USD"
+                            code: lancamento.conta?.currencyCode ?? Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
                         )
                     )
                     .foregroundStyle(.secondary)

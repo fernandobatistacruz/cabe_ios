@@ -35,8 +35,7 @@ final class AppDatabase {
 
     // MARK: - Init
     private init() {
-        self.defaultCurrencyCode =
-            Locale.current.currency?.identifier ?? "USD"
+        self.defaultCurrencyCode = Locale.systemCurrencyCode
 
         do {
             try openDatabase()

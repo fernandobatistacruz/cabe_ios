@@ -254,7 +254,7 @@ final class NovoLancamentoViewModel: ObservableObject {
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
             dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
             notificacaoLidaRaw: 0,
-            currencyCode: Locale.current.currency?.identifier ?? "USD"
+            currencyCode: Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
         )
     }
 

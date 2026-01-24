@@ -254,7 +254,7 @@ struct CartaoRowNotification: View {
     private func formatarValor(_ valor: Decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = cartaoNotificacao.lancamentos.first?.cartao?.conta?.currencyCode ?? "USD"
+        formatter.currencyCode = cartaoNotificacao.lancamentos.first?.cartao?.conta?.currencyCode ?? Locale.systemCurrencyCode
         return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
     }
 }

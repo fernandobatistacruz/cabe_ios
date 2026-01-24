@@ -49,7 +49,7 @@ struct InicioView: View {
                         constas: vmContas.saldoTotal,
                         despesas: vmLancamentos.totalDespesas,
                         mostrarValores: mostrarValores,
-                        moeda: vmContas.contas.first?.currencyCode ?? "USD",
+                        moeda: vmLancamentos.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
                         vmLancamentos: vmLancamentos
                     )
                     
@@ -355,7 +355,7 @@ struct ConsumoCardView: View {
                 items: dados,
                 lineWidth: 18,
                 size: 70,
-                currencyCode: dados.first?.currencyCode ?? "USD"
+                currencyCode: dados.first?.currencyCode ?? Locale.systemCurrencyCode
             )
                 .padding(.trailing, 30)
         }
@@ -407,7 +407,7 @@ struct RecentesListView: View {
                     
                     Spacer()
                     
-                    Text(total, format: .currency(code: grupo.items.first?.currencyCode ?? "USD"))
+                    Text(total, format: .currency(code: grupo.items.first?.currencyCode ?? Locale.systemCurrencyCode))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 6)

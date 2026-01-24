@@ -133,7 +133,7 @@ struct LancamentoListView: View {
                             Text(
                                 section.saldoAcumulado,
                                 format: .currency(
-                                    code: viewModel.lancamentos.first?.currencyCode ?? "USD"
+                                    code: viewModel.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                                 )
                             )
                             .font(.subheadline)                           
@@ -428,7 +428,7 @@ struct LancamentoCartaoRow: View {
 
             Text(
                 total,
-                format: .currency(code: lancamentos.first?.currencyCode ?? "USD")
+                format: .currency(code: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode)
             )
             .foregroundColor(.secondary)
         }

@@ -134,7 +134,7 @@ final class LancamentoListViewModel: ObservableObject {
                 valor: $0.valor,
                 percentual: ($0.valor / totalGeral) * 100,
                 cor: $0.cor,
-                currencyCode: lancamentos.first?.currencyCode ?? "USD"
+                currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
             )
         }
 
@@ -148,7 +148,7 @@ final class LancamentoListViewModel: ObservableObject {
                 valor: outrosValor,
                 percentual: (outrosValor / totalGeral) * 100,
                 cor: .secondary,
-                currencyCode: lancamentos.first?.currencyCode ?? "USD"
+                currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
             )
 
             return top2 + [outros]
@@ -200,7 +200,7 @@ final class LancamentoListViewModel: ObservableObject {
                     valor: $0.valor,
                     percentual: ($0.valor / totalGeral) * 100,
                     cor: $0.cor,
-                    currencyCode: lancamentos.first?.currencyCode ?? "USD"
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                 )
             }
 
@@ -262,7 +262,13 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var totalDespesas: Decimal {
-        despesas.reduce(0) { $0 + $1.valor }
+        despesas.reduce(0) { total, lancamento in
+            let valorConsiderado = lancamento.dividido
+                ? lancamento.valor / 2
+                : lancamento.valor
+
+            return total + valorConsiderado
+        }
     }
     
     var totalReceitas: Decimal {
@@ -270,7 +276,7 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var balanco: Decimal {
-        lancamentos.reduce(0) { $0 + $1.valorComSinal }
+        totalReceitas - totalDespesas
     }
 
 }

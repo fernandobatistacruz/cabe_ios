@@ -94,7 +94,7 @@ struct CartaoFaturaView: View {
                 Text(
                     modoConferencia ? totalConferido : total,
                     format: .currency(
-                        code: lancamentos.first?.currencyCode ?? "USD"
+                        code: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                     )
                 )
                 .font(.title2.bold())
