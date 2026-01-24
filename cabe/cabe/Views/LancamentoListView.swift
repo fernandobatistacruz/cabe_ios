@@ -88,8 +88,7 @@ struct LancamentoListView: View {
                                 NavigationLink {
                                     CartaoFaturaView(
                                         viewModel: viewModel,
-                                        cartao: cartao,
-                                        lancamentos: lancamentos,
+                                        cartao: cartao,                                       
                                         total: total,
                                         vencimento: section.date
                                     )
