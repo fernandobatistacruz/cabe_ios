@@ -88,7 +88,7 @@ struct InicioView: View {
                         mostrarNovaDespesa = true
                     } label: {
                         Image(systemName: "plus")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(.title2)
                             .foregroundStyle(.white)
                             .frame(width: 48, height: 48)
                             .background(Color.accentColor)
