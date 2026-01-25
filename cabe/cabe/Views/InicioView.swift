@@ -298,6 +298,8 @@ struct CardItem: View {
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundStyle(color)
+                        .contentTransition(.numericText())
+                        .animation(.easeInOut(duration: 0.3), value: value)
                 }else{
                     Text("•••") // placeholder ou valor oculto
                         .font(.headline)
