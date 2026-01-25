@@ -381,12 +381,34 @@ struct BackupView: View {
     private var ultimoBackupTimestamp: Double = 0
 
     @EnvironmentObject var vm: BackupViewModel
+    @EnvironmentObject var sub: SubscriptionManager
+    @State private var mostrarPaywall = false
+
 
     var body: some View {
         Form {
 
             Section {
-                Toggle("Backup Automático", isOn: $backupAtivo)
+                Toggle(
+                    "Backup Automático",
+                    isOn: Binding(
+                        get: {
+                            backupAtivo
+                        },
+                        set: { novoValor in
+                            if novoValor {
+                                if sub.isSubscribed {
+                                    backupAtivo = true
+                                } else {
+                                    backupAtivo = false
+                                    mostrarPaywall = true
+                                }
+                            } else {
+                                backupAtivo = false
+                            }
+                        }
+                    )
+                )
             }
             footer: {
                 Text("Quando ativado, seus dados serão salvos automaticamente no iCloud periódicamente.")
@@ -403,7 +425,11 @@ struct BackupView: View {
 
             Section {
                 Button("Fazer Backup Agora") {
-                    vm.fazerBackupManual()
+                    if ( sub.isSubscribed) {
+                        vm.fazerBackupManual()
+                    } else {
+                        mostrarPaywall = true
+                    }
                 }
 
                 Button("Apagar Backup do iCloud", role: .destructive) {
@@ -423,6 +449,11 @@ struct BackupView: View {
         .navigationTitle("Backup")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
+        .sheet(isPresented: $mostrarPaywall) {
+            NavigationStack {
+                PaywallView()
+            }
+        }
     }
 
     private var ultimoBackupTexto: String {

@@ -115,11 +115,11 @@ final class SubscriptionManager: ObservableObject {
             isSubscribed = statuses.contains { status in
                 status.state == .subscribed
             }
-            
+            /*
             #if DEBUG
             isSubscribed = true
             #endif
-            
+            */
              
         } catch {
             print("Erro ao verificar assinatura:", error)
