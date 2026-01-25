@@ -53,6 +53,15 @@ final class CartaoRepository : CartaoRepositoryProtocol{
         }
     }
     
+    func toggleArquivado(_ cartoes: [CartaoModel]) async throws {
+        try await db.dbQueue.write { db in
+            for var cartao in cartoes {
+                cartao.arquivado.toggle()
+                try cartao.update(db)
+            }
+        }
+    }
+    
     func listar() throws -> [CartaoModel] {
         try db.dbQueue.read { db in
             try listar(db: db)
@@ -97,7 +106,7 @@ final class CartaoRepository : CartaoRepositoryProtocol{
                 vencimento: row["vencimento"],
                 fechamento: row["fechamento"],
                 operadora: row["operadora"],
-                arquivado: row["arquivado"],
+                arquivadoRaw: row["arquivado"],
                 contaUuid: row["conta_uuid"],
                 limite: row["limite"],
                 conta: conta

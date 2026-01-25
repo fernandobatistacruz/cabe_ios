@@ -68,11 +68,7 @@ struct ResumoAnualView: View {
                         showingPaywall = true
                     }
                 } label: {
-                    if isExporting {
-                        ProgressView()
-                    } else {
-                        Image(systemName: "square.and.arrow.up")
-                    }
+                    Image(systemName: "square.and.arrow.up")
                 }
                 .disabled(isExporting)
             }

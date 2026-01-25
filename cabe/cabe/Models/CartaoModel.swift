@@ -17,7 +17,7 @@ struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var vencimento: Int
     var fechamento: Int
     var operadora: Int
-    var arquivado: Int
+    var arquivadoRaw: Int
     var contaUuid: String
     var limite: Double
    
@@ -30,7 +30,7 @@ struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         case vencimento
         case fechamento
         case operadora
-        case arquivado
+        case arquivadoRaw = "arquivado"
         case contaUuid = "conta_uuid"
         case limite
     }
@@ -42,12 +42,19 @@ struct CartaoModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         static let vencimento = Column("vencimento")
         static let fechamento = Column("fechamento")
         static let operadora = Column("operadora")
-        static let arquivado = Column("arquivado")
+        static let arquivadoRaw = Column("arquivado")
         static let contaUuid = Column("conta_uuid")
         static let limite = Column("limite")
     }
     
     var operadoraEnum: OperadoraCartao {
         OperadoraCartao(rawValue: operadora) ?? .outra
+    }
+}
+
+extension CartaoModel {
+    var arquivado: Bool {
+        get { arquivadoRaw == 1 }
+        set { arquivadoRaw = newValue ? 1 : 0 }
     }
 }

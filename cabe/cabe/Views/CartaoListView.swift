@@ -67,6 +67,19 @@ struct CartaoListView: View {
                                             Label("Excluir", systemImage: "trash")
                                         }
                                     }
+                                    .swipeActions(
+                                        edge: .trailing,
+                                        allowsFullSwipe: false
+                                    ) {
+                                        Button {
+                                            Task{
+                                                await viewModel.toggleArquivado([cartao])
+                                            }
+                                        } label: {
+                                            Label(cartao.arquivado ? String(localized: "Desarquivar") : String(localized: "Arquivar"), systemImage: "archivebox.fill")
+                                                .tint(.orange)
+                                        }
+                                    }
                             }
                             .listRowInsets(
                                 EdgeInsets(

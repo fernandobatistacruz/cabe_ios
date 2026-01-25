@@ -20,7 +20,7 @@ final class ZoomPagamentoViewModel: ObservableObject {
         do {
             let todos = try cartaoRepository.listar()
             //TODO: Deve vir filtrado do banco
-            cartoes = todos.filter { $0.arquivado == 0 }
+            cartoes = todos.filter { $0.arquivado == false }
             
             contas = try contaRepository.listar()
         } catch {

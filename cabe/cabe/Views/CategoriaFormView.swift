@@ -166,7 +166,7 @@ struct CategoriaFormView: View {
                                             .overlay(
                                                 Circle()
                                                     .stroke(
-                                                        Color.accentColor,
+                                                        Color.primary,
                                                         lineWidth: cor.id == corSelecionada.id ? 3 : 0
                                                     )
                                             )
@@ -191,6 +191,9 @@ struct CategoriaFormView: View {
                                         Image(systemName: icone.systemName)
                                             .frame(width: 32, height: 32)
                                             .padding(8)
+                                            .foregroundColor(icone.id == iconeSelecionado.id
+                                                             ? Color.white
+                                                             : Color.primary)
                                             .background(
                                                 icone.id == iconeSelecionado.id
                                                 ? Color.accentColor

@@ -609,7 +609,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 vencimento: row["ca.vencimento"],
                 fechamento: row["ca.fechamento"],
                 operadora: row["ca.operadora"],
-                arquivado: row["ca.arquivado"],
+                arquivadoRaw: row["ca.arquivado"],
                 contaUuid: row["ca.conta_uuid"],
                 limite: row["ca.limite"],
                 conta: nil

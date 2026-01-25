@@ -24,12 +24,12 @@ enum FiltroCartao: Int, CaseIterable, Identifiable {
     }
 
     /// Mapeia para o valor salvo no banco
-    var valorArquivado: Int {
+    var valorArquivado: Bool {
         switch self {
         case .ativos:
-            return 0
+            return false
         case .arquivados:
-            return 1
+            return true
         }
     }
 }

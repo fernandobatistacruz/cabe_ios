@@ -102,7 +102,7 @@ final class NovoCartaoViewModel: ObservableObject {
             vencimento: vencimentoInt!,
             fechamento: fechamentoInt!,
             operadora: operadora!.rawValue,
-            arquivado: 0,
+            arquivadoRaw: 0,
             contaUuid: conta!.uuid,
             limite: limiteDouble!
         )

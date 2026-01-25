@@ -110,7 +110,7 @@ struct LancamentoListView: View {
                                             Label("Excluir", systemImage: "trash")
                                         }
                                     }
-                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
+                                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                         Button() {
                                             Task{
                                                 await viewModel.togglePago([lancamento])

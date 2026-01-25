@@ -56,6 +56,11 @@ final class CartaoListViewModel: ObservableObject {
         catch { print("Erro ao listar cartões:", error); return [] }
     }
     
+    func toggleArquivado(_ cartoes: [CartaoModel]) async {
+        do { try await repository.toggleArquivado(cartoes) }
+        catch { print("Erro ao alternar pagamento:", error) }
+    }
+    
     private func limparPagamentoPadraoSeNecessario(deletado: MeioPagamento) {
         if pagamentoPadrao == deletado {
             UserDefaults.standard.removeObject(forKey: AppSettings.pagamentoPadrao)
