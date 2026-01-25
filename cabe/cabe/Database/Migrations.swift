@@ -167,6 +167,15 @@ extension AppDatabase {
             }
         }
         
+        migrator.registerMigration("addIndexLancamentoNotas") { db in
+            try db.create(
+                index: "idx_lancamento_notas",
+                on: "lancamento",
+                columns: ["notas"],
+                ifNotExists: true
+            )
+        }
+        
         return migrator
     }
 }

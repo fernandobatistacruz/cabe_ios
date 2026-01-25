@@ -51,7 +51,7 @@ struct NovoLancamentoView: View {
                         vm.reset()
                         mostrarCalendario = false
                     }
-
+                    
                     
                     Form {
                         Section{
@@ -73,10 +73,10 @@ struct NovoLancamentoView: View {
                                     ? vm.categoria?.nome ?? String(
                                         localized: "Selecione"
                                     )
-                                        : vm.categoria?.nomeSubcategoria ?? String(localized: "Selecione")
-
+                                    : vm.categoria?.nomeSubcategoria ?? String(localized: "Selecione")
+                                    
                                     Text(nome)
-                                    .foregroundColor(.secondary)
+                                        .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)
                                         .font(.footnote)
@@ -153,14 +153,14 @@ struct NovoLancamentoView: View {
                                     .keyboardType(.numberPad)
                                     .focused($campoFocado, equals: .parcelas)
                             }
-                          
+                            
                             TextField("Valor", text: $vm.valorTexto)
-                            .keyboardType(.numberPad)
-                            .focused($campoFocado, equals: .valor)
-                            .onChange(of: vm.valorTexto) { novoValor in
-                                vm.atualizarValor(novoValor)
-                            }
-                             
+                                .keyboardType(.numberPad)
+                                .focused($campoFocado, equals: .valor)
+                                .onChange(of: vm.valorTexto) { novoValor in
+                                    vm.atualizarValor(novoValor)
+                                }
+                            
                             Toggle(isOn: $vm.pago) {Text("Pago")}
                             
                             Button {
@@ -210,7 +210,7 @@ struct NovoLancamentoView: View {
                             .frame(minHeight: 80, maxHeight: 100)
                         }
                     }
-                }
+                }               
             }
             .navigationTitle("Nova")
             .navigationBarTitleDisplayMode(.inline)

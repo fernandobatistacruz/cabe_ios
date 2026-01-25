@@ -504,6 +504,52 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
+    func buscarLancamentos(
+        texto: String,
+        limit: Int = 50
+    ) async throws -> [LancamentoModel] {
+
+        guard texto.count >= 2 else { return [] }
+
+        let termo = "%\(texto.lowercased())%"
+
+        return try await db.dbQueue.read { db in
+            let sql = """
+                SELECT
+                    l.*,
+                    c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
+                    ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
+                    ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
+                    ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
+                    cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                    cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+                FROM lancamento l
+                LEFT JOIN conta c ON l.conta_uuid = c.uuid
+                LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
+                LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+                WHERE lower(l.notas) LIKE ?
+                AND l.id IN (
+                    SELECT MIN(id)
+                    FROM lancamento
+                    WHERE lower(notas) LIKE ?
+                    GROUP BY uuid
+                )
+                ORDER BY 
+                    l.id DESC,
+                    l.dataCriacao DESC
+                LIMIT ?
+            """
+
+            let rows = try Row.fetchAll(
+                db,
+                sql: sql,
+                arguments: [termo, termo, limit]
+            )
+
+            return mapRows(rows)
+        }
+    }
+    
     private nonisolated func listar(
             db: Database,
             mes: Int? = nil,
