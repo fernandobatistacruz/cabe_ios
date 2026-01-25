@@ -211,8 +211,13 @@ struct DonutChartView: View {
                     if end - start > 0.0001 { // desenha apenas se visível
                         Circle()
                             .trim(from: start, to: end)
-                            .stroke(items[index].cor,
-                                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+                            .stroke(
+                                items[index].cor,
+                                style: StrokeStyle(
+                                    lineWidth: lineWidth,
+                                    lineCap: .round
+                                )
+                            )
                             .rotationEffect(.degrees(-90))
                     }
                 }
