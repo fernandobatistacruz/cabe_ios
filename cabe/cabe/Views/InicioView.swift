@@ -150,11 +150,11 @@ struct InicioView: View {
                             Text("\(vmLancamentos.totalNotificacoes)")
                                 .font(.caption2)
                                 .foregroundColor(.white)
-                                .padding(5)
+                                .padding(4)
                                 .background(Color.red)
                                 .clipShape(Circle())
-                                .offset(x: 6, y: -6)
-                        }
+                                .offset(x: 6, y: -5)
+                        }                        
                     }
                 }
                 Button {
