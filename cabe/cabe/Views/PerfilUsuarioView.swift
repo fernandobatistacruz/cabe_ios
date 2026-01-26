@@ -14,8 +14,7 @@ struct PerfilUsuarioView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-
-            // Foto
+          
             AsyncImage(url: auth.user?.photoURL) { image in
                 image
                     .resizable()
@@ -83,6 +82,7 @@ struct PerfilUsuarioView: View {
         .padding()
         .navigationTitle("Minha Conta")
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemGroupedBackground))
         .toolbar(.hidden, for: .tabBar)
         .alert("Conta removida", isPresented: $showSuccess) {
             Button("OK") {
