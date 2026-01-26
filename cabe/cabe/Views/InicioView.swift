@@ -281,17 +281,17 @@ struct CardItem: View {
     }
 
     var body: some View {
-        HStack() {
+        HStack(spacing: 12) {
             Image(systemName: icone)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 18, height: 18)
                 .foregroundStyle(color)
-                .foregroundStyle(color)
             
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.body)
+                    .fontWeight(.medium)
                     .foregroundStyle(.primary)
                 if(mostrarValores){
                     Text(formatarValor(value, moeda: moeda))
@@ -306,7 +306,7 @@ struct CardItem: View {
                         .fontWeight(.bold)
                         .foregroundStyle(color)
                 }
-            }
+            }.padding(.vertical,2)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
