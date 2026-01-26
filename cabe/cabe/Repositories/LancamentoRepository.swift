@@ -229,11 +229,21 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         let rows = try Row.fetchAll(db, sql: sql)
         return mapRows(rows)
     }
-
-
+    
     func salvar(_ lancamento: LancamentoModel) async throws {
         try await db.dbQueue.write { db in
+
+            // 1. Insere o lançamento
             try lancamento.insert(db)
+
+            // 2. Se já nasce pago, impacta o saldo
+            if lancamento.pago {
+                try atualizarSaldoConta(
+                    contaUuid: lancamento.contaUuid,
+                    delta: lancamento.valorComSinal,
+                    db: db
+                )
+            }
         }
     }
     
