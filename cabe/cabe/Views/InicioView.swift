@@ -413,13 +413,10 @@ struct RecentesListView: View {
     
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 12) {
-            //TODO: Avaliar se faz sentido mostrar o titulo recentes
             
-            /*
             Text("Recentes")
                 .font(.title3)
-                .fontWeight(.semibold)
-             */
+                .fontWeight(.semibold)                
             
             ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
                 

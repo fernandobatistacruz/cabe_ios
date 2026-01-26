@@ -25,10 +25,9 @@ struct TransferenciaView: View {
 
     var body: some View {
         Form {
-
-            // 🔹 Conta origem
-            Section("Conta de Origem") {
-                Picker("Selecione", selection: $vm.contaOrigemUuid) {
+           
+            Section {
+                Picker("Conta de Origem", selection: $vm.contaOrigemUuid) {
                     Text("Selecione")
                         .tag(String?.none)
 
@@ -38,10 +37,9 @@ struct TransferenciaView: View {
                     }
                 }
             }
-
-            // 🔹 Conta destino
-            Section("Conta de Destino") {
-                Picker("Selecione", selection: $vm.contaDestinoUuid) {
+           
+            Section {
+                Picker("Conta de Destino", selection: $vm.contaDestinoUuid) {
                     Text("Selecione")
                         .tag(String?.none)
 
@@ -51,10 +49,8 @@ struct TransferenciaView: View {
                     }
                 }
             }
-
-            // 🔹 Valor
-            // 🔹 Valor
-            Section("Valor") {
+            
+            Section {
                 TextField(
                     NSLocalizedString("transfer.value.placeholder", comment: "Valor da transferência"),
                     text: $vm.valorTexto

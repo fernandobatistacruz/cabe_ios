@@ -14,13 +14,12 @@ struct RegisterView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground) // fundo dinâmico
+            Color(.systemGroupedBackground)
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
                 Spacer().frame(height: 40)
-                
-                // Ícone do app (opcional)
+               
                 Image("app_icon_ui")
                     .resizable()
                     .scaledToFit()
@@ -32,7 +31,7 @@ struct RegisterView: View {
                             .stroke(Color.gray.opacity(0.2), lineWidth: 1)
                     )
                 
-                Text("Criar Nova Conta")
+                Text("Criar Conta")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
@@ -46,7 +45,7 @@ struct RegisterView: View {
                         .foregroundColor(.primary)
                         .disableAutocorrection(true)
                     
-                    TextField("Email", text: $auth.email)
+                    TextField("E-mail", text: $auth.email)
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
@@ -78,9 +77,7 @@ struct RegisterView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                     }
-
-                    
-                    // Botão Criar Conta
+                   
                     Button {
                         Task { await auth.registerWithEmail(name: name) }
                     } label: {
@@ -92,8 +89,7 @@ struct RegisterView: View {
                             .cornerRadius(22)
                     }
                 }
-                
-                // Botão Cancelar
+                               
                 Button {
                     dismiss()
                 } label: {
