@@ -29,8 +29,6 @@ final class AuthViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var errorMessage: String?
 
-
-
     private let appleService = AppleSignInService()
     private let googleService = GoogleSignInService()
     private var authListener: AuthStateDidChangeListenerHandle?
@@ -50,8 +48,19 @@ final class AuthViewModel: ObservableObject {
                         creationDate: firebaseUser.metadata.creationDate
                     )
                     self.state = .authenticated
-                    isAdmin = (firebaseUser.email == "fernandobatistacruz@gmail.com") ||
-                              (firebaseUser.email == "chelle.castro@gmail.com")
+                   
+                    let admins: Set<String> = [
+                        "fernandobatistacruz@gmail.com",
+                        "chelle.castro@gmail.com",
+                        "kleciobrunno@gmail.com"                        
+                    ]
+
+                    let email = firebaseUser.email?
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        .lowercased() ?? ""
+
+                    isAdmin = admins.contains(email)
+                    
                 } else {
                     self.user = nil
                     self.state = .unauthenticated

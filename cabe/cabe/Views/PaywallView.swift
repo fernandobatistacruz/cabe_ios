@@ -182,6 +182,8 @@ struct PlanCard: View {
     var action: (() -> Void)? = nil
     let isPurchasing: Bool
     var isButtonEnabled: Bool = false
+    
+    @EnvironmentObject var sub: SubscriptionManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -214,9 +216,8 @@ struct PlanCard: View {
                         .font(.footnote)
                 }
             }
-
-            // 🔥 Botão só aparece se permitido
-            if showsButton {
+            
+            if showsButton && !sub.isSubscribed {
                 Button {
                     action?()
                 } label: {

@@ -301,7 +301,7 @@ struct CardItem: View {
                         .contentTransition(.numericText())
                         .animation(.easeInOut(duration: 0.3), value: value)
                 }else{
-                    Text("•••") // placeholder ou valor oculto
+                    Text("•••")
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundStyle(color)
@@ -430,12 +430,19 @@ struct RecentesListView: View {
                     let total = grupo.items.reduce(.zero) { $0 + $1.valorComSinal }
                     
                     Spacer()
-                    
-                    Text(total, format: .currency(code: grupo.items.first?.currencyCode ?? Locale.systemCurrencyCode))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 6)
-                        .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                    if mosttrarValores {
+                        Text(total, format: .currency(code: grupo.items.first?.currencyCode ?? Locale.systemCurrencyCode))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                    } else {
+                        Text("•••")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                    }
                 }
                 
                 VStack(spacing: 0) {
