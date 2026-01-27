@@ -286,3 +286,9 @@ extension Date {
         calendar.startOfDay(for: self)
     }
 }
+
+extension LancamentoModel {
+    var valorParaSaldo: Decimal {
+        dividido ? (valorComSinal / 2) : valorComSinal
+    }
+}

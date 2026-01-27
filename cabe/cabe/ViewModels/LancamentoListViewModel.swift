@@ -288,7 +288,7 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var totalCartao: Decimal {
-        lancamentosCartao.reduce(0) { $0 + $1.valor }
+        lancamentosCartao.reduce(0) { $0 + $1.valorComSinal }
     }
     
     var totalDespesasCartao: Decimal {

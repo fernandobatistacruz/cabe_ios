@@ -69,7 +69,7 @@ struct LancamentoDetalheView: View {
                             .font(.footnote)
                             .foregroundColor(.secondary)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)                        
 
                         Text(
                             lancamento.valorComSinal,
