@@ -74,14 +74,10 @@ struct CategoriaListView: View {
             .overlay(
                 Group {
                     if categoriasFiltradas.isEmpty {
-                        VStack{
-                            Text("Nenhuma Categoria")
-                                .font(.title2)
-                                .fontWeight(.medium)
-                                .multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color(.systemGroupedBackground))
+                        Text("Nenhuma Categoria")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .multilineTextAlignment(.center)                        
                     }
                 }
             )

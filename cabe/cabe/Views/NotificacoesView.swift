@@ -31,13 +31,15 @@ struct NotificacoesView: View {
         .listStyle(.insetGrouped)
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showConfirmMarcarLidos = true
-                } label: {
-                    Image(systemName: "checklist")
+            if vmNotificacao.temVencidos || vmNotificacao.temVenceHoje
+            {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showConfirmMarcarLidos = true
+                    } label: {
+                        Image(systemName: "checklist")
+                    }
                 }
-                .disabled(!vmNotificacao.temVencidos && !vmNotificacao.temVenceHoje)
             }
         }
         .confirmationDialog(
@@ -56,14 +58,14 @@ struct NotificacoesView: View {
             Text("Essa ação não pode ser desfeita.")
         }
         .overlay{
-            if !vmNotificacao.temVencidos && !vmNotificacao.temVenceHoje
-            {
-                Group {
+            Group {
+                if !vmNotificacao.temVencidos && !vmNotificacao.temVenceHoje
+                {
                     Text("Nenhuma Notificação")
                         .font(.title2)
-                        .foregroundColor(.secondary)
+                        .fontWeight(.medium)
                         .multilineTextAlignment(.center)
-                        .padding()
+                    
                 }
             }
         }

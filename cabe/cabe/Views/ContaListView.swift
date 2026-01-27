@@ -47,15 +47,11 @@ struct ContaListView: View {
         .navigationTitle("Contas")
         .overlay(
             Group {
-                if contasFiltradas.isEmpty {
-                    VStack{
-                        Text("Nenhuma Conta")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                if contasFiltradas.isEmpty {                   
+                    Text("Nenhuma Conta")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)
                 }
             }
         )

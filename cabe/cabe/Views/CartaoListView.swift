@@ -98,14 +98,10 @@ struct CartaoListView: View {
                 .overlay(
                     Group {
                         if cartoesFiltrados.isEmpty {
-                            VStack{
-                                Text("Nenhum Cartão")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color(.systemGroupedBackground))
+                            Text("Nenhum Cartão")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .multilineTextAlignment(.center)                            
                         }
                     }
                 )

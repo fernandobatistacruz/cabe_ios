@@ -280,14 +280,10 @@ struct FaturaDetalharView: View {
         .overlay(
             Group {
                 if filtroLancamentos.isEmpty {
-                    VStack{
-                        Text("Nenhum Lançamento")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                    Text("Nenhum Lançamento")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)                    
                 }
             }
         )
