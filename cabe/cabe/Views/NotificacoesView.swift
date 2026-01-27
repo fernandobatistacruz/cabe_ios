@@ -224,7 +224,7 @@ struct CartaoRowNotification: View {
    
     private var totalDoCartao: Decimal {
         cartaoNotificacao.lancamentos.reduce(0) { partialResult, lancamento in
-            partialResult + lancamento.valor
+            partialResult + lancamento.valorComSinal
         }
     }
 
