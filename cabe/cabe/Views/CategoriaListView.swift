@@ -10,6 +10,7 @@ import SwiftUI
 struct CategoriaListView: View {
     
     @State private var searchText = ""
+    @FocusState private var searchFocused: Bool
     @State private var mostrarNovaCategoria = false
     @State private var mostrarConfirmacao = false
     @State private var categoriaParaExcluir: CategoriaModel?
@@ -46,7 +47,6 @@ struct CategoriaListView: View {
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
-            .background(Color(.systemGroupedBackground))
             
             List(categoriasFiltradas) { categoria in
                 CategoriaListRow(categoria: categoria)
@@ -72,25 +72,23 @@ struct CategoriaListView: View {
             .scrollContentBackground(.hidden) // garante fundo igual ao da view
             .background(Color(.systemGroupedBackground))
             .overlay(
-                categoriasFiltradas.isEmpty ?
-                    AnyView(
-                        Text("Nenhuma Categoria")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    )
-                    : AnyView(EmptyView())
+                Group {
+                    if categoriasFiltradas.isEmpty {
+                        VStack{
+                            Text("Nenhuma Categoria")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color(.systemGroupedBackground))
+                    }
+                }
             )
         }
         .navigationTitle("Categorias")
         .background(Color(.systemGroupedBackground))
-        .toolbar(.hidden, for: .tabBar)
-        .searchable(
-            text: $searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Buscar"
-        )
+        .toolbar(.hidden, for: .tabBar)        
         .alert(
             "Excluir Categoria?",
             isPresented: $mostrarConfirmacao
@@ -112,6 +110,29 @@ struct CategoriaListView: View {
                     mostrarNovaCategoria = true
                 } label: {
                     Image(systemName: "plus")
+                }
+            }
+            ToolbarItemGroup(placement: .bottomBar) {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
+                    
+                    TextField("Buscar", text: $searchText)
+                        .focused($searchFocused)
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .clipShape(Capsule())
+                
+                if !searchText.isEmpty {
+                    Spacer()
+                    Button {
+                        searchText = ""                       
+                        UIApplication.shared.endEditing()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .disabled(searchText.isEmpty)
                 }
             }
         }

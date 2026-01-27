@@ -13,14 +13,9 @@ struct BuscarView: View {
     @Environment(\.dismiss) private var dismiss
     
     @StateObject private var vm = BuscarViewModel()
-    @ObservedObject var vmLancamentos: LancamentoListViewModel
-    
-    init(vmLancamentos: LancamentoListViewModel) {
-        self.vmLancamentos = vmLancamentos
-    }
-    
-    @FocusState private var campoBuscaFocado: Bool
-    
+    @StateObject var vmLancamentos: LancamentoListViewModel
+    @FocusState private var searchFocused: Bool
+   
     var body: some View {
         NavigationStack {
             ZStack {
@@ -29,7 +24,7 @@ struct BuscarView: View {
                     .ignoresSafeArea()
                 
                 
-                List(vm.resultados) { lancamento in
+                List(vm.resultados, id: \.uuid) { lancamento in
                     NavigationLink {
                         LancamentoDetalheView(
                             lancamento: lancamento,
@@ -52,16 +47,10 @@ struct BuscarView: View {
                         Group {
                             Text("Nenhum Resultado")
                                 .font(.title2)
-                                .foregroundColor(.secondary)
+                                .fontWeight(.medium)
                                 .multilineTextAlignment(.center)
-                                .padding()
                         }
                     }
-                }
-            }
-            .onAppear {
-                DispatchQueue.main.async {
-                    campoBuscaFocado = true
                 }
             }
             .onChange(of: vm.texto) { novoValor in
@@ -82,20 +71,32 @@ struct BuscarView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
-
+                        
                         TextField("Buscar", text: $vm.texto)
-                            .focused($campoBuscaFocado)
+                            .focused($searchFocused)
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
                     .clipShape(Capsule())
+                    
+                    if !vm.texto.isEmpty {
+                        
+                        Spacer()
+                        Button {
+                            vm.texto = ""                            
+                            UIApplication.shared.endEditing()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                        .disabled(vm.texto.isEmpty)
+                        
+                    }
                 }
             }
             .onAppear {
                 DispatchQueue.main.async {
-                    campoBuscaFocado = true
+                    searchFocused = true
                 }
-
                 vm.recarregarSeNecessario()
             }
         }

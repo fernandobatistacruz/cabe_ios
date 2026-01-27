@@ -7,6 +7,7 @@ struct FaturaDetalharView: View {
     let vencimento: Date
 
     @State private var searchText = ""
+    @FocusState private var searchFocused: Bool
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
@@ -161,30 +162,39 @@ struct FaturaDetalharView: View {
         .navigationTitle("Fatura")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
-
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
-
+                    
                     TextField("Buscar", text: $searchText)
+                        .focused($searchFocused)
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
                 .clipShape(Capsule())
-            }
-            
-            ToolbarItemGroup(placement: .bottomBar) {
-                Spacer()
-                Button {
-                    mostrarNovaDespesa = true
-                } label: {
-                    Image(systemName: "plus")
+                
+                if !searchText.isEmpty {
+                    Spacer()
+                    Button {
+                        searchText = ""
+                        UIApplication.shared.endEditing()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .disabled(searchText.isEmpty)
+                }
+                if searchText.isEmpty {
+                    Spacer()
+                    Button {
+                        mostrarNovaDespesa = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
             }
         }
-        
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
@@ -267,17 +277,20 @@ struct FaturaDetalharView: View {
                 }
             }
         }
-        
-        .overlay {
-            if filtroLancamentos.isEmpty {
-                Text("Nenhum lançamento")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding()
+        .overlay(
+            Group {
+                if filtroLancamentos.isEmpty {
+                    VStack{
+                        Text("Nenhum Lançamento")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemGroupedBackground))
+                }
             }
-        }
-       
+        )
         .sheet(item: $shareItem) { item in
             ShareSheetView(activityItems: [item.url])
         }

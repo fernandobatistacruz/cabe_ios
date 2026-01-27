@@ -32,34 +32,42 @@ final class BuscarViewModel: ObservableObject {
         carregando = true
         buscou = false
 
-        let textoAtual = novoTexto  // 🔐 captura segura
+        let textoAtual = novoTexto
 
         task = Task {
-            try? await Task.sleep(for: .milliseconds(300))
+            do {
+                try await Task.sleep(for: .milliseconds(300))
+            } catch {
+                return // 🔐 cancelada durante o debounce
+            }
 
-            // Se o texto mudou, ignora
-            guard textoAtual == self.texto else { return }
+            guard !Task.isCancelled else { return }
+            guard textoAtual == texto else { return }
 
             await buscar(textoAtual)
         }
     }
 
     private func buscar(_ textoBuscado: String) async {
+        guard !Task.isCancelled else { return }
+
         do {
             let dados = try await repository.buscarLancamentos(texto: textoBuscado)
 
-            // Se o texto mudou durante a busca, ignora
+            guard !Task.isCancelled else { return }
             guard textoBuscado == texto else { return }
 
             resultados = dados
+            buscou = true
         } catch {
+            guard !Task.isCancelled else { return }
             resultados = []
+            buscou = true
         }
 
         carregando = false
-        buscou = true
     }
-    
+
     func recarregarSeNecessario() {
         guard texto.count >= 2 else { return }
 
@@ -70,6 +78,7 @@ final class BuscarViewModel: ObservableObject {
         let textoAtual = texto
 
         task = Task {
+            guard !Task.isCancelled else { return }
             await buscar(textoAtual)
         }
     }
