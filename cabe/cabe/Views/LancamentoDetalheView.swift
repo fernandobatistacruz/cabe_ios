@@ -168,8 +168,12 @@ struct LancamentoDetalheView: View {
                 }
 
                 Section(header: Text("Anotação")) {
-                    Text(lancamento.anotacao)
-                        .multilineTextAlignment(.leading)
+                    TextEditor(text: .constant(lancamento.anotacao))
+                        .frame(height: 80) // ~3 linhas
+                        .disabled(true)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
+                        .foregroundColor(.secondary)
                 }
             }
             .navigationTitle("Detalhar")
