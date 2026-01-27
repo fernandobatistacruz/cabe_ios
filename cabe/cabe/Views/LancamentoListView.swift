@@ -41,7 +41,7 @@ struct LancamentoListView: View {
     
     var lancamentosFiltrados: [LancamentoModel] {
         var resultado = searchText.isEmpty
-            ? viewModel.lancamentos
+        ? viewModel.lancamentos
         : viewModel.lancamentos.filter {
             $0.descricao.localizedCaseInsensitiveContains(searchText.trimmingCharacters(in: .whitespacesAndNewlines))
         }
@@ -60,25 +60,30 @@ struct LancamentoListView: View {
         switch filtroSelecionado {
         case .todos:
             break
-
+            
         case .recorrentes:
             resultado = resultado.filter {
                 $0.tipoRecorrente == .semanal ||
                 $0.tipoRecorrente == .quinzenal ||
                 $0.tipoRecorrente == .mensal
             }
-
+            
+        case .pagos:
+            resultado = resultado.filter {
+                $0.pago == true
+            }
+            
+        case .naoPagos:
+            resultado = resultado.filter {
+                $0.pago == false
+            }
+            
         case .parcelados:
             resultado = resultado.filter {
                 $0.tipoRecorrente == .parcelado
             }
-
-        case .divididos:
-            resultado = resultado.filter {
-                $0.dividido
-            }
         }
-
+            
         return resultado
     }
     

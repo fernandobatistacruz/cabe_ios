@@ -9,8 +9,9 @@
 enum FiltroLancamento: String, CaseIterable, Identifiable {
     case todos
     case parcelados
-    case divididos
     case recorrentes
+    case pagos
+    case naoPagos
 
     var id: String { rawValue }
 
@@ -18,8 +19,27 @@ enum FiltroLancamento: String, CaseIterable, Identifiable {
         switch self {
         case .todos: return "Todos"
         case .parcelados: return "Parcelados"
-        case .divididos: return "Divididos"
+        case .recorrentes: return "Recorrentes"       
+        case .pagos: return "Pagos"
+        case .naoPagos: return "Não Pagos"
+        }
+    }
+}
+
+enum FiltroLancamentoFatura: String, CaseIterable, Identifiable {
+    case todos
+    case parcelados
+    case recorrentes
+    case divididos
+
+    var id: String { rawValue }
+
+    var titulo: String {
+        switch self {
+        case .todos: return "Todos"
+        case .parcelados: return "Parcelados"
         case .recorrentes: return "Recorrentes"
+        case .divididos: return "Divididos"
         }
     }
 }

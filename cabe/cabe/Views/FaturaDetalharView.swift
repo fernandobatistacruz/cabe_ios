@@ -13,7 +13,7 @@ struct FaturaDetalharView: View {
     @State private var lancamentoParaExcluir: LancamentoModel?
     @State private var mostrarDialogExclusao = false
     @State private var ordemData: OrdemData = .decrescente
-    @State private var filtroSelecionado: FiltroLancamento = .todos
+    @State private var filtroSelecionado: FiltroLancamentoFatura = .todos
     @Environment(\.dismiss) private var dismiss
     @State private var mostrarNovaDespesa = false
     
@@ -29,40 +29,42 @@ struct FaturaDetalharView: View {
 
     var filtroLancamentos: [LancamentoModel] {
         var resultado = searchText.isEmpty
-            ? lancamentos
-            : lancamentos.filter {
-                $0.descricao.localizedCaseInsensitiveContains(searchText)
-            }
-      
+        ? lancamentos
+        : lancamentos.filter {
+            $0.descricao.localizedCaseInsensitiveContains(searchText)
+        }
+        
         switch filtroSelecionado {
         case .todos:
             break
-
+            
         case .recorrentes:
             resultado = resultado.filter {
-                $0.tipoRecorrente != .nunca
+                $0.tipoRecorrente == .semanal ||
+                $0.tipoRecorrente == .quinzenal ||
+                $0.tipoRecorrente == .mensal
             }
-
+            
         case .parcelados:
             resultado = resultado.filter {
                 $0.tipoRecorrente == .parcelado
             }
-
+            
         case .divididos:
             resultado = resultado.filter {
-                $0.dividido
+                $0.dividido == true
             }
         }
-       
+        
         resultado.sort {
             guard let d0 = $0.dataCompra,
                   let d1 = $1.dataCompra else {
                 return false
             }
-
+            
             return ordemData == .crescente
-                ? d0 < d1
-                : d0 > d1
+            ? d0 < d1
+            : d0 > d1
         }
 
         return resultado
@@ -205,7 +207,7 @@ struct FaturaDetalharView: View {
                     }
 
                     Section {
-                        ForEach(FiltroLancamento.allCases) { filtro in
+                        ForEach(FiltroLancamentoFatura.allCases) { filtro in
                             Button {
                                 filtroSelecionado = filtro
                             } label: {
