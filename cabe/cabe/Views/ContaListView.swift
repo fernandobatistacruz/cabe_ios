@@ -148,7 +148,6 @@ struct ContaDetalheView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-
             VStack(spacing: 8) {
                 Image(systemName: "building.columns.fill")
                     .font(.system(size: 40))
@@ -165,14 +164,17 @@ struct ContaDetalheView: View {
             Spacer()
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("Detalhar Conta")
+        .background(Color(.systemGroupedBackground))        
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Image(systemName: "pencil")
-                    .onTapGesture {
-                        mostrarEdicao = true
-                    }
+                Button {
+                    mostrarEdicao = true
+                } label: {
+                    Text("Editar")
+                }
             }
         }        
         .sheet(isPresented: $mostrarEdicao) {

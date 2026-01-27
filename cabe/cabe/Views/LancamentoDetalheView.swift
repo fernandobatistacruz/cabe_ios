@@ -178,10 +178,11 @@ struct LancamentoDetalheView: View {
             .toolbar {
                 if !lancamento.transferencia {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Image(systemName: "pencil")
-                            .onTapGesture {
-                                mostrarEdicao = true
-                            }
+                        Button {
+                            mostrarEdicao = true
+                        } label: {
+                            Text("Editar")
+                        }                       
                     }
                 }
                 ToolbarItem(placement: .bottomBar) {

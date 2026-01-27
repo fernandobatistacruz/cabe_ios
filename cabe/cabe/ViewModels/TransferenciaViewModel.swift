@@ -154,7 +154,6 @@ final class TransferenciaUseCase {
             let dia = cal.component(.day, from: hoje)
             let mes = cal.component(.month, from: hoje)
             let ano = cal.component(.year, from: hoje)
-            let dataISO = ISO8601DateFormatter().string(from: hoje)
 
             // 🔹 Lançamento saída
             let saida = LancamentoModel(
@@ -179,7 +178,7 @@ final class TransferenciaUseCase {
                 pagoRaw: 1,
                 divididoRaw: 0,
                 contaUuid: origem.uuid,
-                dataCriacao: dataISO,
+                dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
                 notificacaoLidaRaw: 1,
                 currencyCode: Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
             )
@@ -207,7 +206,7 @@ final class TransferenciaUseCase {
                 pagoRaw: 1,
                 divididoRaw: 0,
                 contaUuid: destino.uuid,
-                dataCriacao: dataISO,
+                dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
                 notificacaoLidaRaw: 1,
                 currencyCode: Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
             )

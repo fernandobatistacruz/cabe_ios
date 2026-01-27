@@ -234,10 +234,11 @@ struct CartaoDetalheView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Image(systemName: "pencil")
-                    .onTapGesture {
-                        mostrarEdicao = true
-                    }
+                Button {
+                    mostrarEdicao = true
+                } label: {
+                    Text("Editar")
+                }
             }
         }
         .sheet(isPresented: $mostrarEdicao) {

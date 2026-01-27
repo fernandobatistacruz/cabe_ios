@@ -193,6 +193,14 @@ extension LancamentoModel {
 }
 
 extension LancamentoModel {
+    
+    var dataCompra: Date? {
+            Calendar.current.date(from: DateComponents(
+                year: anoCompra,
+                month: mesCompra,
+                day: diaCompra
+            ))
+        }
 
     var dataCompraFormatada: String {
         guard let data = Calendar.current.date(from: DateComponents(
@@ -236,21 +244,22 @@ extension LancamentoModel {
 
     var dataCriacaoDate: Date {
 
-        // 1️⃣ ISO8601 (padrão novo)
-        if let date = AppDateFormatter.iso8601.date(from: dataCriacao) {
-            return date
+        if let date = AppDateFormatter.iso8601WithFraction.date(from: dataCriacao) {
+            return date.apenasData()
         }
 
-        // 2️⃣ Legacy Date().description
+        if let date = AppDateFormatter.iso8601.date(from: dataCriacao) {
+            return date.apenasData()
+        }
+
         let legacy = DateFormatter()
         legacy.locale = Locale(identifier: "en_US_POSIX")
-        legacy.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        legacy.dateFormat = "yyyy-MM-dd"
 
         if let date = legacy.date(from: dataCriacao) {
-            return date
+            return date.apenasData()
         }
 
-        // 3️⃣ Fallback seguro
         return .distantPast
     }
 }
@@ -271,3 +280,9 @@ private let isoFormatter: ISO8601DateFormatter = {
     f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return f
 }()
+
+extension Date {
+    func apenasData(calendar: Calendar = .current) -> Date {
+        calendar.startOfDay(for: self)
+    }
+}

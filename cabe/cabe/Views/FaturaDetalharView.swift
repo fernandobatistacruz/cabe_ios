@@ -53,13 +53,17 @@ struct FaturaDetalharView: View {
                 $0.dividido
             }
         }
+       
+        resultado.sort {
+            guard let d0 = $0.dataCompra,
+                  let d1 = $1.dataCompra else {
+                return false
+            }
 
-        // 🔹 Ordenação por data
-        resultado.sort(by: {
-            ordemData == .crescente
-            ? $0.dataCompraFormatada < $1.dataCompraFormatada
-            : $0.dataCompraFormatada > $1.dataCompraFormatada
-        })
+            return ordemData == .crescente
+                ? d0 < d1
+                : d0 > d1
+        }
 
         return resultado
     }
