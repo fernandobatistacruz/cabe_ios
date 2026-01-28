@@ -244,33 +244,42 @@ extension LancamentoModel {
 
     var dataCriacaoDate: Date {
 
-        if let date = AppDateFormatter.iso8601WithFraction.date(from: dataCriacao) {
-            return date.apenasData()
+        let calendar = Calendar.current
+
+        // 1️⃣ ISO8601 com ou sem milissegundos
+        if let date =
+            DataCriacaoParser.iso.date(from: dataCriacao)
+            ?? DataCriacaoParser.isoFraction.date(from: dataCriacao)
+        {
+            let comps = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            return Calendar.current.date(from: comps)!
         }
 
-        if let date = AppDateFormatter.iso8601.date(from: dataCriacao) {
-            return date.apenasData()
+        // 2️⃣ yyyy-MM-dd (novo padrão)
+        let partes = dataCriacao.split(separator: "-")
+        if partes.count == 3,
+           let ano = Int(partes[0]),
+           let mes = Int(partes[1]),
+           let dia = Int(partes[2]),
+           let date = calendar.date(from: DateComponents(year: ano, month: mes, day: dia)) {
+            return date
         }
 
-        let legacy = DateFormatter()
-        legacy.locale = Locale(identifier: "en_US_POSIX")
-        legacy.dateFormat = "yyyy-MM-dd"
-
-        if let date = legacy.date(from: dataCriacao) {
-            return date.apenasData()
-        }
-
-        return .distantPast
+        // 3️⃣ fallback seguro (nunca distantPast)
+        return calendar.startOfDay(for: Date())
     }
 }
 
 extension LancamentoModel {
+
     var dataCriacaoFormatada: String {
-        return dataCriacaoDate.formatted(
-            .dateTime
-                .day(.twoDigits)
-                .month(.twoDigits)
-                .year()
+        let c = Calendar.current.dateComponents([.day, .month, .year], from: dataCriacaoDate)
+
+        return String(
+            format: "%02d/%02d/%04d",
+            c.day!,
+            c.month!,
+            c.year!
         )
     }
 }
@@ -280,12 +289,6 @@ private let isoFormatter: ISO8601DateFormatter = {
     f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return f
 }()
-
-extension Date {
-    func apenasData(calendar: Calendar = .current) -> Date {
-        calendar.startOfDay(for: self)
-    }
-}
 
 extension LancamentoModel {
     var valorParaSaldo: Decimal {

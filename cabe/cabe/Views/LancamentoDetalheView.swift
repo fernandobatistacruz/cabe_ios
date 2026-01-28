@@ -88,6 +88,14 @@ struct LancamentoDetalheView: View {
                         Text(lancamento.pago ? "Pago" : "Não Pago")
                             .foregroundColor(.secondary)
                     }
+                   
+                    HStack {
+                        Text("Data do Cadastro")
+                        Spacer()
+                        Text(lancamento.dataCriacaoFormatada)
+                            .foregroundColor(.secondary)
+                    }
+                    
 
                     HStack {
                         Text("Repete")
@@ -127,14 +135,6 @@ struct LancamentoDetalheView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    if lancamento.cartao == nil {
-                        HStack {
-                            Text("Data do Lançamento")
-                            Spacer()
-                            Text(lancamento.dataCriacaoFormatada)
-                                .foregroundColor(.secondary)
-                        }
-                    }
 
                     if lancamento.dividido {
                         HStack {
@@ -159,11 +159,12 @@ struct LancamentoDetalheView: View {
                         }
 
                         HStack {
-                            Text("Data do Lançamento")
+                            Text("Data da Compra")
                             Spacer()
                             Text(lancamento.dataCompraFormatada)
                                 .foregroundColor(.secondary)
                         }
+ 
                     }
                 }
 

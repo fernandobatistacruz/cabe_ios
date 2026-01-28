@@ -178,7 +178,7 @@ final class TransferenciaUseCase {
                 pagoRaw: 1,
                 divididoRaw: 0,
                 contaUuid: origem.uuid,
-                dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
+                dataCriacao: DataCivil.hojeString(),
                 notificacaoLidaRaw: 1,
                 currencyCode: Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
             )
@@ -206,7 +206,7 @@ final class TransferenciaUseCase {
                 pagoRaw: 1,
                 divididoRaw: 0,
                 contaUuid: destino.uuid,
-                dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
+                dataCriacao: DataCivil.hojeString(),
                 notificacaoLidaRaw: 1,
                 currencyCode: Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
             )

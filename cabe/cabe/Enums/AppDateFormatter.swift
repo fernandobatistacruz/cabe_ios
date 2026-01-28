@@ -7,20 +7,32 @@
 
 import Foundation
 
+enum DataCivil {
 
-enum AppDateFormatter {
+    static func hojeString() -> String {
+        let cal = Calendar(identifier: .gregorian)
+        let c = cal.dateComponents([.year, .month, .day], from: Date())
 
-    static let iso8601: ISO8601DateFormatter = {
+        return String(
+            format: "%04d-%02d-%02d",
+            c.year!,
+            c.month!,
+            c.day!
+        )
+    }
+}
+
+enum DataCriacaoParser {
+
+    static let iso: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime]
-        f.timeZone = TimeZone(secondsFromGMT: 0)
         return f
     }()
 
-    static let iso8601WithFraction: ISO8601DateFormatter = {
+    static let isoFraction: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        f.timeZone = TimeZone(secondsFromGMT: 0)
         return f
     }()
 }

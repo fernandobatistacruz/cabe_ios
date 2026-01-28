@@ -262,11 +262,13 @@ final class NovoLancamentoViewModel: ObservableObject {
             pagoRaw: pago ? 1 : 0,
             divididoRaw: dividida ? 1 : 0,
             contaUuid: pagamentoSelecionado?.contaModel?.uuid ?? "",
-            dataCriacao: AppDateFormatter.iso8601.string(from: Date()),
+            dataCriacao: DataCivil.hojeString(),
             notificacaoLidaRaw: 0,
             currencyCode: Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
         )
     }
+    
+    
 
     // MARK: - Edição
 
