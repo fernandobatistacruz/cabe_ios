@@ -19,6 +19,10 @@ final class BuscarViewModel: ObservableObject {
     private let repository = LancamentoRepository()
     private var task: Task<Void, Never>?
 
+    deinit {
+        task?.cancel()
+    }
+
     func onTextoChange(_ novoTexto: String) {
         task?.cancel()
 
@@ -34,17 +38,18 @@ final class BuscarViewModel: ObservableObject {
 
         let textoAtual = novoTexto
 
-        task = Task {
+        task = Task { [weak self] in
             do {
                 try await Task.sleep(for: .milliseconds(300))
             } catch {
-                return // 🔐 cancelada durante o debounce
+                return
             }
 
+            guard let self else { return }
             guard !Task.isCancelled else { return }
-            guard textoAtual == texto else { return }
+            guard textoAtual == self.texto else { return }
 
-            await buscar(textoAtual)
+            await self.buscar(textoAtual)
         }
     }
 
@@ -52,20 +57,28 @@ final class BuscarViewModel: ObservableObject {
         guard !Task.isCancelled else { return }
 
         do {
+            // 🔐 força retorno fora do MainActor
             let dados = try await repository.buscarLancamentos(texto: textoBuscado)
 
             guard !Task.isCancelled else { return }
             guard textoBuscado == texto else { return }
 
-            resultados = dados
-            buscou = true
+            // ✅ garante mutação no MainActor
+            await MainActor.run {
+                self.resultados = dados
+                self.buscou = true
+                self.carregando = false
+            }
+
         } catch {
             guard !Task.isCancelled else { return }
-            resultados = []
-            buscou = true
-        }
 
-        carregando = false
+            await MainActor.run {
+                self.resultados = []
+                self.buscou = true
+                self.carregando = false
+            }
+        }
     }
 
     func recarregarSeNecessario() {
@@ -77,9 +90,11 @@ final class BuscarViewModel: ObservableObject {
 
         let textoAtual = texto
 
-        task = Task {
+        task = Task { [weak self] in
+            guard let self else { return }
             guard !Task.isCancelled else { return }
-            await buscar(textoAtual)
+
+            await self.buscar(textoAtual)
         }
     }
 }

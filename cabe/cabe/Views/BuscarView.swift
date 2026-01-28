@@ -94,9 +94,7 @@ struct BuscarView: View {
                 }
             }
             .onAppear {
-                DispatchQueue.main.async {
-                    searchFocused = true
-                }
+                searchFocused = true
                 vm.recarregarSeNecessario()
             }
         }
