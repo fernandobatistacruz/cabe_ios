@@ -160,7 +160,7 @@ struct IconeModel {
         IconeModel(id: 61, systemName: "paintbrush.fill"),
         IconeModel(id: 62, systemName: "pianokeys"),
         IconeModel(id: 63, systemName: "photo.fill"),
-        IconeModel(id: 64, systemName: "rocket.fill"),
+        IconeModel(id: 64, systemName: "magazine.fill"),
         IconeModel(id: 65, systemName: "sportscourt.fill"),
         IconeModel(id: 66, systemName: "suit.spade.fill"),
         IconeModel(id: 67, systemName: "headphones"),
