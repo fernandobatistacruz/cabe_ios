@@ -271,6 +271,13 @@ extension Decimal {
         formatter.numberStyle = .currency
         formatter.currencyCode = currencyCode
         formatter.maximumFractionDigits = absValue >= 1_000 ? 1 : 0
+        
+        formatter.currencySymbol = ""
+        formatter.internationalCurrencySymbol = ""
+        formatter.positivePrefix = ""
+        formatter.positiveSuffix = ""
+        formatter.negativePrefix = "-"
+        formatter.negativeSuffix = ""
 
         let thousandSuffix = String(
             localized: "suffix_thousand",

@@ -56,23 +56,39 @@ final class ResumoAnualViewModel: ObservableObject {
 private extension ResumoAnualViewModel {
 
     func calcularResumoAnual(_ lancamentos: [LancamentoModel]) {
-        let receita = lancamentos
+        let totalReceita = lancamentos
             .filter { $0.tipo == Tipo.receita.rawValue }
             .map(\.valor)
             .reduce(0, +)
 
-        let despesa = lancamentos
-            .filter { $0.tipo == Tipo.despesa.rawValue }
-            .map(\.valor)
-            .reduce(0, +)
+        let despesas = lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
+        
+        var totalDespesas: Decimal {
+            despesas.reduce(0) { total, lancamento in
+                let valorConsiderado = lancamento.dividido
+                ? lancamento.valor / 2
+                : lancamento.valor
 
-        let saldo = receita - despesa
-        let taxa = receita > 0 ? saldo / receita : 0
+                return (total + valorConsiderado)
+            }
+        }
+        
+        var saldo: Decimal {
+            lancamentos.reduce(0) { total, lancamento in
+                let valorConsiderado = lancamento.dividido
+                ? lancamento.valorComSinal / 2
+                : lancamento.valorComSinal
+
+                return total + valorConsiderado
+            }
+        }
+        
+        let taxa = totalReceita > 0 ? saldo / totalReceita : 0
 
         resumoAnual = ResumoAnualModel(
             ano: anoSelecionado,
-            receitaTotal: receita,
-            despesaTotal: despesa,
+            receitaTotal: totalReceita,
+            despesaTotal: totalDespesas,
             saldo: saldo,
             taxaEconomia: taxa
         )
@@ -89,10 +105,17 @@ private extension ResumoAnualViewModel {
                 .map(\.valor)
                 .reduce(0, +)
 
-            let despesa = itens
-                .filter { $0.tipo == Tipo.despesa.rawValue }
-                .map(\.valor)
-                .reduce(0, +)
+            let despesas = itens.filter { $0.tipo == Tipo.despesa.rawValue }
+            
+            var despesa: Decimal {
+                despesas.reduce(0) { total, lancamento in
+                    let valorConsiderado = lancamento.dividido
+                    ? lancamento.valor / 2
+                    : lancamento.valor
+
+                    return (total + valorConsiderado)
+                }
+            }
 
             return ResumoMensalModel(
                 mes: mes,

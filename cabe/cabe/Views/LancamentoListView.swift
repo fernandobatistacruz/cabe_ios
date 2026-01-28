@@ -50,10 +50,10 @@ struct LancamentoListView: View {
         case .todos:
             break
         case .receita:
-            resultado = resultado.filter { $0.tipo == Tipo.receita.rawValue }
+            resultado = resultado.filter { $0.tipo == Tipo.receita.rawValue && $0.transferencia == false }
             break
         case .despesa:
-            resultado = resultado.filter { $0.tipo == Tipo.despesa.rawValue }
+            resultado = resultado.filter { $0.tipo == Tipo.despesa.rawValue && $0.transferencia == false}
             break
         }
         
