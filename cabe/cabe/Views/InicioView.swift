@@ -381,7 +381,6 @@ struct AnimatedCounterText: View {
         Text(formatter(animatedValue, moeda))
             .font(font)
             .foregroundStyle(color)
-            .monospacedDigit()
             .onAppear {
                 animatedValue = value
             }
