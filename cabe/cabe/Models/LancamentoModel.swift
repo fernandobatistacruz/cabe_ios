@@ -228,7 +228,7 @@ extension LancamentoModel {
             month: mes,
             day: dia
         )) else {
-            return "—" // placeholder caso algum valor esteja ausente
+            return "—"
         }
 
         return data.formatted(
@@ -245,8 +245,7 @@ extension LancamentoModel {
     var dataCriacaoDate: Date {
 
         let calendar = Calendar.current
-
-        // 1️⃣ ISO8601 com ou sem milissegundos
+        
         if let date =
             DataCriacaoParser.iso.date(from: dataCriacao)
             ?? DataCriacaoParser.isoFraction.date(from: dataCriacao)
@@ -254,8 +253,7 @@ extension LancamentoModel {
             let comps = Calendar.current.dateComponents([.year, .month, .day], from: date)
             return Calendar.current.date(from: comps)!
         }
-
-        // 2️⃣ yyyy-MM-dd (novo padrão)
+       
         let partes = dataCriacao.split(separator: "-")
         if partes.count == 3,
            let ano = Int(partes[0]),
@@ -264,8 +262,7 @@ extension LancamentoModel {
            let date = calendar.date(from: DateComponents(year: ano, month: mes, day: dia)) {
             return date
         }
-
-        // 3️⃣ fallback seguro (nunca distantPast)
+     
         return calendar.startOfDay(for: Date())
     }
 }
