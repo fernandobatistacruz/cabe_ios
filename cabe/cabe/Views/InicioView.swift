@@ -285,7 +285,7 @@ struct CardItem: View {
             Image(systemName: icone)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 18, height: 18)
+                .frame(width: 20, height: 20)
                 .foregroundStyle(color)
             
             VStack(alignment: .leading) {
@@ -328,6 +328,13 @@ struct CardItem: View {
         formatter.currencyCode = moeda
         formatter.locale = locale
         formatter.maximumFractionDigits = 2
+        
+        formatter.currencySymbol = ""
+        formatter.internationalCurrencySymbol = ""
+        formatter.positivePrefix = ""
+        formatter.positiveSuffix = ""
+        formatter.negativePrefix = "-"
+        formatter.negativeSuffix = ""
 
         let absValor = (valor as NSDecimalNumber).doubleValue
         let numero: Decimal

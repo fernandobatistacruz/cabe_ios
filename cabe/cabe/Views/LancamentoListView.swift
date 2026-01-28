@@ -386,9 +386,8 @@ struct LancamentoListView: View {
                 Group {
                     Text("Nenhum Lançamento")
                         .font(.title2)
-                        .foregroundColor(.secondary)
+                        .fontWeight(.medium)
                         .multilineTextAlignment(.center)
-                        .padding()
                 }
             }
         }

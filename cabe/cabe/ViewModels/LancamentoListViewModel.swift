@@ -291,17 +291,11 @@ final class LancamentoListViewModel: ObservableObject {
         lancamentosCartao.reduce(0) { $0 + $1.valorComSinal }
     }
     
-    var totalDespesasCartao: Decimal {
-        lancamentosCartao
-            .filter { $0.tipo == Tipo.despesa.rawValue }
-            .reduce(0) { $0 + $1.valor }
-    }
-    
     var totalDespesas: Decimal {
         despesas.reduce(0) { total, lancamento in
             let valorConsiderado = lancamento.dividido
-                ? lancamento.valor / 2
-                : lancamento.valor
+            ? lancamento.valorComSinal / 2
+            : lancamento.valorComSinal
 
             return total + valorConsiderado
         }
@@ -312,7 +306,13 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var balanco: Decimal {
-        totalReceitas - totalDespesas
+        lancamentos.reduce(0) { total, lancamento in
+            let valorConsiderado = lancamento.dividido
+            ? lancamento.valorComSinal / 2
+            : lancamento.valorComSinal
+
+            return total + valorConsiderado
+        }
     }
 
 }
