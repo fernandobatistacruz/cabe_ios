@@ -294,12 +294,20 @@ struct CardItem: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                 if(mostrarValores){
+                    AnimatedCounterText(
+                           value: value,
+                           moeda: moeda,
+                           font: .headline.weight(.bold),
+                           color: color,
+                           formatter: formatarValor
+                       )
+                    /*
                     Text(formatarValor(value, moeda: moeda))
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundStyle(color)
-                        .contentTransition(.numericText())
-                        .animation(.easeInOut(duration: 0.3), value: value)
+                     */
+                     
                 }else{
                     Text("•••")
                         .font(.headline)
@@ -356,6 +364,63 @@ struct CardItem: View {
 
         let valorFormatado = formatter.string(from: numero as NSDecimalNumber) ?? "\(numero)"
         return "\(valorFormatado) \(sufixo)"
+    }
+}
+
+struct AnimatedCounterText: View {
+    let value: Decimal
+    let moeda: String
+    let font: Font
+    let color: Color
+    let formatter: (Decimal, String) -> String
+
+    @State private var animatedValue: Decimal = .zero
+    @State private var timer: Timer?
+
+    var body: some View {
+        Text(formatter(animatedValue, moeda))
+            .font(font)
+            .foregroundStyle(color)
+            .monospacedDigit()
+            .onAppear {
+                animatedValue = value
+            }
+            .onChange(of: value, perform: { newValue in
+                animate(to: newValue)
+            })
+    }
+
+    private func animate(to target: Decimal) {
+        timer?.invalidate()
+
+        let start = animatedValue
+        guard start != target else { return }
+
+        // trabalha em centavos
+        let startInt = NSDecimalNumber(decimal: start * 100).intValue
+        let targetInt = NSDecimalNumber(decimal: target * 100).intValue
+
+        let distance = abs(targetInt - startInt)
+        let duration: TimeInterval = 0.2
+        let step = max(1, distance / 60)
+        let interval = duration / Double(distance / step)
+
+        var current = startInt
+
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { t in
+            if current == targetInt {
+                t.invalidate()
+                return
+            }
+
+            current += current < targetInt ? step : -step
+
+            if abs(targetInt - current) < step {
+                current = targetInt
+            }
+
+            animatedValue = Decimal(current) / 100
+        }
     }
 }
 
