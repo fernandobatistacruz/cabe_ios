@@ -64,6 +64,13 @@ extension AppDatabase {
         let url = try Self.databaseURL()
 
         dbQueue = try DatabaseQueue(path: url.path)
+        
+        /*
+        //Mostra local do banco de dados
+        #if targetEnvironment(simulator)
+        print("DB PATH:", url.path)
+        #endif
+         */
 
         try Self.makeMigrator(
             defaultCurrencyCode: defaultCurrencyCode
