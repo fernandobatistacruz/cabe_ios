@@ -294,20 +294,10 @@ struct CardItem: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                 if(mostrarValores){
-                    AnimatedCounterText(
-                           value: value,
-                           moeda: moeda,
-                           font: .headline.weight(.bold),
-                           color: color,
-                           formatter: formatarValor
-                       )
-                    /*
                     Text(formatarValor(value, moeda: moeda))
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundStyle(color)
-                     */
-                     
+                        .foregroundStyle(color)                     
                 }else{
                     Text("•••")
                         .font(.headline)
