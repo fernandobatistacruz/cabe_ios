@@ -740,9 +740,15 @@ private extension LancamentoRepository {
                 break
             }
         }
+        
+        var contaUuid = antigo.contaUuid
+        
+        if antigo.cartao != nil {
+            contaUuid = antigo.cartao?.contaUuid ?? ""
+        }
 
         try atualizarSaldoConta(
-            contaUuid: antigo.contaUuid,
+            contaUuid: contaUuid,
             delta: delta,
             db: db
         )
