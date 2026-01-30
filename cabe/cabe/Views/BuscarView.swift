@@ -22,24 +22,25 @@ struct BuscarView: View {
             Color(uiColor: .systemGroupedBackground)
                 .ignoresSafeArea()
             
-            List {
-                if !vm.resultados.isEmpty {
-                    Section(header: Text("Lançamentos")) {
-                        ForEach(vm.resultados, id: \.uuid) { lancamento in
-                            LancamentoRow(
-                                lancamento: lancamento,
-                                mostrarPagamento: false,
-                                mostrarValores: true
-                            )
-                            .listRowInsets(
-                                EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                lancamentoSelecionado = lancamento
-                            }
-                        }
-                    }
+            List(vm.resultados, id: \.uuid) { lancamento in
+                HStack{
+                    LancamentoRow(
+                        lancamento: lancamento,
+                        mostrarPagamento: false,
+                        mostrarValores: true
+                    )
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.gray)
+                        .font(.footnote)
+                }
+                .listRowInsets(
+                    EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                )
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    lancamentoSelecionado = lancamento
                 }
             }
             .listStyle(.insetGrouped)

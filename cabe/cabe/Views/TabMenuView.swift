@@ -69,7 +69,7 @@ struct TabMenuView: View {
                     }
                     .tag(TabItem.buscar)
                     .searchable(text: $searchText)
-                }                 
+                }
             }
         } else {
             TabView (selection: $deepLinkManager.selectedTab) {
@@ -118,6 +118,7 @@ struct TabMenuView: View {
                         searchText: $searchText,
                     )
                 }
+                .searchable(text: $searchText)
                 .tabItem {
                     Label("Buscar", systemImage: "magnifyingglass")
                 }
