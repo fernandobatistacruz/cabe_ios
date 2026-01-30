@@ -36,8 +36,6 @@ final class BuscarViewModel: ObservableObject {
         carregando = true
         buscou = false
 
-        let textoAtual = novoTexto
-
         task = Task { [weak self] in
             do {
                 try await Task.sleep(for: .milliseconds(300))
@@ -47,9 +45,8 @@ final class BuscarViewModel: ObservableObject {
 
             guard let self else { return }
             guard !Task.isCancelled else { return }
-            guard textoAtual == self.texto else { return }
 
-            await self.buscar(textoAtual)
+            await self.buscar(novoTexto)
         }
     }
 
@@ -57,13 +54,10 @@ final class BuscarViewModel: ObservableObject {
         guard !Task.isCancelled else { return }
 
         do {
-            // 🔐 força retorno fora do MainActor
             let dados = try await repository.buscarLancamentos(texto: textoBuscado)
 
             guard !Task.isCancelled else { return }
-            guard textoBuscado == texto else { return }
 
-            // ✅ garante mutação no MainActor
             await MainActor.run {
                 self.resultados = dados
                 self.buscou = true
@@ -81,20 +75,18 @@ final class BuscarViewModel: ObservableObject {
         }
     }
 
-    func recarregarSeNecessario() {
+    func recarregarSeNecessario(texto: String) {
         guard texto.count >= 2 else { return }
 
         task?.cancel()
         carregando = true
         buscou = false
 
-        let textoAtual = texto
-
         task = Task { [weak self] in
             guard let self else { return }
             guard !Task.isCancelled else { return }
 
-            await self.buscar(textoAtual)
+            await self.buscar(texto)
         }
     }
 }

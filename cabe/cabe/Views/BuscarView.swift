@@ -14,89 +14,66 @@ struct BuscarView: View {
     
     @StateObject private var vm = BuscarViewModel()
     @StateObject var vmLancamentos: LancamentoListViewModel
-    @FocusState private var searchFocused: Bool
-   
+    @Binding var searchText: String
+    @State private var lancamentoSelecionado: LancamentoModel?
+    
     var body: some View {
-        NavigationStack {
-            ZStack {
-               
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                
-                List(vm.resultados, id: \.uuid) { lancamento in
-                    NavigationLink {
-                        LancamentoDetalheView(
-                            lancamento: lancamento,
-                            vmLancamentos: vmLancamentos
-                        )
-                    } label: {
-                        LancamentoRow(
-                            lancamento: lancamento,
-                            mostrarPagamento: false,
-                            mostrarValores: true
-                        )
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
-                .overlay {
-                    if vm.carregando {
-                        ProgressView()
-                    } else if vm.buscou && vm.resultados.isEmpty {
-                        Group {
-                            Text("Nenhum Resultado")
-                                .font(.title2)
-                                .fontWeight(.medium)
-                                .multilineTextAlignment(.center)
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            List {
+                if !vm.resultados.isEmpty {
+                    Section(header: Text("Lançamentos")) {
+                        ForEach(vm.resultados, id: \.uuid) { lancamento in
+                            LancamentoRow(
+                                lancamento: lancamento,
+                                mostrarPagamento: false,
+                                mostrarValores: true
+                            )
+                            .listRowInsets(
+                                EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                lancamentoSelecionado = lancamento
+                            }
                         }
                     }
                 }
             }
-            .onChange(of: vm.texto) { novoValor in
-                vm.onTextoChange(novoValor)
-            }
-            .navigationTitle("Buscar")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.body.weight(.semibold))
-                    }
-                }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        
-                        TextField("Buscar", text: $vm.texto)
-                            .focused($searchFocused)
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .clipShape(Capsule())
-                    
-                    if !vm.texto.isEmpty {
-                        
-                        Spacer()
-                        Button {
-                            vm.texto = ""                            
-                            UIApplication.shared.endEditing()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
-                        .disabled(vm.texto.isEmpty)
-                        
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .overlay {
+                if vm.carregando {
+                    ProgressView()
+                } else if vm.buscou && vm.resultados.isEmpty {
+                    Group {
+                        Text("Nenhum Resultado")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .multilineTextAlignment(.center)
                     }
                 }
             }
-            .onAppear {
-                searchFocused = true
-                vm.recarregarSeNecessario()
+        }
+        .navigationTitle("Buscar")
+        .navigationBarTitleDisplayMode(.large)
+        .onChange(of: searchText) { novoValor in
+            vm.onTextoChange(novoValor)
+        }
+        .onAppear {
+            vm.recarregarSeNecessario(texto: searchText)
+        }
+        .sheet(item: $lancamentoSelecionado) { lancamento in
+            NavigationStack {
+                LancamentoDetalheView(
+                    lancamento: lancamento,
+                    vmLancamentos: vmLancamentos,
+                    isModal: true
+                )
             }
         }
     }
 }
+

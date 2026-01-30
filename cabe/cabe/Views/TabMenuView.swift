@@ -1,14 +1,22 @@
+//
+//  NewTabView.swift
+//  cabe
+//
+//  Created by Fernando Batista da Cruz on 29/01/26.
+//
+
 import SwiftUI
 
-enum Tab: Hashable {
+enum TabItem: Hashable {
     case inicio
     case lancamentos
     case resumo
     case ajustes
+    case buscar
 }
 
 struct TabMenuView: View {
-    
+    @State private var searchText = ""
     @EnvironmentObject var deepLinkManager: DeepLinkManager
         
     @StateObject private var vmLancamentos =
@@ -19,46 +27,102 @@ struct TabMenuView: View {
         )
     
     var body: some View {
-        TabView (selection: $deepLinkManager.selectedTab) {
-            NavigationStack(path: $deepLinkManager.path) {
-                InicioView(vmLancamentos: vmLancamentos)
-                    .navigationDestination(for: DeepLink.self) { destination in
-                        switch destination {
-                        case .notificacoes:
-                            NotificacoesView(vmNotificacao: vmLancamentos.notificacaoVM,
-                                             vmLancamentos: vmLancamentos)
-                        }
+        if #available(iOS 18.0, *) {
+            TabView {
+                Tab("Início", systemImage: "text.rectangle.page.fill") {
+                    NavigationStack(path: $deepLinkManager.path) {
+                        InicioView(vmLancamentos: vmLancamentos)
+                            .navigationDestination(for: DeepLink.self) { destination in
+                                switch destination {
+                                case .notificacoes:
+                                    NotificacoesView(vmNotificacao: vmLancamentos.notificacaoVM,
+                                                     vmLancamentos: vmLancamentos)
+                                }
+                            }
                     }
+                    .tag(TabItem.inicio)
+                }
+                Tab("Lançamentos", systemImage: "square.stack.fill") {
+                    NavigationStack {
+                        LancamentoListView(viewModel: vmLancamentos)
+                    }
+                    .tag(TabItem.lancamentos)
+                }
+                Tab("Resumo", systemImage: "chart.bar.xaxis") {
+                    NavigationStack {
+                        ResumoAnualView()
+                    }
+                    .tag(TabItem.resumo)
+                }
+                Tab("Ajustes", systemImage: "gear") {
+                    NavigationStack {
+                        AjustesView()
+                    }
+                    .tag(TabItem.ajustes)
+                }
+                Tab(role: .search) {
+                    NavigationStack {
+                        BuscarView(
+                            vmLancamentos: vmLancamentos,
+                            searchText: $searchText,                           
+                        )
+                    }
+                    .tag(TabItem.buscar)
+                    .searchable(text: $searchText)
+                }                 
             }
-            .tabItem {
-                Label("Início", systemImage: "text.rectangle.page.fill")
-            }
-            .tag(Tab.inicio)
-            
-            NavigationStack {
-                LancamentoListView(viewModel: vmLancamentos)
-            }
-            .tabItem {
-                Label("Lançamentos", systemImage: "square.stack.fill")
-            }
-            .tag(Tab.lancamentos)
-            .environmentObject(vmLancamentos)
+        } else {
+            TabView (selection: $deepLinkManager.selectedTab) {
+                NavigationStack(path: $deepLinkManager.path) {
+                    InicioView(vmLancamentos: vmLancamentos)
+                        .navigationDestination(for: DeepLink.self) { destination in
+                            switch destination {
+                            case .notificacoes:
+                                NotificacoesView(vmNotificacao: vmLancamentos.notificacaoVM,
+                                                 vmLancamentos: vmLancamentos)
+                            }
+                        }
+                }
+                .tabItem {
+                    Label("Início", systemImage: "text.rectangle.page.fill")
+                }
+                .tag(TabItem.inicio)
+                
+                NavigationStack {
+                    LancamentoListView(viewModel: vmLancamentos)
+                }
+                .tabItem {
+                    Label("Lançamentos", systemImage: "square.stack.fill")
+                }
+                .tag(TabItem.lancamentos)
 
-            NavigationStack {
-                ResumoAnualView()
-            }
-            .tabItem {
-                Label("Resumo", systemImage: "chart.bar.xaxis")
-            }
-            .tag(Tab.resumo)
+                NavigationStack {
+                    ResumoAnualView()
+                }
+                .tabItem {
+                    Label("Resumo", systemImage: "chart.bar.xaxis")
+                }
+                .tag(TabItem.resumo)
 
-            NavigationStack {
-                AjustesView()
+                NavigationStack {
+                    AjustesView()
+                }
+                .tabItem {
+                    Label("Ajustes", systemImage: "gear")
+                }
+                .tag(TabItem.ajustes)
+                
+                NavigationStack {
+                    BuscarView(
+                        vmLancamentos: vmLancamentos,
+                        searchText: $searchText,
+                    )
+                }
+                .tabItem {
+                    Label("Buscar", systemImage: "magnifyingglass")
+                }
+                .tag(TabItem.buscar)
             }
-            .tabItem {
-                Label("Ajustes", systemImage: "gear")
-            }
-            .tag(Tab.ajustes)
         }
     }
 }

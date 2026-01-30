@@ -13,12 +13,17 @@ struct LancamentoDetalheView: View {
     
     @State private var mostrarEdicao = false
     @State private var mostrarDialogExclusao = false
+    let isModal: Bool
     @Environment(\.dismiss) private var dismiss
-    
     @StateObject private var vm: LancamentoDetalheViewModel
     @ObservedObject var vmLancamentos: LancamentoListViewModel
 
-    init(lancamento: LancamentoModel,  vmLancamentos: LancamentoListViewModel) {
+    init(
+        lancamento: LancamentoModel,
+        vmLancamentos: LancamentoListViewModel,
+        isModal: Bool = false
+    ) {
+        self.isModal = isModal
         self.vmLancamentos = vmLancamentos
         
         _vm = StateObject(
@@ -181,6 +186,15 @@ struct LancamentoDetalheView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar)
             .toolbar {
+                if isModal {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                    }
+                }
                 if !lancamento.transferencia {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {

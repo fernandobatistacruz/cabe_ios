@@ -20,19 +20,18 @@ enum DataCivil {
             c.day!
         )
     }
-}
+    
+    static func extrairDataCivil(_ valor: String) -> Date? {
+        let partes = valor.prefix(10).split(separator: "-")
 
-enum DataCriacaoParser {
+        guard partes.count == 3,
+              let ano = Int(partes[0]),
+              let mes = Int(partes[1]),
+              let dia = Int(partes[2]) else {
+            return nil
+        }
 
-    static let iso: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime]
-        return f
-    }()
-
-    static let isoFraction: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return f
-    }()
+        return Calendar(identifier: .gregorian)
+            .date(from: DateComponents(year: ano, month: mes, day: dia))
+    }
 }

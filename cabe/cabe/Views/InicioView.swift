@@ -10,7 +10,6 @@ import Combine
 
 struct InicioView: View {
     @State private var mostrarNovoLancamento = false
-    @State private var mostrarBuscar = false
     @State private var showCalendar = false
     @StateObject private var vmLancamentos: LancamentoListViewModel
     @StateObject private var vmContas: ContaListViewModel
@@ -81,6 +80,7 @@ struct InicioView: View {
                 }
                 .padding(.bottom, 10)
             }
+            /*
             VStack {
                 Spacer()
                 HStack {
@@ -116,6 +116,7 @@ struct InicioView: View {
                     }
                 }
             }
+            */
         }
         .navigationTitle(
             Text(
@@ -135,11 +136,6 @@ struct InicioView: View {
                 }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button {
-                    mostrarBuscar = true
-                } label: {
-                    Image(systemName: "magnifyingglass" )
-                }
                 Button {
                     deepLinkManager.path.append(DeepLink.notificacoes)
                 } label: {
@@ -162,6 +158,11 @@ struct InicioView: View {
                 } label: {
                     Image(systemName: mostrarValores ? "eye.slash" : "eye" )
                 }
+                Button {
+                    mostrarNovoLancamento = true
+                } label: {
+                    Image(systemName: "plus")
+                }
             }
         }
         .sheet(isPresented: $showCalendar) {
@@ -177,9 +178,6 @@ struct InicioView: View {
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView(repository: vmLancamentos.repository)
-        }
-        .sheet(isPresented: $mostrarBuscar) {
-            BuscarView(vmLancamentos: vmLancamentos)
         }
         
     }
@@ -508,7 +506,6 @@ struct RecentesListView: View {
                 
                 VStack(spacing: 0) {
                     ForEach(grupo.items) { lancamento in
-                       
                         HStack {
                             NavigationLink {
                                 LancamentoDetalheView(

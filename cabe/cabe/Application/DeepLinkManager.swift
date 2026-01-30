@@ -19,7 +19,7 @@ enum DeepLink: Hashable {
 @MainActor
 final class DeepLinkManager: ObservableObject {
     @Published var path = NavigationPath()
-    @Published var selectedTab: Tab = .inicio
+    @Published var selectedTab: TabItem = .inicio
 
     func open(_ link: DeepLink) {
         switch link {

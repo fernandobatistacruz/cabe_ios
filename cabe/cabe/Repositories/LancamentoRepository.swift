@@ -539,7 +539,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
                 WHERE lower(l.notas) LIKE ?
                 AND l.id IN (
-                    SELECT MIN(id)
+                    SELECT MAX(id)
                     FROM lancamento
                     WHERE lower(notas) LIKE ?
                     GROUP BY uuid
@@ -650,14 +650,14 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 mesCompra: row["mesCompra"],
                 anoCompra: row["anoCompra"],
                 categoriaID: row["categoria"],
-                cartaoUuid: row["cartao_uuid"],
+                cartaoUuid: row["cartao_uuid"] ?? "",
                 recorrente: row["recorrente"],
                 parcelas: row["parcelas"],
                 parcelaMes: row["parcelaMes"],
                 valor: row["valor"],
                 pagoRaw: row["pago"],
                 divididoRaw: row["dividido"],
-                contaUuid: row["conta_uuid"],
+                contaUuid: row["conta_uuid"] ?? "" ,
                 dataCriacao: row["dataCriacao"],
                 notificacaoLidaRaw: row["notificado"] as Int? ?? 0,
                 currencyCode: row["currency_code"],

@@ -353,7 +353,7 @@ struct CategoriaResumo: Identifiable {
 extension LancamentoListViewModel {
   
     var lancamentosRecentesAgrupadosSimples: [(date: Date, items: [LancamentoModel])] {
-
+        
         // Evita duplicidade de UUID, pega os 10 mais recentes
         var vistos: Set<String> = []
 

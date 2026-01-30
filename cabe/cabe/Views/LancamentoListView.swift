@@ -132,7 +132,7 @@ struct LancamentoListView: View {
                                 NavigationLink {
                                     FaturaDetalharView(
                                         viewModel: viewModel,
-                                        cartao: cartao,                                       
+                                        cartao: cartao,
                                         total: total,
                                         vencimento: section.date
                                     )
@@ -179,12 +179,13 @@ struct LancamentoListView: View {
                                     code: viewModel.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                                 )
                             )
-                            .font(.subheadline)                           
+                            .font(.subheadline)
                         }
                     }
                 }
             }
             .listStyle(.insetGrouped)
+            /*
             VStack {
                 Spacer()
                 HStack {
@@ -220,6 +221,7 @@ struct LancamentoListView: View {
                     }
                 }
             }
+            */
         }
         .navigationTitle(
             Text(
@@ -235,11 +237,9 @@ struct LancamentoListView: View {
                 Button {
                     showCalendar = true
                 } label: {
-                    //Image(systemName: "chevron.left")
                     Text(selectedDate, format: .dateTime.year())
                 }
             }
-            
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Section {
@@ -284,6 +284,7 @@ struct LancamentoListView: View {
                     
                 }
             }
+           
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button {
@@ -313,6 +314,13 @@ struct LancamentoListView: View {
                     
                 } label: {
                     Image(systemName: "ellipsis")
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    mostrarNovoLancamento = true
+                } label: {
+                    Image(systemName: "plus")
                 }
             }
         }

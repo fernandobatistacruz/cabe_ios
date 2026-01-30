@@ -243,27 +243,12 @@ extension LancamentoModel {
 extension LancamentoModel {
 
     var dataCriacaoDate: Date {
-
-        let calendar = Calendar.current
-        
-        if let date =
-            DataCriacaoParser.iso.date(from: dataCriacao)
-            ?? DataCriacaoParser.isoFraction.date(from: dataCriacao)
-        {
-            let comps = Calendar.current.dateComponents([.year, .month, .day], from: date)
-            return Calendar.current.date(from: comps)!
-        }
-       
-        let partes = dataCriacao.split(separator: "-")
-        if partes.count == 3,
-           let ano = Int(partes[0]),
-           let mes = Int(partes[1]),
-           let dia = Int(partes[2]),
-           let date = calendar.date(from: DateComponents(year: ano, month: mes, day: dia)) {
+        if let date = DataCivil.extrairDataCivil(dataCriacao) {
             return date
         }
-     
-        return calendar.startOfDay(for: Date())
+        
+        return Calendar(identifier: .gregorian)
+            .startOfDay(for: Date())
     }
 }
 
