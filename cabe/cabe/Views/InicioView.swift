@@ -16,16 +16,7 @@ struct InicioView: View {
     @EnvironmentObject var deepLinkManager: DeepLinkManager
     @EnvironmentObject var sub: SubscriptionManager
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
-    
-    private var selectedDate: Date {
-        Calendar.current.date(
-            from: DateComponents(
-                year: vmLancamentos.anoAtual,
-                month: vmLancamentos.mesAtual,
-                day: 1
-            )
-        ) ?? Date()
-    }
+    @State private var selectedDate: Date = Date()
     
     var body: some View {
         ZStack {
@@ -80,6 +71,15 @@ struct InicioView: View {
             )
         )
         .navigationBarTitleDisplayMode(.large)
+        .onAppear {
+            selectedDate = Calendar.current.date(
+                from: DateComponents(
+                    year: vmLancamentos.anoAtual,
+                    month: vmLancamentos.mesAtual,
+                    day: 1
+                )
+            ) ?? Date()
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -127,19 +127,18 @@ struct InicioView: View {
             }
             
         }
-        .sheet(isPresented: $showCalendar) {
+        .sheet(isPresented: $showCalendar, onDismiss: {
+            vmLancamentos.selecionar(data: selectedDate)
+        }) {
             ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
+                    selectedDate = dataSelecionada
                     showCalendar = false
-                    DispatchQueue.main.async {
-                        vmLancamentos.selecionar(data: dataSelecionada)
-                    }
                 }
             )
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.hidden)
-            
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView(repository: vmLancamentos.repository)

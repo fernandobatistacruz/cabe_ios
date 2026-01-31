@@ -23,16 +23,7 @@ struct LancamentoListView: View {
     @State private var shareItem: ShareItem?
     @State private var filtroSelecionado: FiltroLancamento = .todos
     @State private var filtroTipo: FiltroTipo = .todos
-    
-    private var selectedDate: Date {
-        Calendar.current.date(
-            from: DateComponents(
-                year: viewModel.anoAtual,
-                month: viewModel.mesAtual,
-                day: 1
-            )
-        ) ?? Date()
-    }
+    @State private var selectedDate: Date = Date()
     
     private var filtroAtivo: Bool {
         filtroSelecionado != .todos || filtroTipo != .todos
@@ -194,6 +185,15 @@ struct LancamentoListView: View {
         )
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Buscar")
+        .onAppear {
+            selectedDate = Calendar.current.date(
+                from: DateComponents(
+                    year: viewModel.anoAtual,
+                    month: viewModel.mesAtual,
+                    day: 1
+                )
+            ) ?? Date()
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -326,11 +326,14 @@ struct LancamentoListView: View {
         .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView(repository: viewModel.repository)
         }
-        .sheet(isPresented: $showCalendar) {
+        .sheet(isPresented: $showCalendar, onDismiss: {
+            viewModel.selecionar(data: selectedDate)
+        }) {
             ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
-                    viewModel.selecionar(data: dataSelecionada)
+                    selectedDate = dataSelecionada
+                    showCalendar = false
                 }
             )
             .presentationDetents([.medium, .large])
