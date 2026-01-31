@@ -131,7 +131,10 @@ struct InicioView: View {
             ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
-                    vmLancamentos.selecionar(data: dataSelecionada)
+                    showCalendar = false
+                    DispatchQueue.main.async {
+                        vmLancamentos.selecionar(data: dataSelecionada)
+                    }
                 }
             )
             .presentationDetents([.medium, .large])
