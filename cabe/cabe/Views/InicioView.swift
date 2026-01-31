@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 struct InicioView: View {
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
+    @ObservedObject var vmContas: ContaListViewModel
     @State private var mostrarNovoLancamento = false
     @State private var showCalendar = false
-    @StateObject private var vmLancamentos: LancamentoListViewModel
-    @StateObject private var vmContas: ContaListViewModel
     @EnvironmentObject var deepLinkManager: DeepLinkManager
     @EnvironmentObject var sub: SubscriptionManager
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
@@ -25,15 +25,6 @@ struct InicioView: View {
                 day: 1
             )
         ) ?? Date()
-    }
-    
-    init(vmLancamentos: LancamentoListViewModel) {
-        _vmLancamentos = StateObject(wrappedValue: vmLancamentos)
-        
-        let repositoryConta = ContaRepository()
-        _vmContas = StateObject(
-            wrappedValue: ContaListViewModel(repository: repositoryConta)
-        )
     }
     
     var body: some View {
@@ -132,7 +123,7 @@ struct InicioView: View {
                     mostrarNovoLancamento = true
                 } label: {
                     Image(systemName: "plus")
-                }                
+                }
             }
             
         }

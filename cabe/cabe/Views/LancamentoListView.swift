@@ -10,7 +10,6 @@ import SwiftUI
 struct LancamentoListView: View {
     
     @ObservedObject var viewModel: LancamentoListViewModel
-    
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
     @State private var lancamentoParaExcluir: LancamentoModel?

@@ -26,12 +26,17 @@ struct TabMenuView: View {
             ano: Calendar.current.component(.year, from: Date())
         )
     
+    @StateObject private var vmContas = ContaListViewModel(repository: ContaRepository())
+    
     var body: some View {
         if #available(iOS 18.0, *) {
             TabView {
                 Tab("Início", systemImage: "text.rectangle.page.fill") {
                     NavigationStack(path: $deepLinkManager.path) {
-                        InicioView(vmLancamentos: vmLancamentos)
+                        InicioView(
+                            vmLancamentos: vmLancamentos,
+                            vmContas: vmContas
+                        )
                             .navigationDestination(for: DeepLink.self) { destination in
                                 switch destination {
                                 case .notificacoes:
@@ -68,13 +73,12 @@ struct TabMenuView: View {
                         )
                     }
                     .tag(TabItem.buscar)
-                    .searchable(text: $searchText)
                 }
             }
         } else {
             TabView (selection: $deepLinkManager.selectedTab) {
                 NavigationStack(path: $deepLinkManager.path) {
-                    InicioView(vmLancamentos: vmLancamentos)
+                    InicioView(vmLancamentos: vmLancamentos, vmContas: vmContas)
                         .navigationDestination(for: DeepLink.self) { destination in
                             switch destination {
                             case .notificacoes:

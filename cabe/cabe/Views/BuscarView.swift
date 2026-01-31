@@ -60,6 +60,7 @@ struct BuscarView: View {
         }
         .navigationTitle("Buscar")
         .navigationBarTitleDisplayMode(.large)
+        .searchable(text: $searchText)
         .onChange(of: searchText) { novoValor in
             vm.onTextoChange(novoValor)
         }
