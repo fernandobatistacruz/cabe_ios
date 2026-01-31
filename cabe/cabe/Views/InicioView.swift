@@ -104,16 +104,16 @@ struct InicioView: View {
                 } label: {
                     ZStack(alignment: .topTrailing) {
                         Image(systemName: "bell")
-                        
+                                              
                         if vmLancamentos.totalNotificacoes > 0 {
                             Text("\(vmLancamentos.totalNotificacoes)")
-                                .font(.caption2)
+                                .font(.caption)
                                 .foregroundColor(.white)
                                 .padding(4)
                                 .background(Color.red)
                                 .clipShape(Circle())
                                 .offset(x: 6, y: -5)
-                        }                        
+                        }
                     }
                 }
                 Button {
@@ -121,12 +121,20 @@ struct InicioView: View {
                 } label: {
                     Image(systemName: mostrarValores ? "eye.slash" : "eye" )
                 }
+                
+                
+            }
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.flexible, placement: .topBarTrailing)
+            }
+            ToolbarItem(placement: .topBarTrailing){
                 Button {
                     mostrarNovoLancamento = true
                 } label: {
                     Image(systemName: "plus")
-                }
+                }                
             }
+            
         }
         .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(
@@ -257,8 +265,8 @@ struct CardItem: View {
                 if(mostrarValores){
                     Text(formatarValor(value, moeda: moeda))
                         .font(.headline)
-                        .fontWeight(.bold)
-                        .foregroundStyle(color)                     
+                        .fontWeight(.heavy)
+                        .foregroundStyle(color)
                 }else{
                     Text("•••")
                         .font(.headline)

@@ -97,13 +97,17 @@ final class LancamentoListViewModel: ObservableObject {
 
         let despesas = lancamentos.filter {
             $0.tipo == Tipo.despesa.rawValue &&
-            !$0.transferencia
+            $0.transferencia == false
         }
 
         // 🔑 normaliza subcategoria → pai
         let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
             let info = categoriaPrincipalInfo(from: lancamento.categoria)
-            let valor = (lancamento.valor as NSDecimalNumber).doubleValue
+            let valorDecimal = lancamento.dividido
+                ? lancamento.valor / 2
+                : lancamento.valor
+
+            let valor = NSDecimalNumber(decimal: valorDecimal).doubleValue
 
             return (
                 id: info.id,
@@ -179,13 +183,18 @@ final class LancamentoListViewModel: ObservableObject {
 
         let despesas = lancamentos.filter {
             $0.tipo == Tipo.despesa.rawValue &&
-            !$0.transferencia
+            $0.transferencia == false
         }
 
         // 🔑 NORMALIZA antes de agrupar
         let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
             let info = categoriaPrincipalInfo(from: lancamento.categoria)
-            let valor = (lancamento.valor as NSDecimalNumber).doubleValue
+            
+            let valorDecimal = lancamento.dividido
+                ? lancamento.valor / 2
+                : lancamento.valor
+
+            let valor = NSDecimalNumber(decimal: valorDecimal).doubleValue
 
             return (
                 id: info.id,
@@ -326,7 +335,10 @@ extension LancamentoListViewModel {
     }
 
     private var despesas: [LancamentoModel] {
-        lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
+        lancamentos.filter {
+            $0.tipo == Tipo.despesa.rawValue &&
+            $0.transferencia == false
+        }
     }
 
     private var receitas: [LancamentoModel] {

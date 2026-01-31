@@ -100,6 +100,9 @@ struct FaturaListView: View {
                     Text(selectedDate, format: .dateTime.year())
                 }
             }
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.flexible, placement: .topBarTrailing)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     NavigationLink {
@@ -107,7 +110,6 @@ struct FaturaListView: View {
                     } label: {
                         Label("Gerenciar Cartões", systemImage: "creditcard")
                     }
-                    
                 } label: {
                     Image(systemName: "ellipsis")
                 }

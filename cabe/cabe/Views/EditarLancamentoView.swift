@@ -59,7 +59,13 @@ struct EditarLancamentoView: View {
                                         .foregroundColor(.primary)
                                     Spacer()
                                     
-                                    Text(vm.categoria?.nome ?? "Selecione")
+                                    let nome = vm.categoria?.pai == nil
+                                    ? vm.categoria?.nome ?? String(
+                                        localized: "Selecione"
+                                    )
+                                    : vm.categoria?.nomeSubcategoria ?? String(localized: "Selecione")
+                                    
+                                    Text(nome)
                                         .foregroundColor(.secondary)
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.gray)

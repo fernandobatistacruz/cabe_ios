@@ -33,12 +33,7 @@ final class ResumoAnualViewModel: ObservableObject {
     func carregarDados() async {
         do {
             lancamentos =  try await repository.listarLancamentosDoAno(ano: anoSelecionado)
-            
-            let lancamentosSemTransferencia = lancamentos.filter {
-                !$0.transferencia
-            }
-            
-            processar(lancamentosSemTransferencia)
+            processar(lancamentos)
         } catch {
             print("Erro ao carregar lançamentos do ano:", error)
         }
@@ -61,7 +56,10 @@ private extension ResumoAnualViewModel {
             .map(\.valor)
             .reduce(0, +)
 
-        let despesas = lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
+        let despesas = lancamentos.filter {
+            $0.tipo == Tipo.despesa.rawValue &&
+            $0.transferencia == false
+        }
         
         var totalDespesas: Decimal {
             despesas.reduce(0) { total, lancamento in
@@ -105,7 +103,10 @@ private extension ResumoAnualViewModel {
                 .map(\.valor)
                 .reduce(0, +)
 
-            let despesas = itens.filter { $0.tipo == Tipo.despesa.rawValue }
+            let despesas = itens.filter {
+                $0.tipo == Tipo.despesa.rawValue &&
+                $0.transferencia == false
+            }
             
             var despesa: Decimal {
                 despesas.reduce(0) { total, lancamento in
@@ -128,7 +129,8 @@ private extension ResumoAnualViewModel {
     func calcularDespesasPorCategoria(_ lancamentos: [LancamentoModel]) {
 
         let despesas = lancamentos.filter {
-            $0.tipo == Tipo.despesa.rawValue
+            $0.tipo == Tipo.despesa.rawValue &&
+            $0.transferencia == false
         }
 
         // 🔹 Mapa de todas as categorias envolvidas nos lançamentos
@@ -206,7 +208,10 @@ private extension ResumoAnualViewModel {
         }
 
         // Despesas recorrentes
-        let despesas = lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
+        let despesas = lancamentos.filter {
+            $0.tipo == Tipo.despesa.rawValue &&
+            $0.transferencia == false
+        }
         let recorrentes = despesas.filter {
             $0.tipoRecorrente == .mensal || $0.tipoRecorrente == .quinzenal || $0.tipoRecorrente == .semanal
         }

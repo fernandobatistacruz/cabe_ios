@@ -236,7 +236,13 @@ struct FaturaDetalharView: View {
                 } label: {
                     Image(systemName: filtroAtivo
                           ? "line.3.horizontal.decrease.circle.fill"
-                          : "line.3.horizontal.decrease")
+                          : "line.3.horizontal.decrease"
+                    )
+                    .symbolRenderingMode(filtroAtivo ? .palette : .monochrome)
+                    .foregroundStyle(
+                        filtroAtivo ? Color.white : Color.primary,
+                        Color.accentColor
+                    )
                 }
                 
                 Menu {
