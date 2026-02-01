@@ -215,7 +215,6 @@ struct FaturaDetalharView: View {
                             }
                         }
                     }
-
                     Section {
                         ForEach(FiltroLancamentoFatura.allCases) { filtro in
                             Button {
@@ -243,8 +242,7 @@ struct FaturaDetalharView: View {
                         filtroAtivo ? Color.white : Color.primary,
                         Color.accentColor
                     )
-                }
-                
+                }                
                 Menu {
                     Button {
                         withAnimation {

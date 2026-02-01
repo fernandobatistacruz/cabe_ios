@@ -112,8 +112,6 @@ struct InicioView: View {
                 } label: {
                     Image(systemName: mostrarValores ? "eye.slash" : "eye" )
                 }
-                
-                
             }
             if #available(iOS 26.0, *) {
                 ToolbarSpacer(.flexible, placement: .topBarTrailing)

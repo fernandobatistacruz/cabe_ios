@@ -202,7 +202,7 @@ struct LancamentoListView: View {
                     Text(selectedDate, format: .dateTime.year())
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
                     Section {
                         ForEach(FiltroTipo.allCases) { filtro in
@@ -221,7 +221,6 @@ struct LancamentoListView: View {
                             }
                         }
                     }
-                    
                     Section {
                         ForEach(FiltroLancamento.allCases) { filtro in
                             Button {
@@ -250,9 +249,6 @@ struct LancamentoListView: View {
                         Color.accentColor
                     )
                 }
-            }
-           
-            ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button {
                         if sub.isSubscribed {
