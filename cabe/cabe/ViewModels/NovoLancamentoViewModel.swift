@@ -317,6 +317,7 @@ final class NovoLancamentoViewModel: ObservableObject {
         lancamento.categoriaID = categoria?.id ?? lancamento.categoriaID
         lancamento.cartaoUuid = pagamentoSelecionado?.cartaoModel?.uuid ?? ""
         lancamento.contaUuid = pagamentoSelecionado?.contaModel?.uuid ?? ""
+        lancamento.cartao = pagamentoSelecionado?.cartaoModel
     }
     
     func sugerirDataFatura() {

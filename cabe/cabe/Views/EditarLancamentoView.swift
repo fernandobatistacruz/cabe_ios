@@ -33,10 +33,6 @@ struct EditarLancamentoView: View {
                 repository: repository)
         )
     }
-    
-    private var valorAlterado: Bool {
-        vm.valor != lancamento.valor
-    }
 
     var body: some View {
         NavigationStack {
@@ -233,7 +229,7 @@ struct EditarLancamentoView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task {
-                            if valorAlterado && vm.recorrenciaPolicy.requerConfirmacaoEscopoAoAlterarValor {
+                            if vm.recorrenciaPolicy.requerConfirmacaoEscopoAoAlterarValor {
                                 mostrarConfirmacaoEscopo = true
                                 return
                             }
@@ -303,7 +299,8 @@ struct EditarLancamentoView: View {
 
             // Atualiza o lançamento atual e os recorrentes com base no escopo
             try await vm.repository.editar(
-                lancamento: editado,
+                antigo: lancamento,
+                novo: editado,
                 escopo: escopo
             )
 

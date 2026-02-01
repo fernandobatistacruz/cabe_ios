@@ -248,7 +248,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
     }
     
     func editar(
-        lancamento: LancamentoModel,
+        antigo: LancamentoModel,
+        novo: LancamentoModel,
         escopo: EscopoEdicaoRecorrencia
     ) async throws {
 
@@ -257,115 +258,121 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             switch escopo {
 
             case .somenteEste:
-                try editarUnico(lancamento, db: db)
+                try editarUnico(
+                    antigo: antigo,
+                    novo: novo,
+                    db: db
+                )
 
             case .esteEProximos:
-                try editarEsteEProximos(lancamento, db: db)
+                try editarEsteEProximos(
+                    antigo: antigo,
+                    novo: novo,
+                    db: db
+                )
 
             case .todos:
-                try editarTodos(lancamento, db: db)
+                try editarTodos(
+                    antigo: antigo,
+                    novo: novo,
+                    db: db
+                )
             }
         }
     }
     
     private nonisolated func editarUnico(
-        _ lancamento: LancamentoModel,
+        antigo: LancamentoModel,
+        novo: LancamentoModel,
         db: Database
     ) throws {
-
-        guard
-            let id = lancamento.id,
-            let antigo = try LancamentoModel
-                .filter(LancamentoModel.Columns.id == id)
-                .fetchOne(db)
-        else {
-            try lancamento.update(db)
-            return
-        }
-
+        
+        try novo.update(db)
+        
         try aplicarDeltaSaldo(
             antigo: antigo,
-            novo: lancamento,
+            novo: novo,
             removendo: false,
             db: db
         )
-
-        try lancamento.update(db)
     }
     
     private nonisolated func editarEsteEProximos(
-        _ lancamentoBase: LancamentoModel,
+        antigo: LancamentoModel,
+        novo: LancamentoModel,
         db: Database
     ) throws {
 
         let lancamentos = try LancamentoModel
             .filter(
-                LancamentoModel.Columns.uuid == lancamentoBase.uuid &&
+                LancamentoModel.Columns.uuid == antigo.uuid &&
                 (
-                    LancamentoModel.Columns.ano > lancamentoBase.ano ||
+                    LancamentoModel.Columns.ano > antigo.ano ||
                     (
-                        LancamentoModel.Columns.ano == lancamentoBase.ano &&
-                        LancamentoModel.Columns.mes >= lancamentoBase.mes
+                        LancamentoModel.Columns.ano == antigo.ano &&
+                        LancamentoModel.Columns.mes >= antigo.mes
                     )
                 )
             )
             .fetchAll(db)
 
-        for antigo in lancamentos {
+        for lancamento in lancamentos {
 
-            var novo = antigo
-
-            // 🔹 Campos que PODEM ser alterados
-            novo.descricao = lancamentoBase.descricao
-            novo.anotacao = lancamentoBase.anotacao
-            novo.valor = lancamentoBase.valor
-            novo.pagoRaw = lancamentoBase.pagoRaw
-            novo.divididoRaw = lancamentoBase.divididoRaw
-            novo.categoriaID = lancamentoBase.categoriaID
-            novo.cartaoUuid = lancamentoBase.cartaoUuid
-            novo.contaUuid = lancamentoBase.contaUuid
+            var atualizado = lancamento
+          
+            atualizado.descricao = novo.descricao
+            atualizado.anotacao = novo.anotacao
+            atualizado.valor = novo.valor
+            atualizado.pagoRaw = novo.pagoRaw
+            atualizado.divididoRaw = novo.divididoRaw
+            atualizado.categoriaID = novo.categoriaID
+            atualizado.cartaoUuid = novo.cartaoUuid
+            atualizado.contaUuid = novo.contaUuid
+            atualizado.cartao = novo.cartao
 
             try aplicarDeltaSaldo(
                 antigo: antigo,
-                novo: novo,
+                novo: atualizado,
                 removendo: false,
                 db: db
             )
 
-            try novo.update(db)
+            try atualizado.update(db)
         }
     }
     
     private nonisolated func editarTodos(
-        _ lancamentoBase: LancamentoModel,
+        antigo: LancamentoModel,
+        novo: LancamentoModel,
         db: Database
     ) throws {
 
         let lancamentos = try LancamentoModel
-            .filter(LancamentoModel.Columns.uuid == lancamentoBase.uuid)
+            .filter(LancamentoModel.Columns.uuid == antigo.uuid)
             .fetchAll(db)
 
-        for antigo in lancamentos {
+        for lancamento in lancamentos {
 
-            var novo = antigo
-
-            novo.descricao = lancamentoBase.descricao
-            novo.anotacao = lancamentoBase.anotacao
-            novo.valor = lancamentoBase.valor
-            novo.pagoRaw = lancamentoBase.pagoRaw
-            novo.divididoRaw = lancamentoBase.divididoRaw
-            novo.categoriaID = lancamentoBase.categoriaID
-            novo.cartaoUuid = lancamentoBase.cartaoUuid
-            novo.contaUuid = lancamentoBase.contaUuid
+            var atualizado = lancamento
+          
+            atualizado.descricao = novo.descricao
+            atualizado.anotacao = novo.anotacao
+            atualizado.valor = novo.valor
+            atualizado.pagoRaw = novo.pagoRaw
+            atualizado.divididoRaw = novo.divididoRaw
+            atualizado.categoriaID = novo.categoriaID
+            atualizado.cartaoUuid = novo.cartaoUuid
+            atualizado.contaUuid = novo.contaUuid
+            atualizado.cartao = novo.cartao
 
             try aplicarDeltaSaldo(
                 antigo: antigo,
-                novo: novo,
+                novo: atualizado,
                 removendo: false,
                 db: db
             )
 
-            try novo.update(db)
+            try atualizado.update(db)
         }
     }
     
@@ -713,45 +720,88 @@ private extension LancamentoRepository {
     ) throws {
 
         let estavaPago = antigo.pago
-        let valorAnterior = antigo.valorComSinal
+        let valorAntigo = antigo.valorComSinal
+        let contaAntiga = try contaImpactada(lancamento: antigo)
 
-        var delta: Decimal = 0
-
+        // 🗑 Remoção
         if removendo {
             if estavaPago {
-                delta = -valorAnterior
+                try atualizarSaldoConta(
+                    contaUuid: contaAntiga,
+                    delta: -valorAntigo,
+                    db: db
+                )
             }
-        } else if let novo {
-
-            let estaPagoAgora = novo.pago
-            let valorNovo = novo.valorComSinal
-
-            switch (estavaPago, estaPagoAgora) {
-            case (false, true):
-                delta = valorNovo
-
-            case (true, false):
-                delta = -valorAnterior
-
-            case (true, true):
-                delta = valorNovo - valorAnterior
-
-            default:
-                break
-            }
-        }
-        
-        var contaUuid = antigo.contaUuid
-        
-        if antigo.cartao != nil {
-            contaUuid = antigo.cartao?.contaUuid ?? ""
+            return
         }
 
-        try atualizarSaldoConta(
-            contaUuid: contaUuid,
-            delta: delta,
-            db: db
-        )
+        guard let novo else { return }
+
+        let estaPagoAgora = novo.pago
+        let valorNovo = novo.valorComSinal
+        let contaNova = try contaImpactada(lancamento: novo)
+
+        // 🔄 Caso 1: estava pago → agora não pago
+        if estavaPago && !estaPagoAgora {
+            try atualizarSaldoConta(
+                contaUuid: contaAntiga,
+                delta: -valorAntigo,
+                db: db
+            )
+            return
+        }
+
+        // 🔄 Caso 2: não estava pago → agora pago
+        if !estavaPago && estaPagoAgora {
+            try atualizarSaldoConta(
+                contaUuid: contaNova,
+                delta: valorNovo,
+                db: db
+            )
+            return
+        }
+
+        // 🔄 Caso 3: pago → pago
+        if estavaPago && estaPagoAgora {
+
+            // Mudou a conta (ou cartão)
+            if contaAntiga != contaNova {
+                // estorna da antiga
+                try atualizarSaldoConta(
+                    contaUuid: contaAntiga,
+                    delta: -valorAntigo,
+                    db: db
+                )
+
+                // aplica na nova
+                try atualizarSaldoConta(
+                    contaUuid: contaNova,
+                    delta: valorNovo,
+                    db: db
+                )
+            } else {
+                // mesma conta → só ajusta diferença
+                let delta = valorNovo - valorAntigo
+                if delta != 0 {
+                    try atualizarSaldoConta(
+                        contaUuid: contaNova,
+                        delta: delta,
+                        db: db
+                    )
+                }
+            }
+        }
+    }
+    
+    private nonisolated func contaImpactada(lancamento: LancamentoModel) throws -> String {
+        
+        var contaUuid = lancamento.contaUuid
+        
+        if lancamento.cartao != nil {
+            contaUuid = lancamento.cartao?.contaUuid ?? ""
+        }
+        
+        return contaUuid
     }
 }
 

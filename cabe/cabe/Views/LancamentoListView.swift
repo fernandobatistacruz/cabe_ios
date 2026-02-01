@@ -439,17 +439,22 @@ struct LancamentoListView: View {
                     $0.cartao!.id!
                 }
 
-                let itensCartao = porCartao.map { (_, lancamentos) in
-                    let cartao = lancamentos.first!.cartao!
-                    let total = lancamentos.reduce(.zero) { $0 + $1.valorComSinal }
-
-                    return LancamentoItem.cartaoAgrupado(
-                        cartao: cartao,
-                        total: total,
-                        lancamentos: lancamentos
-                    )
-                }
-
+                let itensCartao = porCartao
+                    .values
+                    .sorted { lhs, rhs in
+                        lhs.first!.cartao!.nome < rhs.first!.cartao!.nome
+                    }
+                    .map { lancamentos in
+                        let cartao = lancamentos.first!.cartao!
+                        let total = lancamentos.reduce(.zero) { $0 + $1.valorComSinal }
+                        
+                        return LancamentoItem.cartaoAgrupado(
+                            cartao: cartao,
+                            total: total,
+                            lancamentos: lancamentos
+                        )
+                    }
+                
                 return (date: date, items: itensSimples + itensCartao)
             }
 

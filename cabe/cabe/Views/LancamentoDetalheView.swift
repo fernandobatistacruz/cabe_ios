@@ -205,20 +205,20 @@ struct LancamentoDetalheView: View {
                     }
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
-                    Button {
-                        Task{
-                            await vmLancamentos.togglePago([lancamento])
+                    if lancamento.cartao == nil {
+                        Button {
+                            Task{
+                                await vmLancamentos.togglePago([lancamento])
+                            }
+                        } label: {
+                            Text(lancamento.pago ? "Desfazer Pagamento" : "Pago")
                         }
-                    } label: {
-                        Text(lancamento.pago ? "Desfazer Pagamento" : "Pago")
                     }
-                    .padding(.horizontal)
                     Button {
                         mostrarDialogExclusao = true
                     } label: {
                         Text("Excluir")
-                    }
-                    .padding(.horizontal)
+                    }                   
                 }
             }
             .sheet(isPresented: $mostrarEdicao) {
