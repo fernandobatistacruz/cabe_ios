@@ -30,8 +30,8 @@ struct TabMenuView: View {
     
     var body: some View {
         if #available(iOS 18.0, *) {
-            TabView {
-                Tab("Início", systemImage: "text.rectangle.page.fill") {
+            TabView (selection: $deepLinkManager.selectedTab) {
+                Tab("Início", systemImage: "text.rectangle.page.fill", value: TabItem.inicio) {
                     NavigationStack(path: $deepLinkManager.path) {
                         InicioView(
                             vmLancamentos: vmLancamentos,
@@ -45,34 +45,29 @@ struct TabMenuView: View {
                                 }
                             }
                     }
-                    .tag(TabItem.inicio)
                 }
-                Tab("Lançamentos", systemImage: "square.stack.fill") {
+                Tab("Lançamentos", systemImage: "square.stack.fill", value: TabItem.lancamentos) {
                     NavigationStack {
                         LancamentoListView(viewModel: vmLancamentos)
                     }
-                    .tag(TabItem.lancamentos)
                 }
-                Tab("Resumo", systemImage: "chart.bar.xaxis") {
+                Tab("Resumo", systemImage: "chart.bar.xaxis", value: TabItem.resumo) {
                     NavigationStack {
                         ResumoAnualView()
                     }
-                    .tag(TabItem.resumo)
                 }
-                Tab("Ajustes", systemImage: "gear") {
+                Tab("Ajustes", systemImage: "gear", value: TabItem.ajustes) {
                     NavigationStack {
                         AjustesView()
                     }
-                    .tag(TabItem.ajustes)
                 }
-                Tab(role: .search) {
+                Tab(value: TabItem.buscar, role: .search) {
                     NavigationStack {
                         BuscarView(
                             vmLancamentos: vmLancamentos,
                             searchText: $searchText,                           
                         )
                     }
-                    .tag(TabItem.buscar)
                 }
             }
         } else {
