@@ -102,6 +102,7 @@ struct CategoriaFormView: View {
                                 .background(Color(.systemGroupedBackground))
                                 .cornerRadius(22)
                                 .multilineTextAlignment(.center)
+                                .textInputAutocapitalization(.words)
                                 .focused($campoFocado, equals: .nome)
                             }
                             .padding()
@@ -363,6 +364,7 @@ struct SubcategoriaSheet: View {
             Form {
                 Section {
                     TextField("Nome da Subcategoria", text: $nome)
+                        .textInputAutocapitalization(.words)
                 }
             }
             .navigationTitle(subcategoria == nil ? "Nova Subcategoria" : "Editar Subcategoria")

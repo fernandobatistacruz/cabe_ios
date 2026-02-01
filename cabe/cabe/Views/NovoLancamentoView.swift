@@ -58,6 +58,7 @@ struct NovoLancamentoView: View {
                             TextField("Descrição", text: $vm.descricao)
                                 .focused($campoFocado, equals: .descricao)
                                 .submitLabel(.next)
+                                .textInputAutocapitalization(.words)
                                 .onSubmit {
                                     campoFocado = .valor
                                 }

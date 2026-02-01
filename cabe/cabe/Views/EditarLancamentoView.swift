@@ -50,6 +50,7 @@ struct EditarLancamentoView: View {
                         // MARK: - Dados básicos
                         Section {
                             TextField("Descrição", text: $vm.descricao)
+                                .textInputAutocapitalization(.words)
 
                             Button {
                                 sheetAtivo = .categoria

@@ -295,6 +295,7 @@ struct NovoCartaoView: View {
                 TextField("Nome", text: $viewModel.nome)
                     .focused($campoFocado, equals: .nome)
                         .submitLabel(.next)
+                        .textInputAutocapitalization(.words)
                         .onSubmit {
                             campoFocado = .vencimento
                         }
@@ -430,6 +431,8 @@ struct EditarCartaoView: View {
             Form {
                 Section{
                     TextField("Nome", text: $viewModel.nome)
+                        .textInputAutocapitalization(.words)
+                    
                     Button {
                         sheetAtivo = .operadora
                     } label: {

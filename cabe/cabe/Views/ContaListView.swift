@@ -225,6 +225,7 @@ struct NovaContaView: View {
             TextField("Nome", text: $nome)
                 .focused($campoFocado, equals: .nome)
                     .submitLabel(.next)
+                    .textInputAutocapitalization(.words)
                     .onSubmit {
                         campoFocado = .saldo
                     }
@@ -307,7 +308,9 @@ struct EditarContaView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Nome da Conta", text: $nome)
+                TextField("Nome", text: $nome)
+                    .textInputAutocapitalization(.words)
+                
                 TextField("Saldo", text: $saldoText)
                     .keyboardType(.decimalPad)
                     .onChange(of: saldoText) { value in
