@@ -24,6 +24,7 @@ struct LancamentoListView: View {
     @State private var filtroSelecionado: FiltroLancamento = .todos
     @State private var filtroTipo: FiltroTipo = .todos
     @State private var selectedDate: Date = Date()
+    @State private var direcao: Edge = .trailing
     
     private var filtroAtivo: Bool {
         filtroSelecionado != .todos || filtroTipo != .todos
@@ -177,6 +178,7 @@ struct LancamentoListView: View {
             .listStyle(.insetGrouped)            
         }
         .contentShape(Rectangle()) // importante para capturar gesto em áreas vazias
+       // .animation(.easeInOut(duration: 0.25), value: selectedDate)
         .gesture(
             DragGesture(minimumDistance: 30)
                 .onEnded { value in
@@ -187,10 +189,8 @@ struct LancamentoListView: View {
                     guard abs(horizontal) > abs(vertical) else { return }
                     
                     if horizontal < -40 {
-                        // ← swipe para esquerda → próximo mês
                         alterarMes(+1)
                     } else if horizontal > 40 {
-                        // → swipe para direita → mês anterior
                         alterarMes(-1)
                     }
                 }
@@ -387,12 +387,17 @@ struct LancamentoListView: View {
                 }
             }
         }
-    }
+    }   
     
     private func alterarMes(_ delta: Int) {
+        direcao = delta > 0 ? .trailing : .leading
+
         guard let novaData = Calendar.current.date(byAdding: .month, value: delta, to: selectedDate) else { return }
-        
-        selectedDate = novaData
+
+        withAnimation(.easeInOut(duration: 0.30)) {
+            selectedDate = novaData
+        }
+
         viewModel.selecionar(data: novaData)
     }
     
