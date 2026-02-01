@@ -37,13 +37,13 @@ struct TabMenuView: View {
                             vmLancamentos: vmLancamentos,
                             vmContas: vmContas
                         )
-                            .navigationDestination(for: DeepLink.self) { destination in
-                                switch destination {
-                                case .notificacoes:
-                                    NotificacoesView(vmNotificacao: vmLancamentos.notificacaoVM,
-                                                     vmLancamentos: vmLancamentos)
-                                }
+                        .navigationDestination(for: DeepLink.self) { destination in
+                            switch destination {
+                            case .notificacoes:
+                                NotificacoesView(vmNotificacao: vmLancamentos.notificacaoVM,
+                                                 vmLancamentos: vmLancamentos)
                             }
+                        }
                     }
                 }
                 Tab("Lançamentos", systemImage: "square.stack.fill", value: TabItem.lancamentos) {
