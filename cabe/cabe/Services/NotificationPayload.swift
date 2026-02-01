@@ -48,11 +48,12 @@ struct NotificacaoFactory {
         return agrupados.compactMap { (_, itens) in
             guard
                 let primeiro = itens.first,
-                let cartao = primeiro.cartao,
-                let dataVencimento = primeiro.dataVencimentoCartao
+                let cartao = primeiro.cartao               
             else {
                 return nil
             }
+            
+            let dataVencimento = primeiro.dataVencimento
 
             return CartaoNotificacao(
                 cartaoId: primeiro.cartaoUuid,

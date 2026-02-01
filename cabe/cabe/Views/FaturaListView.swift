@@ -130,7 +130,7 @@ struct FaturaListView: View {
     var lancamentosAgrupados: [(date: Date, items: [LancamentoItem])] {
 
         let porData = Dictionary(grouping: viewModel.lancamentos) {
-            Calendar.current.startOfDay(for: $0.dataAgrupamento)
+            Calendar.current.startOfDay(for: $0.dataVencimento)
         }
 
         let resultado = porData.compactMap { (date, lancamentosDoDia) -> (Date, [LancamentoItem])? in

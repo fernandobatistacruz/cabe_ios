@@ -422,7 +422,7 @@ struct LancamentoListView: View {
     var lancamentosAgrupados: [LancamentoSectionAcumulada] {
 
         let porData = Dictionary(grouping: lancamentosFiltrados) {
-            Calendar.current.startOfDay(for: $0.dataAgrupamento)
+            Calendar.current.startOfDay(for: $0.dataVencimento)
         }
 
         // 1️⃣ monta as sections base

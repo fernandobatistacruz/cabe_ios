@@ -302,7 +302,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         novo: LancamentoModel,
         db: Database
     ) throws {
-
+        
         let lancamentos = try LancamentoModel
             .filter(
                 LancamentoModel.Columns.uuid == antigo.uuid &&
@@ -313,13 +313,23 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                         LancamentoModel.Columns.mes >= antigo.mes
                     )
                 )
+                && LancamentoModel.Columns.id >= antigo.id
             )
             .fetchAll(db)
+        
+        let calendar = Calendar.current
+        var dataVencimento = novo.dataVencimento
 
         for lancamento in lancamentos {
-
+            
             var atualizado = lancamento
-          
+            
+            atualizado.dia = calendar.component(.day, from: dataVencimento)
+            atualizado.mes = calendar.component(.month, from: dataVencimento)
+            atualizado.ano = calendar.component(.year, from: dataVencimento)
+            atualizado.diaCompra = novo.diaCompra
+            atualizado.mesCompra = novo.mesCompra
+            atualizado.anoCompra = novo.anoCompra
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor
@@ -329,15 +339,26 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             atualizado.cartaoUuid = novo.cartaoUuid
             atualizado.contaUuid = novo.contaUuid
             atualizado.cartao = novo.cartao
-
+                        
             try aplicarDeltaSaldo(
                 antigo: antigo,
                 novo: atualizado,
                 removendo: false,
                 db: db
             )
-
+            
             try atualizado.update(db)
+            
+            switch atualizado.tipoRecorrente {
+            case .nunca, .parcelado:
+                break
+            case .mensal:
+                dataVencimento = calendar.date(byAdding: .month, value: 1, to: dataVencimento)!
+            case .quinzenal:
+                dataVencimento = calendar.date(byAdding: .day, value: 14, to: dataVencimento)!
+            case .semanal:
+                dataVencimento = calendar.date(byAdding: .day, value: 7, to: dataVencimento)!
+            }
         }
     }
     
@@ -354,7 +375,10 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         for lancamento in lancamentos {
 
             var atualizado = lancamento
-          
+            
+            atualizado.diaCompra = novo.diaCompra
+            atualizado.mesCompra = novo.mesCompra
+            atualizado.anoCompra = novo.anoCompra
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor

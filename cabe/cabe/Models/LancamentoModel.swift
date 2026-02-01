@@ -99,11 +99,11 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
 }
 
 extension LancamentoModel {
-    var dataAgrupamento: Date {
+    var dataVencimento: Date {
         var components = DateComponents()
 
         if let cartao = cartao {
-            components.day = cartao.vencimento
+            components.day = cartao.vencimento > 0 ? cartao.vencimento : 1
         } else {
             components.day = dia
         }
@@ -170,24 +170,6 @@ extension LancamentoModel {
                 .day(.twoDigits)
                 .month(.twoDigits)
                 .year()
-        )
-    }
-}
-
-extension LancamentoModel {
-
-    var dataVencimentoCartao: Date? {
-        guard
-            let cartao = cartao,
-            cartao.vencimento > 0
-        else { return nil }
-
-        return Calendar.current.date(
-            from: DateComponents(
-                year: ano,
-                month: mes,
-                day: cartao.vencimento
-            )
         )
     }
 }

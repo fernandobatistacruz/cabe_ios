@@ -39,7 +39,7 @@ final class NotificationScheduler {
 
             var components = Calendar.current.dateComponents(
                 [.year, .month, .day],
-                from: lancamento.dataAgrupamento
+                from: lancamento.dataVencimento
             )
             components.hour = 9
             components.minute = 0

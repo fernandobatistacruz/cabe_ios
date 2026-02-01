@@ -33,22 +33,22 @@ final class NotificacaoViewModel: ObservableObject {
         let lancamentosSimples = naoLidos.filter { $0.cartaoUuid.isEmpty }
 
         vencidos = lancamentosSimples.filter {
-            !$0.pago && $0.dataAgrupamento < hoje
+            !$0.pago && $0.dataVencimento < hoje
         }
 
         vencemHoje = lancamentosSimples.filter {
-            !$0.pago && Calendar.current.isDate($0.dataAgrupamento, inSameDayAs: hoje)
+            !$0.pago && Calendar.current.isDate($0.dataVencimento, inSameDayAs: hoje)
         }
 
         // 3️⃣ Lançamentos de cartão, agrupados por cartão
         let lancamentosCartao = naoLidos.filter { !$0.cartaoUuid.isEmpty }
 
         cartoesVencidos = agrupaCartaoLancamentos(
-            lancamentos: lancamentosCartao.filter { $0.dataAgrupamento < hoje && !$0.pago }
+            lancamentos: lancamentosCartao.filter { $0.dataVencimento < hoje && !$0.pago }
         )
 
         cartoesVenceHoje = agrupaCartaoLancamentos(
-            lancamentos: lancamentosCartao.filter { Calendar.current.isDate($0.dataAgrupamento, inSameDayAs: hoje) && !$0.pago }
+            lancamentos: lancamentosCartao.filter { Calendar.current.isDate($0.dataVencimento, inSameDayAs: hoje) && !$0.pago }
         )
     }
    
@@ -93,11 +93,12 @@ final class NotificacaoViewModel: ObservableObject {
         return agrupados.compactMap { (_, itens) in
             guard
                 let primeiro = itens.first,
-                let cartao = primeiro.cartao,
-                let dataVencimento = primeiro.dataVencimentoCartao
+                let cartao = primeiro.cartao
             else {
                 return nil
             }
+
+            let dataVencimento = primeiro.dataVencimento
 
             return CartaoNotificacao(
                 cartaoId: primeiro.cartaoUuid,
