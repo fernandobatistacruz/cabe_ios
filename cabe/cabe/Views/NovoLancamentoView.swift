@@ -34,169 +34,164 @@ struct NovoLancamentoView: View {
     
     var body: some View {
         NavigationStack{
-            ZStack (alignment: .top) {
-                List {
-                    Section {
-                        TextField("Descrição", text: $vm.descricao)
-                            .focused($campoFocado, equals: .descricao)
-                            .submitLabel(.next)
-                            .textInputAutocapitalization(.words)
-                            .onSubmit {
-                                campoFocado = .valor
-                            }
-                        Button {
-                            sheetAtivo = .categoria
-                        } label: {
-                            HStack {
-                                Text("Categoria")
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                
-                                let nome = vm.categoria?.pai == nil
-                                ? vm.categoria?.nome ?? String(
-                                    localized: "Selecione"
-                                )
-                                : vm.categoria?.nomeSubcategoria ?? String(localized: "Selecione")
-                                
-                                Text(nome)
-                                    .foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
-                            }
+            List {
+                Section {
+                    TextField("Valor", text: $vm.valorTexto)
+                        .keyboardType(.numberPad)
+                        .focused($campoFocado, equals: .valor)
+                        .onChange(of: vm.valorTexto) { novoValor in
+                            vm.atualizarValor(novoValor)
                         }
-                    }
-                    Section {
-                        Button {
-                            sheetAtivo = .pagamento
-                        } label: {
-                            HStack {
-                                Text("Pagamento")
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Text(vm.pagamentoSelecionado?.titulo ??  String(
-                                    localized: "Selecione")
-                                ).foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
-                            }
-                        }
-                        if((vm.pagamentoSelecionado?.cartaoModel != nil))
-                        {
-                            Button {
-                                sheetAtivo = .fatura
-                            } label: {
-                                HStack {
-                                    Text("Fatura")
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Text(
-                                        vm.dataFatura
-                                            .formatted(
-                                                .dateTime
-                                                    .month(.wide)
-                                                    .year()
-                                            )
-                                            .capitalizingFirstLetter()
-                                    )
-                                    .foregroundColor(.secondary)
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.gray)
-                                        .font(.footnote)
-                                }
-                            }
-                        }
-                        
-                        if(vm.tipo == .despesa){
-                            Toggle(isOn: $vm.dividida) {Text("Dividida")}
-                        }
-                        
+                    
+                    TextField("Descrição", text: $vm.descricao)
+                        .focused($campoFocado, equals: .descricao)
+                        .submitLabel(.next)
+                        .textInputAutocapitalization(.words)
+                    
+                    Button {
+                        sheetAtivo = .categoria
+                    } label: {
                         HStack {
-                            if vm.recorrenciaPolicy.podeAlterarTipo {
-                                Picker("Repete", selection: $vm.recorrente) {
-                                    ForEach(vm.recorrenciasDisponiveis, id: \.self) { tipo in
-                                        Text(tipo.titulo)
-                                            .tag(tipo)
-                                    }
-                                }
-                            } else {
-                                HStack {
-                                    Text("Repete")
-                                    Spacer()
-                                    Text(vm.recorrente.titulo)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
+                            Text("Categoria")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            
+                            let nome = vm.categoria?.pai == nil
+                            ? vm.categoria?.nome ?? String(
+                                localized: "Selecione"
+                            )
+                            : vm.categoria?.nomeSubcategoria ?? String(localized: "Selecione")
+                            
+                            Text(nome)
+                                .foregroundColor(.secondary)
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
                         }
-                        
-                        if vm.recorrente == .parcelado {
-                            TextField("Número de parcelas", text: $vm.parcelaTexto)
-                                .keyboardType(.numberPad)
-                                .focused($campoFocado, equals: .parcelas)
+                    }
+                }
+                Section {
+                    Button {
+                        sheetAtivo = .pagamento
+                    } label: {
+                        HStack {
+                            Text("Pagamento")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text(vm.pagamentoSelecionado?.titulo ??  String(
+                                localized: "Selecione")
+                            ).foregroundColor(.secondary)
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
                         }
-                        
-                        TextField("Valor", text: $vm.valorTexto)
-                            .keyboardType(.numberPad)
-                            .focused($campoFocado, equals: .valor)
-                            .onChange(of: vm.valorTexto) { novoValor in
-                                vm.atualizarValor(novoValor)
-                            }
-                        
-                        Toggle(isOn: $vm.pago) {Text("Pago")}
-                        
+                    }
+                    if((vm.pagamentoSelecionado?.cartaoModel != nil))
+                    {
                         Button {
-                            mostrarCalendario.toggle()
+                            sheetAtivo = .fatura
                         } label: {
                             HStack {
-                                Text(vm.pagamentoSelecionado?.cartaoModel == nil ? "Vencimento" : "Data da Compra")
+                                Text("Fatura")
                                     .foregroundColor(.primary)
                                 Spacer()
-                                Text("\(vm.data.formatted(date: .abbreviated, time: .omitted))")
-                                    .foregroundColor(.primary)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 22)
-                                            .fill(
-                                                Color(
-                                                    uiColor: .secondarySystemFill
-                                                )
-                                            )
-                                    )
+                                Text(
+                                    vm.dataFatura
+                                        .formatted(
+                                            .dateTime
+                                                .month(.wide)
+                                                .year()
+                                        )
+                                        .capitalizingFirstLetter()
+                                )
+                                .foregroundColor(.secondary)
+                                
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
                             }
                         }
-                        
-                        if mostrarCalendario {
-                            DatePicker(
-                                "",
-                                selection: $vm.data,
-                                displayedComponents: [.date]
-                            )
-                            .datePickerStyle(.graphical)
-                        }
-                        
                     }
-                    Section {
-                        ZStack(alignment: .topLeading) {
-                            if vm.anotacao.isEmpty {
-                                Text("Anotação")
+                    
+                    if(vm.tipo == .despesa){
+                        Toggle(isOn: $vm.dividida) {Text("Dividida")}
+                    }
+                    
+                    HStack {
+                        if vm.recorrenciaPolicy.podeAlterarTipo {
+                            Picker("Repete", selection: $vm.recorrente) {
+                                ForEach(vm.recorrenciasDisponiveis, id: \.self) { tipo in
+                                    Text(tipo.titulo)
+                                        .tag(tipo)
+                                }
+                            }
+                        } else {
+                            HStack {
+                                Text("Repete")
+                                Spacer()
+                                Text(vm.recorrente.titulo)
                                     .foregroundColor(.secondary)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 10)
                             }
-                            TextEditor(text: $vm.anotacao)
-                                .padding(8)
-                                .background(Color.clear)
                         }
-                        .frame(minHeight: 80, maxHeight: 100)
                     }
+                    
+                    if vm.recorrente == .parcelado {
+                        TextField("Número de parcelas", text: $vm.parcelaTexto)
+                            .keyboardType(.numberPad)
+                            .focused($campoFocado, equals: .parcelas)
+                    }
+                    
+                    Toggle(isOn: $vm.pago) {Text("Pago")}
+                    
+                    Button {
+                        mostrarCalendario.toggle()
+                    } label: {
+                        HStack {
+                            Text(vm.pagamentoSelecionado?.cartaoModel == nil ? "Vencimento" : "Data da Compra")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text("\(vm.data.formatted(date: .abbreviated, time: .omitted))")
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 22)
+                                        .fill(
+                                            Color(
+                                                uiColor: .secondarySystemFill
+                                            )
+                                        )
+                                )
+                        }
+                    }
+                    
+                    if mostrarCalendario {
+                        DatePicker(
+                            "",
+                            selection: $vm.data,
+                            displayedComponents: [.date]
+                        )
+                        .datePickerStyle(.graphical)
+                    }
+                    
                 }
-                .listStyle(.insetGrouped)
-                .safeAreaInset(edge: .top) {
-                    Color.clear.frame(height: 22)
+                Section {
+                    ZStack(alignment: .topLeading) {
+                        if vm.anotacao.isEmpty {
+                            Text("Anotação")
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
+                        }
+                        TextEditor(text: $vm.anotacao)
+                            .padding(8)
+                            .background(Color.clear)
+                    }
+                    .frame(minHeight: 80, maxHeight: 100)
                 }
+            }
+            .listStyle(.insetGrouped)          
+            .safeAreaInset(edge: .top) {
                 Picker("Tipo", selection: $vm.tipo) {
                     ForEach(Tipo.allCases.reversed(), id: \.self) { tipo in
                         Text(tipo.descricao).tag(tipo)
@@ -207,7 +202,6 @@ struct NovoLancamentoView: View {
             }
             .navigationTitle("Nova")
             .navigationBarTitleDisplayMode(.inline)
-            .background(Color(uiColor: .systemGroupedBackground))
             .sheet(item: $sheetAtivo) { sheet in
                 NavigationStack {
                     switch sheet {
@@ -272,16 +266,16 @@ struct NovoLancamentoView: View {
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    campoFocado = .descricao
+                    campoFocado = .valor
                 }
             }
             .onChange(of: vm.pagamentoSelecionado) { _ in
                 vm.sugerirDataFatura()
             }
         }
-        
     }
 }
+
 
 enum NovoLancamentoSheet: Identifiable {
     case categoria
