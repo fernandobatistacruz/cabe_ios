@@ -190,7 +190,8 @@ struct NovoLancamentoView: View {
                     .frame(minHeight: 80, maxHeight: 100)
                 }
             }
-            .listStyle(.insetGrouped)          
+            .listStyle(.insetGrouped)
+            .scrollDismissesKeyboard(.immediately)
             .safeAreaInset(edge: .top) {
                 Picker("Tipo", selection: $vm.tipo) {
                     ForEach(Tipo.allCases.reversed(), id: \.self) { tipo in

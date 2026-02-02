@@ -38,6 +38,12 @@ struct EditarLancamentoView: View {
         NavigationStack {
             List {
                 Section {
+                    TextField("Valor", text: $vm.valorTexto)
+                        .keyboardType(.numberPad)
+                        .onChange(of: vm.valorTexto) { novoValor in
+                            vm.atualizarValor(novoValor)
+                        }
+                    
                     TextField("Descrição", text: $vm.descricao)
                         .textInputAutocapitalization(.words)
                     
@@ -124,14 +130,8 @@ struct EditarLancamentoView: View {
                     
                     if vm.podeAlterarNoParcela {
                         TextField("Número de parcelas", text: $vm.parcelaTexto)
-                            .keyboardType(.numberPad)
+                            .keyboardType(.numberPad)                        
                     }
-                    
-                    TextField("Valor", text: $vm.valorTexto)
-                        .keyboardType(.numberPad)
-                        .onChange(of: vm.valorTexto) { novoValor in
-                            vm.atualizarValor(novoValor)
-                        }
                     
                     Toggle("Pago", isOn: $vm.pago)
                     
@@ -166,6 +166,7 @@ struct EditarLancamentoView: View {
                         .datePickerStyle(.graphical)
                     }
                 }
+                
                 Section {
                     ZStack(alignment: .topLeading) {
                         if vm.anotacao.isEmpty {
@@ -179,6 +180,7 @@ struct EditarLancamentoView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Editar Lançamento")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $sheetAtivo) { sheet in
