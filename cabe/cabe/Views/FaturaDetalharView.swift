@@ -23,6 +23,8 @@ struct FaturaDetalharView: View {
             $0.cartaoUuid == cartao.uuid
         }
     }
+    
+    
 
     // 🔹 Estados da conferência
     @State private var modoConferencia = false
@@ -82,6 +84,18 @@ struct FaturaDetalharView: View {
             .map(\.valorComSinal)
             .reduce(0, +)
     }
+    
+    var totalFiltrado: Decimal {
+        if filtroSelecionado == .divididos {
+            filtroLancamentos
+                .map(\.valorParaSaldo)
+                .reduce(0, +)
+        } else {
+            filtroLancamentos
+                .map(\.valorComSinal)
+                .reduce(0, +)
+        }
+    }
 
     var body: some View {
         List {
@@ -105,7 +119,7 @@ struct FaturaDetalharView: View {
                 .frame(maxWidth: .infinity, alignment: .leading) // 🔑 ocupa o espaço flexível
 
                 Text(
-                    modoConferencia ? totalConferido : total,
+                    modoConferencia ? totalConferido : filtroSelecionado != .todos ? totalFiltrado : total,
                     format: .currency(
                         code: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                     )

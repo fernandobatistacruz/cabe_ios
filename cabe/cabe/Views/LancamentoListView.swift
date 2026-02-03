@@ -182,10 +182,6 @@ struct LancamentoListView: View {
             DragGesture(minimumDistance: 30)
                 .onEnded { value in
                     let horizontal = value.translation.width
-                    let vertical = value.translation.height
-                    
-                    // ignora se for mais vertical que horizontal
-                    guard abs(horizontal) > abs(vertical) else { return }
                     
                     if horizontal < -40 {
                         alterarMes(+1)

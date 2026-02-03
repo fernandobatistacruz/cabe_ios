@@ -59,7 +59,6 @@ struct ZoomCategoriaView: View {
                                 .foregroundColor(.accentColor)
                         }
                     }
-
                 }
             }
         }

@@ -69,10 +69,6 @@ struct InicioView: View {
             DragGesture(minimumDistance: 30)
                 .onEnded { value in
                     let horizontal = value.translation.width
-                    let vertical = value.translation.height
-                    
-                    // ignora se for mais vertical que horizontal
-                    guard abs(horizontal) > abs(vertical) else { return }
                     
                     if horizontal < -40 {
                         // ← swipe para esquerda → próximo mês
@@ -290,13 +286,24 @@ struct CardItem: View {
                         .font(.headline)
                         .fontWeight(.heavy)
                         .foregroundStyle(color)
+                        .contentTransition(
+                            {
+                                if #available(iOS 17.0, *) {
+                                    .numericText(value: NSDecimalNumber(decimal: value).doubleValue)
+                                } else {
+                                    .identity
+                                }
+                            }()
+                        )
                 }else{
                     Text("•••")
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundStyle(color)
                 }
-            }.padding(.vertical,2)
+            }
+            .padding(.vertical,2)
+            .animation(.default, value: value)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -538,3 +545,4 @@ struct RecentesListView: View {
         .padding(.horizontal)
     }
 }
+
