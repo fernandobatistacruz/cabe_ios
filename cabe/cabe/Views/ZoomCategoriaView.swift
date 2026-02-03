@@ -65,6 +65,7 @@ struct ZoomCategoriaView: View {
         }
         .navigationTitle("Categorias")
         .navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.immediately)
         .onAppear {
             guard categorias.isEmpty else { return }
             categorias = (try? repository.listar(tipo: tipo)) ?? []

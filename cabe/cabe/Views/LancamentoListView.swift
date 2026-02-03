@@ -79,106 +79,105 @@ struct LancamentoListView: View {
     }
     
     var body: some View {
-        ZStack {
-            List {
-                ForEach(lancamentosAgrupados, id: \.date) { section in
-                    Section {
-                        ForEach(section.items) { item in
-                            switch item {
-
-                            case .simples(let lancamento):
-                                NavigationLink {
-                                    LancamentoDetalheView(
-                                        lancamento: lancamento,
-                                        vmLancamentos: viewModel
-                                    )
-                                } label: {
-                                    LancamentoRow(
-                                        lancamento: lancamento,
-                                        mostrarPagamento: true,
-                                        mostrarValores: true
-                                    )
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                        Button(role: .destructive) {
-                                            lancamentoParaExcluir = lancamento
-                                            mostrarDialogExclusao = true
-                                        } label: {
-                                            Label("Excluir", systemImage: "trash")
-                                        }
-                                    }
-                                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                        Button() {
-                                            Task{
-                                                await viewModel.togglePago([lancamento])
-                                            }
-                                        } label: {
-                                            Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
-                                                .tint(.accentColor)
-                                            
-                                        }
+        List {
+            ForEach(lancamentosAgrupados, id: \.date) { section in
+                Section {
+                    ForEach(section.items) { item in
+                        switch item {
+                            
+                        case .simples(let lancamento):
+                            NavigationLink {
+                                LancamentoDetalheView(
+                                    lancamento: lancamento,
+                                    vmLancamentos: viewModel
+                                )
+                            } label: {
+                                LancamentoRow(
+                                    lancamento: lancamento,
+                                    mostrarPagamento: true,
+                                    mostrarValores: true
+                                )
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        lancamentoParaExcluir = lancamento
+                                        mostrarDialogExclusao = true
+                                    } label: {
+                                        Label("Excluir", systemImage: "trash")
                                     }
                                 }
-                                    
-                            case .cartaoAgrupado(let cartao, let total, let lancamentos):
-                                NavigationLink {
-                                    FaturaDetalharView(
-                                        viewModel: viewModel,
-                                        cartao: cartao,
-                                        total: total,
-                                        vencimento: section.date
-                                    )
-                                } label: {
-                                    LancamentoCartaoRow(
-                                        cartao: cartao,
-                                        lancamentos: lancamentos,
-                                        total: total
-                                    )
-                                    .swipeActions(edge: .leading,allowsFullSwipe: false) {
-                                        Button() {
-                                            Task{
-                                                await viewModel.togglePago(lancamentos)
-                                            }
-                                        } label: {
-                                            var temPendentes: Bool {
-                                                lancamentos.contains { !$0.pago }
-                                            }
-                                            Label(
-                                                temPendentes ? String(
-                                                    localized: "Pago"
-                                                ): String(localized: "Não Pago"),
-                                                systemImage: temPendentes ?
-                                                "checklist.checked" : "checklist.unchecked"
-                                            )
-                                        }.tint(.accentColor)
+                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                    Button() {
+                                        Task{
+                                            await viewModel.togglePago([lancamento])
+                                        }
+                                    } label: {
+                                        Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
+                                            .tint(.accentColor)
+                                        
                                     }
                                 }
                             }
-                        }
-                        .listRowInsets(
-                            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-                        )
-
-                    } header: {
-                        HStack {
-                            Text(section.date, format: .dateTime.day().month(.wide))
-
-                            Spacer()
-
-                            Text(
-                                section.saldoAcumulado,
-                                format: .currency(
-                                    code: viewModel.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                            
+                        case .cartaoAgrupado(let cartao, let total, let lancamentos):
+                            NavigationLink {
+                                FaturaDetalharView(
+                                    viewModel: viewModel,
+                                    cartao: cartao,
+                                    total: total,
+                                    vencimento: section.date
                                 )
-                            )
-                            .font(.subheadline)
+                            } label: {
+                                LancamentoCartaoRow(
+                                    cartao: cartao,
+                                    lancamentos: lancamentos,
+                                    total: total
+                                )
+                                .swipeActions(edge: .leading,allowsFullSwipe: false) {
+                                    Button() {
+                                        Task{
+                                            await viewModel.togglePago(lancamentos)
+                                        }
+                                    } label: {
+                                        var temPendentes: Bool {
+                                            lancamentos.contains { !$0.pago }
+                                        }
+                                        Label(
+                                            temPendentes ? String(
+                                                localized: "Pago"
+                                            ): String(localized: "Não Pago"),
+                                            systemImage: temPendentes ?
+                                            "checklist.checked" : "checklist.unchecked"
+                                        )
+                                    }.tint(.accentColor)
+                                }
+                            }
                         }
+                    }
+                    .listRowInsets(
+                        EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                    )
+                    
+                } header: {
+                    HStack {
+                        Text(section.date, format: .dateTime.day().month(.wide))
+                        
+                        Spacer()
+                        
+                        Text(
+                            section.saldoAcumulado,
+                            format: .currency(
+                                code: viewModel.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                            )
+                        )
+                        .font(.subheadline)
                     }
                 }
             }
-            .listStyle(.insetGrouped)            
         }
+        .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
         .contentShape(Rectangle()) // importante para capturar gesto em áreas vazias
-       // .animation(.easeInOut(duration: 0.25), value: selectedDate)
+        // .animation(.easeInOut(duration: 0.25), value: selectedDate)
         .gesture(
             DragGesture(minimumDistance: 30)
                 .onEnded { value in
@@ -285,9 +284,9 @@ struct LancamentoListView: View {
                         }
                     }
                     .disabled(isExporting)
-                   
+                    
                     Divider()
-                   
+                    
                     Button {
                         mostrarTransferencia = true
                     } label: {
@@ -372,12 +371,12 @@ struct LancamentoListView: View {
                 ZStack {
                     Color.black.opacity(0.15)
                         .ignoresSafeArea()
-
+                    
                     ProgressView()
                         .progressViewStyle(.circular)
                         .scaleEffect(1.2)
                 }
-            }          
+            }
             if lancamentosFiltrados.isEmpty {
                 Group {
                     Text("Nenhum Lançamento")
@@ -387,7 +386,7 @@ struct LancamentoListView: View {
                 }
             }
         }
-    }   
+    }
     
     private func alterarMes(_ delta: Int) {
         direcao = delta > 0 ? .trailing : .leading

@@ -106,6 +106,7 @@ struct CartaoListView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
+                .scrollDismissesKeyboard(.immediately)
                 .scrollContentBackground(.hidden)
                 .overlay(
                     Group {

@@ -621,7 +621,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
                 WHERE lower(l.notas) LIKE ?
                 AND l.id IN (
-                    SELECT MAX(id)
+                    SELECT MIN(id)
                     FROM lancamento
                     WHERE lower(notas) LIKE ?
                     GROUP BY uuid

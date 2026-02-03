@@ -44,6 +44,7 @@ struct BuscarView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .scrollDismissesKeyboard(.immediately)
             .scrollContentBackground(.hidden)
             .overlay {
                 if vm.carregando {

@@ -58,6 +58,7 @@ struct ContaListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Contas")
         .overlay(
             Group {

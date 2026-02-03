@@ -82,6 +82,7 @@ struct CategoriaListView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .scrollDismissesKeyboard(.immediately)
             .scrollContentBackground(.hidden) // garante fundo igual ao da view
             .background(Color(.systemGroupedBackground))
             .overlay(
