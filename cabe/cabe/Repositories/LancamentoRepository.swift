@@ -230,6 +230,57 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         return mapRows(rows)
     }
     
+    func existeLancamentoParaConta(contaUuid: String) async throws -> Bool {
+        try await db.dbQueue.read { db in
+            try Bool.fetchOne(
+                db,
+                sql: """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM lancamento
+                        WHERE conta_uuid = ?
+                        LIMIT 1
+                    )
+                """,
+                arguments: [contaUuid]
+            ) ?? false
+        }
+    }
+    
+    func existeLancamentoParaCartao(cartaoUuid: String) async throws -> Bool {
+        try await db.dbQueue.read { db in
+            try Bool.fetchOne(
+                db,
+                sql: """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM lancamento
+                        WHERE cartao_uuid = ?
+                        LIMIT 1
+                    )
+                """,
+                arguments: [cartaoUuid]
+            ) ?? false
+        }
+    }
+    
+    func existeLancamentoParaCategoria(id: Int64, tipo: Int) async throws -> Bool {
+        try await db.dbQueue.read { db in
+            try Bool.fetchOne(
+                db,
+                sql: """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM lancamento
+                        WHERE categoria = ? AND tipo = ?
+                        LIMIT 1
+                    )
+                """,
+                arguments: [id, tipo]
+            ) ?? false
+        }
+    }
+    
     func salvar(_ lancamento: LancamentoModel) async throws {
         try await db.dbQueue.write { db in
 
@@ -744,7 +795,7 @@ private extension LancamentoRepository {
     ) throws {
 
         let estavaPago = antigo.pago
-        let valorAntigo = antigo.valorComSinal
+        let valorAntigo = antigo.valorParaSaldo
         let contaAntiga = try contaImpactada(lancamento: antigo)
 
         // 🗑 Remoção
@@ -762,7 +813,7 @@ private extension LancamentoRepository {
         guard let novo else { return }
 
         let estaPagoAgora = novo.pago
-        let valorNovo = novo.valorComSinal
+        let valorNovo = novo.valorParaSaldo
         let contaNova = try contaImpactada(lancamento: novo)
 
         // 🔄 Caso 1: estava pago → agora não pago

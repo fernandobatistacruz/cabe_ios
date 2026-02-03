@@ -15,6 +15,7 @@ struct CartaoListView: View {
     @FocusState private var searchFocused: Bool
     @State private var mostrarNovoCartao = false
     @State private var mostrarConfirmacao = false
+    @State private var mostrarAlerta = false
     @State private var cartaoParaExcluir: CartaoModel?
     @State private var filtroSelecionado: FiltroCartao = .ativos
     @StateObject private var viewModel: CartaoListViewModel
@@ -63,7 +64,18 @@ struct CartaoListView: View {
                                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
                                             cartaoParaExcluir = cartao
-                                            mostrarConfirmacao = true
+                                           
+                                            Task{
+                                                let existe = try await LancamentoRepository().existeLancamentoParaCartao(
+                                                    cartaoUuid: cartao.uuid)
+                                                
+                                                if existe {
+                                                    mostrarAlerta = true
+                                                } else {
+                                                    mostrarConfirmacao = true
+                                                }
+                                            }
+                                            
                                         } label: {
                                             Label("Excluir", systemImage: "trash")
                                         }
@@ -109,6 +121,11 @@ struct CartaoListView: View {
         }
         .navigationTitle("Cartões")
         .toolbar(.hidden, for: .tabBar)
+        .alert("", isPresented: $mostrarAlerta) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Este cartão está um uso e não poderá ser excluída.")
+        }
         .alert("Excluir Cartão?", isPresented: $mostrarConfirmacao) {
             Button("Excluir", role: .destructive) {
                 Task{
@@ -541,6 +558,13 @@ struct EditarCartaoView: View {
             cartao.uuid = self.cartao.uuid
             
             try await CartaoRepository().editar(cartao)
+            let pagamentoPadrao: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
+            
+            if pagamentoPadrao?.contaModel?.uuid == cartao.uuid {
+                let meio = MeioPagamento.cartao(cartao)
+                UserDefaults.standard.salvarPagamentoPadrao(meio)
+            }
+            
             dismiss()
         } catch let erro as CartaoValidacaoErro {
             erroValidacao = erro

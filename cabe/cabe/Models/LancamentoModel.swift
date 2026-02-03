@@ -256,6 +256,8 @@ private let isoFormatter: ISO8601DateFormatter = {
 
 extension LancamentoModel {
     var valorParaSaldo: Decimal {
-        dividido ? (valorComSinal / 2) : valorComSinal
+        let v = dividido ? (valorComSinal / 2) : valorComSinal
+        return v.arredondadoMoeda()
     }
 }
+

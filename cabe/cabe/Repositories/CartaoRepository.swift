@@ -68,6 +68,23 @@ final class CartaoRepository : CartaoRepositoryProtocol{
         }
     }
     
+    func existeCartaoParaConta(contaUuid: String) async throws -> Bool {
+        try await db.dbQueue.read { db in
+            try Bool.fetchOne(
+                db,
+                sql: """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM cartao
+                        WHERE conta_uuid = ?
+                        LIMIT 1
+                    )
+                """,
+                arguments: [contaUuid]
+            ) ?? false
+        }
+    }
+    
     private func listar(db: Database) throws -> [CartaoModel] {
         let rows = try Row.fetchAll(db, sql: """
                 SELECT
@@ -87,6 +104,7 @@ final class CartaoRepository : CartaoRepositoryProtocol{
                     a.currency_code
                 FROM cartao c
                 JOIN conta a ON c.conta_uuid = a.uuid
+                ORDER BY c.nome ASC
             """)
         
         return rows.map { row in

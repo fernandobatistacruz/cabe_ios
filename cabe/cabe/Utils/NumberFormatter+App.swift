@@ -25,3 +25,11 @@ final class CurrencyFormatter {
     }
 }
 
+extension Decimal {
+    func arredondadoMoeda() -> Decimal {
+        var value = self
+        var result = Decimal()
+        NSDecimalRound(&result, &value, 2, .bankers)
+        return result
+    }
+}

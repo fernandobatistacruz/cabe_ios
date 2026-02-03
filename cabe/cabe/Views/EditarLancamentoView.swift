@@ -143,7 +143,9 @@ struct EditarLancamentoView: View {
                                 .foregroundColor(.primary)
                             Spacer()
                             Text("\(vm.data.formatted(date: .abbreviated, time: .omitted))")
-                                .foregroundColor(.primary)
+                                .foregroundColor(
+                                    mostrarCalendario ? .accentColor : .primary
+                                )
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(
@@ -164,6 +166,9 @@ struct EditarLancamentoView: View {
                             displayedComponents: [.date]
                         )
                         .datePickerStyle(.graphical)
+                        .frame(height: 340) // fixa altura
+                        .clipped()
+                        .listRowInsets(.init(top: 0, leading: 10, bottom: 0, trailing: 10))
                     }
                 }
                 

@@ -8,6 +8,7 @@ struct ContaListView: View {
     @FocusState private var searchFocused: Bool
     @State private var mostrarNovaConta = false
     @State private var mostrarConfirmacao = false
+    @State private var mostrarAlerta = false
     @State private var contaParaExcluir: ContaModel?
     @EnvironmentObject var sub: SubscriptionManager
     @StateObject private var viewModel: ContaListViewModel
@@ -36,7 +37,20 @@ struct ContaListView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             contaParaExcluir = conta
-                            mostrarConfirmacao = true
+                            
+                            Task {
+                                let existeLancamento = try await LancamentoRepository()
+                                    .existeLancamentoParaConta(contaUuid: conta.uuid)
+                                
+                                let existeCartao = try await CartaoRepository()
+                                    .existeCartaoParaConta(contaUuid: conta.uuid)
+                                
+                                if existeLancamento || existeCartao {
+                                    mostrarAlerta = true
+                                } else {
+                                    mostrarConfirmacao = true
+                                }
+                            }
                         } label: {
                             Label("Excluir", systemImage: "trash")
                         }
@@ -56,6 +70,11 @@ struct ContaListView: View {
             }
         )
         .toolbar(.hidden, for: .tabBar)
+        .alert("", isPresented: $mostrarAlerta) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Esta conta está um uso e não poderá ser excluída.")
+        }
         .alert(
             "Excluir Conta?",
             isPresented: $mostrarConfirmacao,
@@ -360,6 +379,13 @@ struct EditarContaView: View {
         
         do {
             try await ContaRepository().editar(conta)
+            
+            let pagamentoPadrao: MeioPagamento? = UserDefaults.standard.carregarPagamentoPadrao()
+            
+            if pagamentoPadrao?.contaModel?.uuid == conta.uuid {
+                let meio = MeioPagamento.conta(conta)               
+                UserDefaults.standard.salvarPagamentoPadrao(meio)
+            }
         }
         catch{
             debugPrint("Erro ao editar conta", error)

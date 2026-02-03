@@ -146,7 +146,7 @@ struct LancamentoDetalheView: View {
                             Text("Dividido")
                             Spacer()
                             Text(
-                                lancamento.valorComSinal / 2,
+                                lancamento.valorParaSaldo,
                                 format: .currency(code: lancamento.currencyCode)
                             )
                             .foregroundColor(.secondary)
@@ -211,14 +211,14 @@ struct LancamentoDetalheView: View {
                                 await vmLancamentos.togglePago([lancamento])
                             }
                         } label: {
-                            Text(lancamento.pago ? "Desfazer Pagamento" : "Pago")
-                        }
+                            Text(lancamento.pago ? "Não Pago" : "Pago")
+                        }                        
                     }
                     Button {
                         mostrarDialogExclusao = true
                     } label: {
                         Text("Excluir")
-                    }                   
+                    }
                 }
             }
             .sheet(isPresented: $mostrarEdicao) {

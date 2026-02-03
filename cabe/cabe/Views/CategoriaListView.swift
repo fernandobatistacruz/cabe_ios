@@ -13,6 +13,7 @@ struct CategoriaListView: View {
     @FocusState private var searchFocused: Bool
     @State private var mostrarNovaCategoria = false
     @State private var mostrarConfirmacao = false
+    @State private var mostrarAlerta = false
     @State private var categoriaParaExcluir: CategoriaModel?
     @State private var tipoFiltro: Tipo = .despesa
     @State private var mostrarEditarCategoria = false
@@ -57,7 +58,19 @@ struct CategoriaListView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             categoriaParaExcluir = categoria
-                            mostrarConfirmacao = true
+                           
+                            Task {
+                                let existe = try await LancamentoRepository()
+                                    .existeLancamentoParaCategoria(
+                                        id: categoria.id ?? 0,
+                                        tipo: categoria.tipo
+                                    )
+                                if existe {
+                                    mostrarAlerta = true
+                                } else {
+                                    mostrarConfirmacao = true
+                                }
+                            }
                         } label: {
                             Label("Excluir", systemImage: "trash")
                         }
@@ -84,7 +97,12 @@ struct CategoriaListView: View {
         }
         .navigationTitle("Categorias")
         .background(Color(.systemGroupedBackground))
-        .toolbar(.hidden, for: .tabBar)        
+        .toolbar(.hidden, for: .tabBar)
+        .alert("", isPresented: $mostrarAlerta) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Esta categoria está um uso e não poderá ser excluída.")
+        }
         .alert(
             "Excluir Categoria?",
             isPresented: $mostrarConfirmacao

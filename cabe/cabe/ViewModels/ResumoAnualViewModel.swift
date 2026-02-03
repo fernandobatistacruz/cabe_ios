@@ -64,9 +64,9 @@ private extension ResumoAnualViewModel {
         var totalDespesas: Decimal {
             despesas.reduce(0) { total, lancamento in
                 let valorConsiderado = lancamento.dividido
-                ? lancamento.valor / 2
-                : lancamento.valor
-
+                    ? lancamento.valor / 2
+                    : lancamento.valor
+                
                 return (total + valorConsiderado)
             }
         }
@@ -74,9 +74,8 @@ private extension ResumoAnualViewModel {
         var saldo: Decimal {
             lancamentos.reduce(0) { total, lancamento in
                 let valorConsiderado = lancamento.dividido
-                ? lancamento.valorComSinal / 2
-                : lancamento.valorComSinal
-
+                    ? lancamento.valor / 2
+                    : lancamento.valor
                 return total + valorConsiderado
             }
         }
@@ -111,9 +110,9 @@ private extension ResumoAnualViewModel {
             var despesa: Decimal {
                 despesas.reduce(0) { total, lancamento in
                     let valorConsiderado = lancamento.dividido
-                    ? lancamento.valor / 2
-                    : lancamento.valor
-
+                        ? lancamento.valor / 2
+                        : lancamento.valor
+                    
                     return (total + valorConsiderado)
                 }
             }
