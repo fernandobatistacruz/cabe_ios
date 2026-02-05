@@ -10,6 +10,8 @@ struct ResumoAnualView: View {
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
+    @State private var showingYearPicker = false
+    @State private var tempDate = Date()
     
     init(
         ano: Int = Calendar.current.component(.year, from: .now),
@@ -47,12 +49,10 @@ struct ResumoAnualView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Menu {
-                    ForEach((2020...Calendar.current.component(.year, from: .now)).reversed(), id: \.self) { ano in
-                        Button(String(ano)) {
-                            vm.anoSelecionado = ano
-                        }
-                    }
+                Button {
+                    let comps = DateComponents(year: vm.anoSelecionado)
+                    tempDate = Calendar.current.date(from: comps) ?? .now
+                    showingYearPicker = true
                 } label: {
                     Text("\(String(vm.anoSelecionado))")
                         .font(.subheadline)
@@ -71,6 +71,42 @@ struct ResumoAnualView: View {
                     Image(systemName: "square.and.arrow.up")
                 }
                 .disabled(isExporting)
+            }
+        }
+        .sheet(isPresented: $showingYearPicker) {
+            NavigationStack {
+
+                let years = Array(2020...(anoAtual + 10)).reversed()
+
+                VStack {
+
+                    Picker("Ano", selection: $vm.anoSelecionado) {
+                        ForEach(years, id: \.self) { ano in
+                            Text(String(ano)).tag(ano)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    .labelsHidden()
+
+                    Spacer()
+                }
+                .toolbar {
+
+                    // 👇 botão novo
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Hoje") {
+                            vm.anoSelecionado = anoAtual
+                            showingYearPicker = false
+                        }
+                    }
+
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("OK") {
+                            showingYearPicker = false
+                        }
+                    }
+                }
+                .presentationDetents([.medium])
             }
         }
         .task {
@@ -101,6 +137,10 @@ struct ResumoAnualView: View {
                 }
             }
         }
+    }
+    
+    private var anoAtual: Int {
+        Calendar.current.component(.year, from: .now)
     }
     
     private func exportarCSV() async {
