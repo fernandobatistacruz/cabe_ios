@@ -80,8 +80,8 @@ struct LancamentoDetalheView: View {
                             lancamento.valorComSinal,
                             format: .currency(code: lancamento.currencyCode)
                         )
-                        .font(.title2.bold())
-                        .foregroundStyle(.secondary)
+                        .font(.title3.bold())
+                        .foregroundStyle(.primary)
                         .fixedSize(horizontal: true, vertical: false)
                     }
                 }

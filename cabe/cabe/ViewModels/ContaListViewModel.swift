@@ -34,7 +34,7 @@ final class ContaListViewModel: ObservableObject {
         // Converte cada saldo Double em Decimal e soma
         $contas
             .map { contas in
-                contas.reduce(Decimal(0)) { $0 + Decimal($1.saldo) }
+                contas.reduce(Decimal(0)) { $0 + $1.saldo }
             }
             .assign(to: \.saldoTotal, on: self)
             .store(in: &cancellables)

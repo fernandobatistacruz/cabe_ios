@@ -72,15 +72,13 @@ final class TransferenciaViewModel: ObservableObject {
 
         valor = valorDecimal
 
-        valorTexto = CurrencyFormatter
-            .formatter(for: .current)
+        valorTexto = CurrencyFormatter.formatter(currencyCode: Locale.systemCurrencyCode)
             .string(from: valorDecimal as NSDecimalNumber) ?? ""
     }
 
     private func configurarValorInicial() {
         valor = 0
-        valorTexto = CurrencyFormatter
-            .formatter(for: .current)
+        valorTexto = CurrencyFormatter.formatter(currencyCode: Locale.systemCurrencyCode)
             .string(from: 0) ?? ""
     }
 }
@@ -142,8 +140,8 @@ final class TransferenciaUseCase {
             }
 
             // 🔹 Atualizar saldos
-            origem.saldo -= (valor as NSDecimalNumber).doubleValue
-            destino.saldo += (valor as NSDecimalNumber).doubleValue
+            origem.saldo -= valor
+            destino.saldo += valor
 
             try origem.update(db)
             try destino.update(db)

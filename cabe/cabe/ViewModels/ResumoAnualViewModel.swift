@@ -73,9 +73,7 @@ private extension ResumoAnualViewModel {
         
         var saldo: Decimal {
             lancamentos.reduce(0) { total, lancamento in
-                let valorConsiderado = lancamento.dividido
-                    ? lancamento.valor / 2
-                    : lancamento.valor
+                let valorConsiderado = lancamento.valorParaSaldo
                 return total + valorConsiderado
             }
         }

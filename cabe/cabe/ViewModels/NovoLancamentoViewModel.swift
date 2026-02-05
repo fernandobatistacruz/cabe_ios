@@ -39,8 +39,7 @@ final class NovoLancamentoViewModel: ObservableObject {
     init(repository: LancamentoRepository) {
         self.repository = repository
         self.contexto = .criacao
-        self.lancamentoEdicao = nil
-        configurarValorInicial(0)
+        self.lancamentoEdicao = nil        
         sugerirDataFatura()
         
         // sugestão inicial de recorrência
@@ -94,8 +93,8 @@ final class NovoLancamentoViewModel: ObservableObject {
             .string(from: lancamento.valor as NSDecimalNumber) ?? ""
         
         carregarPagamento(from: lancamento)
-        configurarValorInicial(lancamento.valor)
-    }   
+        configurarValorInicial(lancamento)
+    }
     
     
     var recorrenciaPolicy: RecorrenciaPolicy {
@@ -147,16 +146,16 @@ final class NovoLancamentoViewModel: ObservableObject {
         valor = valorDecimal
 
         valorTexto = CurrencyFormatter
-            .formatter(for: .current)
+            .formatter(currencyCode: Locale.systemCurrencyCode)
             .string(from: valorDecimal as NSDecimalNumber) ?? ""
     }
     
-    private func configurarValorInicial(_ valorInicial: Decimal = 0) {
-        valor = valorInicial
+    private func configurarValorInicial(_ lancamento: LancamentoModel) {
+        valor = lancamento.valor
 
         valorTexto = CurrencyFormatter
-            .formatter(for: .current)
-            .string(from: valorInicial as NSDecimalNumber) ?? ""
+            .formatter(currencyCode: lancamento.currencyCode)
+            .string(from: valor as NSDecimalNumber) ?? ""
     }
     
     func carregarPagamento(from lancamento: LancamentoModel) {
@@ -176,7 +175,7 @@ final class NovoLancamentoViewModel: ObservableObject {
 
     var parcelaInt: Int {
         guard let value = Int(parcelaTexto),
-              (1...31).contains(value) else {
+              (1...600).contains(value) else {
             return 1
         }
         return value

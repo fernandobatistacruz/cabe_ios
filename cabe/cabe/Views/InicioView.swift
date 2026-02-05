@@ -18,6 +18,7 @@ struct InicioView: View {
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     @State private var selectedDate: Date = Date()
     @State private var direcao: Edge = .trailing
+   
     
     var body: some View {
         ZStack {
@@ -190,6 +191,7 @@ struct FavoritosView: View{
     let mostrarValores: Bool
     let moeda: String
     let vmLancamentos: LancamentoListViewModel
+    @EnvironmentObject var deepLinkManager: DeepLinkManager
     
     var body: some View {
         VStack(alignment: .leading){
@@ -242,8 +244,9 @@ struct FavoritosView: View{
                     icone: "barcode",
                     mostrarValores: mostrarValores,
                     moeda: moeda
-                    
-                )
+                ).onTapGesture {
+                    deepLinkManager.selectedTab = .lancamentos
+                }
             }.padding(.horizontal)
         }
     }
@@ -286,15 +289,6 @@ struct CardItem: View {
                         .font(.headline)
                         .fontWeight(.heavy)
                         .foregroundStyle(color)
-                        .contentTransition(
-                            {
-                                if #available(iOS 17.0, *) {
-                                    .numericText(value: NSDecimalNumber(decimal: value).doubleValue)
-                                } else {
-                                    .identity
-                                }
-                            }()
-                        )
                 }else{
                     Text("•••")
                         .font(.headline)
@@ -303,7 +297,6 @@ struct CardItem: View {
                 }
             }
             .padding(.vertical,2)
-            .animation(.default, value: value)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)

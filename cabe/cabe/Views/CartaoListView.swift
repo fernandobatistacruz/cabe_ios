@@ -125,7 +125,7 @@ struct CartaoListView: View {
         .alert("", isPresented: $mostrarAlerta) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Este cartão está um uso e não poderá ser excluída.")
+            Text("Este cartão está um uso e não poderá ser excluído.")
         }
         .alert("Excluir Cartão?", isPresented: $mostrarConfirmacao) {
             Button("Excluir", role: .destructive) {

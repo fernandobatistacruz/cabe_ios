@@ -7,7 +7,7 @@ struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var id: Int64?
     var uuid: String
     var nome: String
-    var saldo: Double
+    var saldo: Decimal
     var currencyCode: String
     
     enum CodingKeys: String, CodingKey {

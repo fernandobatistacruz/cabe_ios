@@ -69,6 +69,16 @@ struct ZoomCategoriaView: View {
             guard categorias.isEmpty else { return }
             categorias = (try? repository.listar(tipo: tipo)) ?? []
         }
+        .overlay(
+            Group {
+                if categoriasFiltradas.isEmpty {
+                    Text("Nenhuma Categoria")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)
+                }
+            }
+        )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {

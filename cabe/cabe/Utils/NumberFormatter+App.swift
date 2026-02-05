@@ -15,10 +15,11 @@ extension NumberFormatter {
 
 final class CurrencyFormatter {
 
-    static func formatter(for locale: Locale) -> NumberFormatter {
+    static func formatter(currencyCode: String) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = locale
+        formatter.locale = .current
+        formatter.currencyCode = currencyCode
         formatter.maximumFractionDigits = 2
         formatter.minimumFractionDigits = 2
         return formatter

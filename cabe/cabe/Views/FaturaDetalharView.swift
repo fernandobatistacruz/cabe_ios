@@ -124,9 +124,9 @@ struct FaturaDetalharView: View {
                         code: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                     )
                 )
-                .font(.title2.bold())
+                .font(.title3.bold())
                 .foregroundStyle(
-                    modoConferencia ? Color.accentColor : .secondary
+                    modoConferencia ? Color.accentColor : .primary
                 )
                 .fixedSize(horizontal: true, vertical: false) // 🔒 nunca trunca
             }

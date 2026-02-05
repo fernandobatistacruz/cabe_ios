@@ -236,7 +236,7 @@ struct NovaContaView: View {
 
     @State private var nome: String = ""
     @State private var saldoText: String = ""
-    @State private var saldoDecimal: Decimal? = nil
+    @State private var saldoDecimal: Decimal = 0
     @FocusState private var campoFocado: CampoFoco?
 
 
@@ -251,11 +251,10 @@ struct NovaContaView: View {
                     }
             
             TextField("Saldo", text: $saldoText)
-                .keyboardType(.decimalPad)
+                .keyboardType(.numberPad)
                 .focused($campoFocado, equals: .saldo)
-                .onChange(of: saldoText) { value in
-                    saldoDecimal = NumberFormatter.decimalInput
-                        .number(from: value) as? Decimal
+                .onChange(of: saldoText) { novoValor in
+                    atualizarValor(novoValor)
                 }
             
         }
@@ -281,7 +280,7 @@ struct NovaContaView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
-                .disabled(nome.isEmpty || saldoDecimal == nil)
+                .disabled(nome.isEmpty || saldoText.isEmpty)
             }
         }
         .onAppear {
@@ -291,13 +290,25 @@ struct NovaContaView: View {
         }
     }
     
+    func atualizarValor(_ novoTexto: String) {
+        // remove tudo que não for número
+        let numeros = novoTexto.filter { $0.isNumber }
+
+        let centavos = Decimal(Int(numeros) ?? 0)
+        let valorDecimal = centavos / 100
+
+        saldoDecimal = valorDecimal
+
+        let formatter = CurrencyFormatter.formatter(currencyCode: Locale.systemCurrencyCode)
+        saldoText = formatter.string(from: saldoDecimal as NSDecimalNumber) ?? ""
+    }
 
     private func salvar() async {
         
         let conta = ContaModel.init(
             uuid: UUID().uuidString,
             nome: nome,
-            saldo: NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue,
+            saldo: saldoDecimal,
             currencyCode : Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
         )
         
@@ -323,7 +334,7 @@ struct EditarContaView: View {
 
     @State private var nome: String = ""
     @State private var saldoText: String = ""
-    @State private var saldoDecimal: Decimal? = nil
+    @State private var saldoDecimal: Decimal = 0
     
     var body: some View {
         NavigationStack {
@@ -332,10 +343,9 @@ struct EditarContaView: View {
                     .textInputAutocapitalization(.words)
                 
                 TextField("Saldo", text: $saldoText)
-                    .keyboardType(.decimalPad)
-                    .onChange(of: saldoText) { value in
-                        saldoDecimal = NumberFormatter.decimalInput
-                            .number(from: value) as? Decimal
+                    .keyboardType(.numberPad)
+                    .onChange(of: saldoText) { novoValor in
+                        atualizarValor(novoValor)
                     }
             }
             .navigationTitle("Editar Conta")
@@ -359,24 +369,36 @@ struct EditarContaView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
-                    .disabled(nome.isEmpty || saldoDecimal == nil)
+                    .disabled(nome.isEmpty || saldoText.isEmpty)
                 }
             }
             .onAppear {
+                saldoDecimal = conta.saldo
                 nome = conta.nome
-                let formatter = NumberFormatter.decimalInput
-                saldoText = formatter.string(
-                    from: NSDecimalNumber(value: conta.saldo)
-                ) ?? ""
-                saldoDecimal = NSDecimalNumber(value: conta.saldo).decimalValue
+                let formatter = CurrencyFormatter.formatter(currencyCode: conta.currencyCode)
+                saldoText = formatter.string(from: conta.saldo as NSDecimalNumber) ?? ""
+
             }
         }
+    }
+    
+    func atualizarValor(_ novoTexto: String) {
+        // remove tudo que não for número
+        let numeros = novoTexto.filter { $0.isNumber }
+
+        let centavos = Decimal(Int(numeros) ?? 0)
+        let valorDecimal = centavos / 100
+
+        saldoDecimal = valorDecimal
+
+        let formatter = CurrencyFormatter.formatter(currencyCode: conta.currencyCode)
+        saldoText = formatter.string(from: saldoDecimal as NSDecimalNumber) ?? ""
     }
 
     private func salvar() async {
         
         conta.nome = nome
-        conta.saldo = NSDecimalNumber(decimal: saldoDecimal ?? 0).doubleValue
+        conta.saldo = saldoDecimal
         
         do {
             try await ContaRepository().editar(conta)

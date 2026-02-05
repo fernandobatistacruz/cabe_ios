@@ -49,6 +49,10 @@ struct CategoriaFormView: View {
     
     @EnvironmentObject var sub: SubscriptionManager
     @State private var mostrarPaywall = false
+    
+    @State private var mostrarAlerta = false
+    @State private var mostrarConfirmacao = false
+    @State private var categoriaParaExcluir: CategoriaModel?
 
     // MARK: - Init
     init(categoria: CategoriaModel? = nil, isEditar: Bool = false) {
@@ -131,7 +135,17 @@ struct CategoriaFormView: View {
                                             .swipeActions {
                                                 Button(role: .destructive) {
                                                     Task{
-                                                        await removerSubcategoria(sub)
+                                                        let existe = try await LancamentoRepository()
+                                                            .existeLancamentoParaCategoria(
+                                                                id: sub.id ?? 0,
+                                                                tipo: sub.tipo
+                                                            )
+                                                        if existe {
+                                                            mostrarAlerta = true
+                                                        } else {
+                                                            categoriaParaExcluir = sub
+                                                            mostrarConfirmacao = true
+                                                        }
                                                     }
                                                 } label: {
                                                     Label("Excluir", systemImage: "trash")
@@ -218,6 +232,7 @@ struct CategoriaFormView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
+                .scrollDismissesKeyboard(.immediately)
                 .navigationTitle(isEditar ? "Editar Categoria" : "Nova Categoria")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -239,6 +254,25 @@ struct CategoriaFormView: View {
                         .buttonStyle(.borderedProminent)
                         .disabled(nome.isEmpty)
                     }
+                }
+                .alert("", isPresented: $mostrarAlerta) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text("Esta subcategoria está um uso e não poderá ser excluída.")
+                }
+                .alert(
+                    "Excluir Categoria?",
+                    isPresented: $mostrarConfirmacao
+                ) {
+                    Button("Excluir", role: .destructive) {
+                        Task {
+                            guard let categoria = categoriaParaExcluir else { return }
+                            await removerSubcategoria(categoria)
+                        }
+                    }
+                    Button("Cancelar", role: .cancel) { }
+                } message: {
+                    Text("Essa ação não poderá ser desfeita.")
                 }
                 .onAppear {
                     todasCategorias = try! CategoriaRepository().listar()
