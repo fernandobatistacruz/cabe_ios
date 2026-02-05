@@ -249,17 +249,24 @@ struct NovoLancamentoView: View {
                             }
                         }
                     } label: {
-                        if isSaving {
-                            ProgressView()
-                                .tint(.white)
-                        } else {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.white)
-                        }
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.white)                        
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
                     .disabled(!vm.formValido || isSaving)
+                }
+            }
+            .overlay {
+                if isSaving {
+                    ZStack {
+                        Color.black.opacity(0.15)
+                            .ignoresSafeArea()
+
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .scaleEffect(1.2)
+                    }
                 }
             }
             .alert(item: $erroValidacao) { erro in

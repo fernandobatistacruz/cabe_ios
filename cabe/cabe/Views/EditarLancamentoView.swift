@@ -228,20 +228,29 @@ struct EditarLancamentoView: View {
                                 mostrarConfirmacaoEscopo = true
                                 return
                             }
-                            
+                            isSaving = true
                             await salvarEdicao(escopo: .somenteEste)
+                            isSaving = false
                         }
                     } label: {
-                        if isSaving {
-                            ProgressView().tint(.white)
-                        } else {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.white)
-                        }
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.white)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.accentColor)
                     .disabled(!vm.formValido)
+                }
+            }
+            .overlay {
+                if isSaving {
+                    ZStack {
+                        Color.black.opacity(0.15)
+                            .ignoresSafeArea()
+
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .scaleEffect(1.2)
+                    }
                 }
             }
             .alert(item: $erroValidacao) { erro in

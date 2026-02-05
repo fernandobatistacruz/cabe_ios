@@ -173,6 +173,7 @@ struct FaturaDetalharView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Fatura")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
@@ -306,7 +307,11 @@ struct FaturaDetalharView: View {
             }
         )
         .sheet(item: $shareItem) { item in
-            ShareSheetView(activityItems: [item.url])
+            ShareSheetView(
+                message: "Fatura do cartão \(String(cartao.nome)) extraído do Cabe",
+                subject: "Fatura do cartão \(String(cartao.nome)) extraído do Cabe",
+                fileURL: item.url
+            )
         }
         
         .sheet(isPresented: $mostrarNovaDespesa) {

@@ -360,7 +360,11 @@ struct LancamentoListView: View {
             }
         }
         .sheet(item: $shareItem) { item in
-            ShareSheetView(activityItems: [item.url])
+            ShareSheetView(
+                message: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe",
+                subject: "Lançamentos de \(String(viewModel.anoAtual))/\(String(viewModel.anoAtual)) extraído do Cabe",
+                fileURL: item.url
+            )
         }
         .overlay {
             if isExporting {

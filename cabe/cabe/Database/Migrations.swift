@@ -176,6 +176,16 @@ extension AppDatabase {
             )
         }
         
+        migrator.registerMigration("fixNullCartaoUuid") { db in
+            try db.execute(
+                sql: """
+                    UPDATE lancamento
+                    SET cartao_uuid = ''
+                    WHERE cartao_uuid IS NULL
+                """
+            )
+        }
+        
         return migrator
     }
 }

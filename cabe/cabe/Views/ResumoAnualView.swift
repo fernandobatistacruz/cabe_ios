@@ -123,7 +123,11 @@ struct ResumoAnualView: View {
             }
         }
         .sheet(item: $shareItem) { item in
-            ShareSheetView(activityItems: [item.url])
+            ShareSheetView(
+                message: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe",
+                subject: "Relatório anual extraído do Cabe - \(String(vm.anoSelecionado))",
+                fileURL: item.url
+            )
         }
         .overlay {
             if isExporting {
