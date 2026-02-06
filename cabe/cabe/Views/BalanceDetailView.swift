@@ -83,7 +83,7 @@ extension BalanceDetailView {
                         Spacer()
                         
                         Text(item.valorFormatado)
-                            .fontWeight(.semibold)
+                            .fontWeight(.medium)
                             .foregroundStyle(.secondary)
                     }
                 }
