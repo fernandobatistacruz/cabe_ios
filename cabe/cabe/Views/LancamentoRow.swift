@@ -15,8 +15,8 @@ struct LancamentoRow: View {
     
     init(
         lancamento: LancamentoModel,
-        mostrarPagamento: Bool,
-        mostrarValores: Bool,
+        mostrarPagamento: Bool = true,
+        mostrarValores: Bool = true,
         mostrarData: Bool = false
     ) {
         self.lancamento = lancamento

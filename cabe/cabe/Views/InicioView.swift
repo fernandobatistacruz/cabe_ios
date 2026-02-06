@@ -202,14 +202,21 @@ struct FavoritosView: View{
                 .padding(.horizontal)
             
             HStack() {
-                CardItem(
-                    title: String(localized: "Balanço"),
-                    value: balanco,
-                    color: .purple,
-                    icone:  "chart.bar.fill",
-                    mostrarValores: mostrarValores,
-                    moeda: moeda
-                )
+                NavigationLink {
+                    BalanceDetailView(
+                        lancamentosMes: vmLancamentos.lancamentos                       
+                    )
+                } label: {
+                    CardItem(
+                        title: String(localized: "Balanço"),
+                        value: balanco,
+                        color: .purple,
+                        icone:  "chart.bar.fill",
+                        mostrarValores: mostrarValores,
+                        moeda: moeda
+                    )
+                }
+                .buttonStyle(.plain)
                 NavigationLink {
                     FaturaListView(viewModel: vmLancamentos)
                 } label: {

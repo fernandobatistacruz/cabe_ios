@@ -106,7 +106,7 @@ struct ResumoAnualView: View {
                         }
                     }
                 }
-                .presentationDetents([.medium])
+                .presentationDetents([.fraction(0.35)])
             }
         }
         .task {

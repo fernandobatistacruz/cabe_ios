@@ -161,22 +161,21 @@ struct LancamentosPorCategoriaView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(lancamentosFiltrados) { lancamento in
-                HStack(spacing: 4) {
-                    Text(lancamento.descricao)
-                    
-                    Spacer()
-
-                    Text(
-                        lancamento.valor,
-                        format: .currency(
-                            code: lancamento.conta?.currencyCode ?? Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
-                        )
-                    )
-                    .foregroundStyle(.secondary)
-                }
+        List (lancamentosFiltrados) { lancamento in
+            NavigationLink {
+                LancamentoDetalheView(
+                    lancamento: lancamento,
+                    vmLancamentos: vm
+                )
+            } label: {
+                LancamentoRow(
+                    lancamento: lancamento,
+                    mostrarPagamento: false,
+                )                
             }
+            .listRowInsets(
+                EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+            )
         }
         .navigationTitle(categoriaNome)
     }

@@ -186,7 +186,7 @@ private extension ResumoAnualViewModel {
             }
             .sorted { $0.total > $1.total }
     }
-
+    
     func gerarInsights(_ lancamentos: [LancamentoModel]) {
         var frases: [LocalizedStringKey] = []
 

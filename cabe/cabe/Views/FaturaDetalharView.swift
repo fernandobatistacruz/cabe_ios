@@ -390,7 +390,8 @@ struct LancamentoConferenciaRow: View {
             LancamentoRow(
                 lancamento: lancamento,
                 mostrarPagamento: false,
-                mostrarValores: true
+                mostrarValores: true,
+                mostrarData: true
             )
 
             Spacer()
