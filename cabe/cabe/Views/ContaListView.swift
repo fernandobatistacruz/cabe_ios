@@ -201,7 +201,8 @@ struct ContaDetalheView: View {
 
     private var lancamentosFiltrados: [LancamentoModel] {
         vmLancamentos.lancamentos.filter {
-            $0.contaUuid == conta.uuid
+            $0.contaUuid == conta.uuid ||
+            $0.cartao?.contaUuid == conta.uuid
         }
     }
 
@@ -210,26 +211,28 @@ struct ContaDetalheView: View {
     var body: some View {
         List {
             headerView
-                .listRowInsets(.init())               // remove padding padrão da célula
+                .listRowInsets(.init())              // remove padding padrão da célula
                 .listRowSeparator(.hidden)           // remove linha
                 .listRowBackground(Color.clear)
-     
-            Section("Lançamentos") {
-                ForEach(lancamentosFiltrados) { lancamento in
-                    NavigationLink {
-                        LancamentoDetalheView(
-                            lancamento: lancamento,
-                            vmLancamentos: vmLancamentos
-                        )
-                    } label: {
-                        LancamentoRow(
-                            lancamento: lancamento,
-                            mostrarPagamento: false
+            
+            if !lancamentosFiltrados.isEmpty {
+                Section("Lançamentos") {
+                    ForEach(lancamentosFiltrados) { lancamento in
+                        NavigationLink {
+                            LancamentoDetalheView(
+                                lancamento: lancamento,
+                                vmLancamentos: vmLancamentos
+                            )
+                        } label: {
+                            LancamentoRow(
+                                lancamento: lancamento,
+                                mostrarPagamento: false
+                            )
+                        }
+                        .listRowInsets(
+                            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
                         )
                     }
-                    .listRowInsets(
-                        EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-                    )
                 }
             }
         }
