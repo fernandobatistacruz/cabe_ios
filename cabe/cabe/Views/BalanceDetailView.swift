@@ -60,7 +60,7 @@ extension BalanceDetailView {
                         color: .purple
             )
             
-            SummaryCard(title: "Gastos",
+            SummaryCard(title: "Percentual de Gasto",
                         value: vm.percentualGasto,
                         color: .blue
             )

@@ -155,7 +155,7 @@ final class BalanceDetailViewModel: ObservableObject {
         }
         
         if saldo > 0 {
-            frases.append("💰 Você economizou \(saldoFormatado) este mês.")
+            frases.append("💵 Você economizou \(saldoFormatado) este mês.")
         }
         
         if self.despesas > receitas * 0.9 {
