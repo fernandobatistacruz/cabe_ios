@@ -12,6 +12,7 @@ struct ResumoAnualView: View {
     @State private var shareItem: ShareItem?
     @State private var showingYearPicker = false
     @State private var tempDate = Date()
+    @State private var anoDraft: Int = 0
     
     init(
         ano: Int = Calendar.current.component(.year, from: .now),
@@ -79,22 +80,22 @@ struct ResumoAnualView: View {
                 let years = Array(2020...(anoAtual + 10)).reversed()
 
                 VStack {
-
-                    Picker("Ano", selection: $vm.anoSelecionado) {
+                    Picker("Ano", selection: $anoDraft) {
                         ForEach(years, id: \.self) { ano in
                             Text(String(ano)).tag(ano)
                         }
                     }
                     .pickerStyle(.wheel)
                     .labelsHidden()
-
-                    Spacer()
+                }
+                .onAppear {
+                    anoDraft = vm.anoSelecionado
                 }
                 .toolbar {
 
-                    // 👇 botão novo
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Hoje") {
+                            anoDraft = anoAtual
                             vm.anoSelecionado = anoAtual
                             showingYearPicker = false
                         }
@@ -102,6 +103,7 @@ struct ResumoAnualView: View {
 
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("OK") {
+                            vm.anoSelecionado = anoDraft
                             showingYearPicker = false
                         }
                     }
@@ -125,7 +127,7 @@ struct ResumoAnualView: View {
         .sheet(item: $shareItem) { item in
             ShareSheetView(
                 message: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe",
-                subject: "Relatório anual extraído do Cabe - \(String(vm.anoSelecionado))",
+                subject: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe",
                 fileURL: item.url
             )
         }

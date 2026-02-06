@@ -233,7 +233,7 @@ struct FavoritosView: View{
             }.padding(.horizontal)
             HStack() {
                 NavigationLink {                    
-                    ContaListView()
+                    ContaListView(vmLancamentos: vmLancamentos)
                 } label: {
                     CardItem(
                         title: String(localized: "Contas"),

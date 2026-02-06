@@ -13,13 +13,16 @@ struct ContaListView: View {
     @EnvironmentObject var sub: SubscriptionManager
     @StateObject private var viewModel: ContaListViewModel
     @State private var mostrarTransferencia = false
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
 
-    init() {
+    init(vmLancamentos: LancamentoListViewModel) {
+        self.vmLancamentos = vmLancamentos
+        
         let repository = ContaRepository()
-            _viewModel = StateObject(
-                wrappedValue: ContaListViewModel(repository: repository)
-            )
-        }
+        _viewModel = StateObject(
+            wrappedValue: ContaListViewModel(repository: repository)
+        )
+    }
     
     var contasFiltradas: [ContaModel] {
         searchText.isEmpty
@@ -31,7 +34,7 @@ struct ContaListView: View {
     var body: some View {
         List(contasFiltradas) { conta in
             NavigationLink {
-                ContaDetalheView(conta: conta)
+                ContaDetalheView(conta: conta, vmLancamentos: vmLancamentos)
             } label: {
                 ContaRow(conta: conta)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -181,45 +184,92 @@ struct ContaRow: View {
 
 // MARK: - Detalhe da Conta
 
+import SwiftUI
+
 struct ContaDetalheView: View {
 
     let conta: ContaModel
     @State private var mostrarEdicao = false
+    @ObservedObject var vmLancamentos: LancamentoListViewModel
+
+    init(conta: ContaModel, vmLancamentos: LancamentoListViewModel) {
+        self.conta = conta
+        self.vmLancamentos = vmLancamentos
+    }
+
+    // MARK: - Filtro
+
+    private var lancamentosFiltrados: [LancamentoModel] {
+        vmLancamentos.lancamentos.filter {
+            $0.contaUuid == conta.uuid
+        }
+    }
+
+    // MARK: - View
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 8) {
-                Image(systemName: "building.columns.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(conta.saldo >= 0 ? .green : .red)
-
-                Text(conta.nome)
-                    .font(.title2.bold())
-
-                Text(conta.saldo, format: .currency(code: conta.currencyCode))
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
+        List {
+            headerView
+                .listRowInsets(.init())               // remove padding padrão da célula
+                .listRowSeparator(.hidden)           // remove linha
+                .listRowBackground(Color.clear)
+     
+            Section("Lançamentos") {
+                ForEach(lancamentosFiltrados) { lancamento in
+                    NavigationLink {
+                        LancamentoDetalheView(
+                            lancamento: lancamento,
+                            vmLancamentos: vmLancamentos
+                        )
+                    } label: {
+                        LancamentoRow(
+                            lancamento: lancamento,
+                            mostrarPagamento: false
+                        )
+                    }
+                    .listRowInsets(
+                        EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                    )
+                }
             }
-
-            Spacer()
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Detalhar Conta")
-        .background(Color(.systemGroupedBackground))        
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
+                Button("Editar") {
                     mostrarEdicao = true
-                } label: {
-                    Text("Editar")
                 }
             }
-        }        
+        }
         .sheet(isPresented: $mostrarEdicao) {
             EditarContaView(conta: conta)
         }
+    }
+}
+
+// MARK: - Header
+
+private extension ContaDetalheView {
+
+    var headerView: some View {
+        VStack(spacing: 8) {
+
+            Image(systemName: "building.columns.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(conta.saldo >= 0 ? .green : .red)
+
+            Text(conta.nome)
+                .font(.title2.bold())
+
+            Text(conta.saldo, format: .currency(code: conta.currencyCode))
+                .font(.title3)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

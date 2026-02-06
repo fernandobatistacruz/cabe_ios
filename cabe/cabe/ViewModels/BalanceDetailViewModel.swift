@@ -106,7 +106,7 @@ final class BalanceDetailViewModel: ObservableObject {
         let id = UUID()
         let descricao: String
         let valor: Decimal
-
+      
         var valorFormatado: String {
             let f = NumberFormatter()
             f.numberStyle = .currency
@@ -116,13 +116,13 @@ final class BalanceDetailViewModel: ObservableObject {
 
     var topGastos: [GastoItem] {
         lancamentos
-            .filter { $0.valorParaSaldo < 0 }
-            .sorted { $0.valorParaSaldo < $1.valorParaSaldo }
+            .filter { $0.valorComSinal < 0 }
+            .sorted { $0.valorComSinal < $1.valorComSinal }
             .prefix(5)
             .map {
                 GastoItem(
                     descricao: $0.descricao,
-                    valor: abs($0.valorParaSaldo)
+                    valor: abs($0.valorComSinal)
                 )
             }
     }
@@ -132,11 +132,6 @@ final class BalanceDetailViewModel: ObservableObject {
     var insights: [LocalizedStringKey] {
 
         var frases: [LocalizedStringKey] = []
-        
-        // Maior despesa por categoria
-        if let maior = despesasPorCategoria.first {
-            frases.append("🏷️ \(maior.nome) foi sua maior despesa do mês.")
-        }
 
         // Despesas recorrentes
         let despesas = lancamentos.filter {
@@ -159,7 +154,7 @@ final class BalanceDetailViewModel: ObservableObject {
         }
         
         if self.despesas > receitas * 0.9 {
-            frases.append("⚠️ Atenção: você gastou quase toda a sua renda.")
+            frases.append("⚠️ Atenção, você gastou quase toda a sua renda.")
         }
         
         return frases

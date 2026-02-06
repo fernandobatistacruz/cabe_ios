@@ -125,9 +125,10 @@ struct SummaryCard: View {
             
             Text(value)
                 .font(.headline)
+                .fontWeight(.heavy)
                 .foregroundColor(color)
         }
-        .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
         .padding(.horizontal)
         .background(
             RoundedRectangle(cornerRadius: 22)

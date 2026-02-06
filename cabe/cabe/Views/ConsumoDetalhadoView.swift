@@ -37,7 +37,7 @@ struct ConsumoDetalhadoView: View {
                 VStack {
                     DonutChartView(
                         items: items,
-                        lineWidth: 22,
+                        lineWidth: 26,
                         size: 180,
                         detalhar: true,
                         currencyCode: vm.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
@@ -170,8 +170,8 @@ struct LancamentosPorCategoriaView: View {
             } label: {
                 LancamentoRow(
                     lancamento: lancamento,
-                    mostrarPagamento: false,
-                )                
+                    mostrarPagamento: false                   
+                )
             }
             .listRowInsets(
                 EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)

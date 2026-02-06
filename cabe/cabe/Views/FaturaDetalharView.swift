@@ -308,8 +308,8 @@ struct FaturaDetalharView: View {
         )
         .sheet(item: $shareItem) { item in
             ShareSheetView(
-                message: "Fatura do cartão \(String(cartao.nome)) extraído do Cabe",
-                subject: "Fatura do cartão \(String(cartao.nome)) extraído do Cabe",
+                message: "Fatura de \(String(vencimento.formatted(.dateTime.month(.wide).year()))) do cartão \(String(cartao.nome)) extraído do Cabe",
+                subject: "Fatura de \(String(vencimento.formatted(.dateTime.month(.wide).year()))) do cartão \(String(cartao.nome)) extraído do Cabe",
                 fileURL: item.url
             )
         }

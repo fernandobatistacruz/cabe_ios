@@ -23,72 +23,70 @@ struct FaturaListView: View {
     }
     
     var body: some View {
-        ZStack {
-            List {
-                ForEach(lancamentosAgrupados, id: \.date) { section in
-                    Section {
-                        ForEach(section.items) { item in
-                            if case .cartaoAgrupado(let cartao, let total, let lancamentos) = item {
-                                NavigationLink {
-                                    FaturaDetalharView(
-                                        viewModel: viewModel,
-                                        cartao: cartao,                                        
-                                        total: total,
-                                        vencimento: section.date
-                                    )
-                                } label: {
-                                    LancamentoCartaoRow(
-                                        cartao: cartao,
-                                        lancamentos: lancamentos,
-                                        total: total
-                                    )
-                                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                        Button {
-                                            Task {
-                                                await viewModel.togglePago(lancamentos)
-                                            }
-                                        } label: {
-                                            let temPendentes = lancamentos.contains { !$0.pago }
-                                            Label(
-                                                temPendentes
-                                                    ? String(localized: "Pago")
-                                                    : String(localized: "Não Pago"),
-                                                systemImage: temPendentes
-                                                    ? "checklist.checked"
-                                                    : "checklist.unchecked"
-                                            )
+        List {
+            ForEach(lancamentosAgrupados, id: \.date) { section in
+                Section {
+                    ForEach(section.items) { item in
+                        if case .cartaoAgrupado(let cartao, let total, let lancamentos) = item {
+                            NavigationLink {
+                                FaturaDetalharView(
+                                    viewModel: viewModel,
+                                    cartao: cartao,
+                                    total: total,
+                                    vencimento: section.date
+                                )
+                            } label: {
+                                LancamentoCartaoRow(
+                                    cartao: cartao,
+                                    lancamentos: lancamentos,
+                                    total: total
+                                )
+                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                    Button {
+                                        Task {
+                                            await viewModel.togglePago(lancamentos)
                                         }
-                                        .tint(.accentColor)
+                                    } label: {
+                                        let temPendentes = lancamentos.contains { !$0.pago }
+                                        Label(
+                                            temPendentes
+                                            ? String(localized: "Pago")
+                                            : String(localized: "Não Pago"),
+                                            systemImage: temPendentes
+                                            ? "checklist.checked"
+                                            : "checklist.unchecked"
+                                        )
                                     }
+                                    .tint(.accentColor)
                                 }
                             }
                         }
-                        .listRowInsets(
-                            EdgeInsets(
-                                top: 8,
-                                leading: 16,
-                                bottom: 8,
-                                trailing: 16
-                            )
-                        )
-                    } header: {
-                        Text(section.date, format: .dateTime.day().month(.wide))
                     }
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: 8,
+                            leading: 16,
+                            bottom: 8,
+                            trailing: 16
+                        )
+                    )
+                } header: {
+                    Text(section.date, format: .dateTime.day().month(.wide))
                 }
             }
-            .overlay{
-                if lancamentosAgrupados.isEmpty {
-                    Group {
-                        Text("Nenhuma Fatura")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    }
-                }                
-            }
-            .listStyle(.insetGrouped)
         }
+        .overlay{
+            if lancamentosAgrupados.isEmpty {
+                Group {
+                    Text("Nenhuma Fatura")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
         .navigationTitle("Faturas")
         .navigationBarTitleDisplayMode(.large)
         .toolbar(.hidden, for: .tabBar)
@@ -104,14 +102,10 @@ struct FaturaListView: View {
                 ToolbarSpacer(.flexible, placement: .topBarTrailing)
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    NavigationLink {
-                        CartaoListView()
-                    } label: {
-                        Label("Gerenciar Cartões", systemImage: "creditcard")
-                    }
+                NavigationLink {
+                    CartaoListView()
                 } label: {
-                    Image(systemName: "ellipsis")
+                    Label("Cartões", systemImage: "creditcard")
                 }
             }
         }
