@@ -75,4 +75,13 @@ struct CartaoNotificacao: Identifiable {
     let quantidade: Int
     let dataVencimento: Date
     let lancamentos: [LancamentoModel]
+    
+    var dataVencimentoFormatada: String {
+        return dataVencimento.formatted(
+            .dateTime
+                .day(.twoDigits)
+                .month(.twoDigits)
+                .year()
+        )
+    }
 }

@@ -226,7 +226,8 @@ struct ContaDetalheView: View {
                         } label: {
                             LancamentoRow(
                                 lancamento: lancamento,
-                                mostrarPagamento: false
+                                mostrarPagamento: false,
+                                mostrarVencimento: true
                             )
                         }
                         .listRowInsets(

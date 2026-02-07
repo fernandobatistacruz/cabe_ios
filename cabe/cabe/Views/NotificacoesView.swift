@@ -88,7 +88,7 @@ private struct VenceHojeSection: View {
                     LancamentoRow(
                         lancamento: lancamento,
                         mostrarPagamento: false,
-                        mostrarValores: true
+                        mostrarVencimento: true
                     )
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button {
@@ -163,7 +163,7 @@ private struct VencidosSection: View {
                     LancamentoRow(
                         lancamento: lancamento,
                         mostrarPagamento: false,
-                        mostrarValores: true
+                        mostrarVencimento: true
                     )
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button {
@@ -243,7 +243,7 @@ struct CartaoRowNotification: View {
                 Text(cartaoNotificacao.nomeCartao)
                     .font(.body)
                     .foregroundColor(.primary)
-                Text("Fatura")
+                Text(cartaoNotificacao.dataVencimentoFormatada)
                     .font(.footnote)
                     .foregroundColor(.secondary)
             }

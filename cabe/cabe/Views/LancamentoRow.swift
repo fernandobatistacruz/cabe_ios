@@ -11,18 +11,21 @@ struct LancamentoRow: View {
     let lancamento: LancamentoModel   
     let mostrarPagamento: Bool
     let mostrarValores: Bool
-    let mostrarData: Bool
+    let mostrarCompra: Bool
+    let mostrarVencimento: Bool
     
     init(
         lancamento: LancamentoModel,
         mostrarPagamento: Bool = true,
         mostrarValores: Bool = true,
-        mostrarData: Bool = false
+        mostrarData: Bool = false,
+        mostrarVencimento: Bool = false
     ) {
         self.lancamento = lancamento
         self.mostrarPagamento = mostrarPagamento
         self.mostrarValores = mostrarValores
-        self.mostrarData = mostrarData
+        self.mostrarCompra = mostrarData
+        self.mostrarVencimento = mostrarVencimento
     }
 
     var body: some View {
@@ -76,12 +79,13 @@ struct LancamentoRow: View {
                     }
                 }
                 
-                if mostrarData {
-                    Text(lancamento.dataCompraFormatada)
+                
+                if mostrarCompra || mostrarVencimento {
+                    Text(mostrarCompra ? lancamento.dataCompraFormatada : lancamento.dataVencimentoFormatada)
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
-                else{
+                else {
                     let subtitleText: String = {
                         if lancamento.transferencia {
                             return lancamento.conta?.nome ?? ""
@@ -97,6 +101,8 @@ struct LancamentoRow: View {
                     Text(subtitleText)
                         .font(.footnote)
                         .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                 }
             }
 
