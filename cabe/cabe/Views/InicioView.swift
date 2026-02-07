@@ -45,8 +45,7 @@ struct InicioView: View {
                     
                     NavigationLink {
                         ConsumoDetalhadoView(
-                            vm: vmLancamentos,
-                            items: vmLancamentos.gastosPorCategoriaDetalhado
+                            vm: vmLancamentos                            
                         )
                     } label: {
                         ConsumoCardView(

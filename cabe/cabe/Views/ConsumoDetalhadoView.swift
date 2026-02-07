@@ -17,8 +17,7 @@ enum PeriodoConsumo: CaseIterable, Identifiable {
 struct ConsumoDetalhadoView: View {
 
     @ObservedObject var vm: LancamentoListViewModel
-    let items: [CategoriaResumo]
-    
+    @State private var items: [CategoriaResumo]
     @State private var periodo: PeriodoConsumo = .mes
     @State private var yearlyItems: [CategoriaResumo] = []
     @State private var loadingYear = false
@@ -49,6 +48,11 @@ struct ConsumoDetalhadoView: View {
         case .ano:
             return selectedDate.formatted(.dateTime.year())
         }
+    }
+    
+    init (vm : LancamentoListViewModel) {
+        self.vm = vm
+        self.items = vm.gastosPorCategoriaDetalhado
     }
 
     var body: some View {
