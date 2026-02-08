@@ -596,15 +596,23 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    func listarLancamentosAteAno(_ ano: Int) async throws -> [LancamentoModel] {
+    func listarLancamentosAteAno(
+        _ ano: Int,
+        categoriaID: Int64
+    ) async throws -> [LancamentoModel] {
         try await db.dbQueue.read { db in
-            try self.listarAteAno(db: db, ano: ano)
+            try self.listarAteAno(
+                db: db,
+                ano: ano,
+                categoriaID: categoriaID
+            )
         }
     }
     
     private nonisolated func listarAteAno(
         db: Database,
-        ano: Int
+        ano: Int,
+        categoriaID: Int64
     ) throws -> [LancamentoModel] {
 
         let sql = """
@@ -616,15 +624,30 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
                 cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
                 cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+
             FROM lancamento l
+
             LEFT JOIN conta c ON l.conta_uuid = c.uuid
             LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
             LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
-            WHERE l.ano <= ?
-            ORDER BY l.ano DESC, l.mes DESC, l.dia DESC, l.id DESC
+
+            WHERE
+                l.ano <= ?
+                AND (cat.id = ? OR cat.pai = ?)
+
+            ORDER BY
+                l.ano DESC,
+                l.mes DESC,
+                l.dia DESC,
+                l.id DESC
         """
 
-        let rows = try Row.fetchAll(db, sql: sql, arguments: [ano])
+        let rows = try Row.fetchAll(
+            db,
+            sql: sql,
+            arguments: [ano, categoriaID, categoriaID]
+        )
+
         return mapRows(rows)
     }
     

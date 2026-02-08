@@ -177,7 +177,7 @@ final class LancamentoListViewModel: ObservableObject {
         }
 
         return resultado
-    }
+    }    
     
     var gastosPorCategoriaDetalhado: [CategoriaResumo] {
 

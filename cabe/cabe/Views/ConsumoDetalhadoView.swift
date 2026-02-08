@@ -428,6 +428,16 @@ struct LancamentosPorCategoriaView: View {
         .listStyle(.insetGrouped)
         .animation(.easeInOut(duration: 0.2), value: expandedCategorias)
         .animation(.easeInOut(duration: 0.2), value: expandedSubs)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink("Histórico") {
+                    LancamentosPorCategoriaHistoricoView(
+                        vm: vm,
+                        categoriaID: categoriaID
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -508,11 +518,7 @@ private extension LancamentosPorCategoriaView {
                 vmLancamentos: vm
             )
         } label: {
-            LancamentoRow(
-                lancamento: lancamento,
-                mostrarPagamento: false,
-                mostrarVencimento: true
-            )
+            LancamentoRowConsumo(lancamento: lancamento)
         }
         .listRowInsets(
             EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
@@ -527,6 +533,50 @@ private extension LancamentosPorCategoriaView {
         }
     }
 }
+
+struct LancamentoRowConsumo: View {
+    let lancamento: LancamentoModel
+    
+    init(
+        lancamento: LancamentoModel
+    ) {
+        self.lancamento = lancamento
+    }
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            
+            Circle()
+                .fill(lancamento.categoria?.getCor().cor ?? .gray)
+                .frame(width: 12, height: 12)
+            
+            
+            VStack(alignment: .leading) {
+                
+                    Text(lancamento.descricao)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                    
+                    Text(lancamento.dataVencimentoFormatada)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Text(
+                lancamento.valorComSinal,
+                format: .currency(
+                    code: lancamento.currencyCode
+                )
+            )
+            .foregroundColor(.secondary)
+        }
+    }
+}
+
 
 // MARK: - Helper moeda
 
