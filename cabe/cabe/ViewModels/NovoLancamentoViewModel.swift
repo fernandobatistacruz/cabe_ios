@@ -36,15 +36,19 @@ final class NovoLancamentoViewModel: ObservableObject {
     // MARK: - Init
 
     /// Cadastro
-    init(repository: LancamentoRepository) {
+    init(repository: LancamentoRepository, meioPagamento: MeioPagamento? = nil) {
         self.repository = repository
         self.contexto = .criacao
-        self.lancamentoEdicao = nil        
-        sugerirDataFatura()
-        
-        // sugestão inicial de recorrência
+        self.lancamentoEdicao = nil
+       
         self.recorrente = RecorrenciaPolicy
-            .sugestaoInicial(meioPagamento: pagamentoSelecionado)
+                .sugestaoInicial(meioPagamento: pagamentoSelecionado)
+        
+        if meioPagamento != nil {
+            self.pagamentoSelecionado = meioPagamento
+        }
+        
+        sugerirDataFatura()
     }
 
     /// Edição
@@ -319,25 +323,30 @@ final class NovoLancamentoViewModel: ObservableObject {
         lancamento.cartao = pagamentoSelecionado?.cartaoModel
     }
     
+    
     func sugerirDataFatura() {
         guard case let .cartao(cartao) = pagamentoSelecionado else { return }
-
+        
         let calendar = Calendar.current
-        let hoje = Date()
-
-        let diaHoje = calendar.component(.day, from: hoje)
-
-        var componentes = calendar.dateComponents([.year, .month], from: hoje)
-
-        if diaHoje > cartao.fechamento {
-            // Fatura já fechou → próximo mês
-            componentes.month = (componentes.month ?? 1) + 1
-        }
-
+        let diaHoje = calendar.component(.day, from: Date())
+        
+        var componentes = calendar.dateComponents([.year, .month], from: Date())
         componentes.day = cartao.vencimento
-
-        if let dataSugerida = calendar.date(from: componentes) {
-            self.dataFatura = dataSugerida
+        
+        if cartao.vencimento > cartao.fechamento {
+            if cartao.fechamento >= diaHoje {
+                self.dataFatura = calendar.date(from: componentes) ?? Date()
+            }
+            else {
+                self.dataFatura = calendar.date(byAdding: .month, value: 1, to: componentes.date ?? Date()) ?? Date()
+            }
+        } else {
+            if cartao.fechamento >= diaHoje {
+                self.dataFatura = calendar.date(byAdding: .month, value: 1, to: componentes.date ?? Date()) ?? Date()
+            }
+            else {
+                self.dataFatura = calendar.date(byAdding: .month, value: 2, to: componentes.date ?? Date()) ?? Date()
+            }
         }
     }
     

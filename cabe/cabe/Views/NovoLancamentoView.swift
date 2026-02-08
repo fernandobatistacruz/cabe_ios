@@ -18,6 +18,7 @@ struct NovoLancamentoView: View {
     
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm: NovoLancamentoViewModel
+    @State var pagamentoSelecionado: MeioPagamento?
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
@@ -26,9 +27,9 @@ struct NovoLancamentoView: View {
     @State private var isSaving = false
     @FocusState private var campoFocado: CampoFoco?
     
-    init(repository: LancamentoRepository) {
+    init(repository: LancamentoRepository, meioPagamento: MeioPagamento? = nil) {
         _vm = StateObject(
-            wrappedValue: NovoLancamentoViewModel(repository: repository)
+            wrappedValue: NovoLancamentoViewModel(repository: repository, meioPagamento: meioPagamento)
         )
     }
     

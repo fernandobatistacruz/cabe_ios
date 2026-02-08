@@ -209,8 +209,6 @@ struct FaturaDetalharView: View {
                     }
                 }
             }
-        }
-        .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
                     Section {
@@ -257,7 +255,7 @@ struct FaturaDetalharView: View {
                         filtroAtivo ? Color.white : Color.primary,
                         Color.accentColor
                     )
-                }                
+                }
                 Menu {
                     Button {
                         withAnimation {
@@ -313,11 +311,12 @@ struct FaturaDetalharView: View {
                 fileURL: item.url
             )
         }
-        
         .sheet(isPresented: $mostrarNovaDespesa) {
-            NovoLancamentoView(repository: viewModel.repository)
+            NovoLancamentoView(
+                repository: viewModel.repository,
+                meioPagamento: MeioPagamento.cartao(cartao)
+            )
         }
-       
         .overlay {
             if isExporting {
                 ZStack {
