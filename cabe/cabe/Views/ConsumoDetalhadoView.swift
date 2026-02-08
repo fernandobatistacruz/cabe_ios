@@ -17,9 +17,8 @@ enum PeriodoConsumo: CaseIterable, Identifiable {
 struct ConsumoDetalhadoView: View {
 
     @ObservedObject var vm: LancamentoListViewModel
-    @State private var items: [CategoriaResumo]
-    @State private var periodo: PeriodoConsumo = .mes
     @State private var yearlyItems: [CategoriaResumo] = []
+    @State private var periodo: PeriodoConsumo = .mes
     @State private var loadingYear = false
     @State private var yearlyLancamentos: [LancamentoModel] = []
     @State private var showCalendar = false
@@ -50,9 +49,8 @@ struct ConsumoDetalhadoView: View {
         }
     }
     
-    init (vm : LancamentoListViewModel) {
-        self.vm = vm
-        self.items = vm.gastosPorCategoriaDetalhado
+    private var items: [CategoriaResumo] {
+        vm.gastosPorCategoriaDetalhado
     }
 
     var body: some View {
@@ -63,7 +61,18 @@ struct ConsumoDetalhadoView: View {
                 content
             }
         }
-        .task(id: "\(periodo)-\(Calendar.current.component(.year, from: selectedDate))") {
+        .onAppear {
+            selectedDate = Calendar.current.date(
+                from: DateComponents(
+                    year: vm.anoAtual,
+                    month: vm.mesAtual,
+                    day: 1
+                )
+            ) ?? Date()
+        }
+        .task(
+            id: "\(periodo)-\(Calendar.current.component(.year, from: selectedDate))"
+        ) {
 
             guard periodo == .ano else { return }
 
@@ -98,14 +107,13 @@ struct ConsumoDetalhadoView: View {
                 }
             }
         }
-        .sheet(isPresented: $showCalendar, onDismiss: {
-            vm.selecionar(data: selectedDate)
-        }) {
+        .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
                     selectedDate = dataSelecionada
                     showCalendar = false
+                    vm.selecionar(data: selectedDate)
                 }
             )
             .presentationDetents([.medium, .large])

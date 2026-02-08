@@ -141,14 +141,13 @@ struct InicioView: View {
             }
             
         }
-        .sheet(isPresented: $showCalendar, onDismiss: {
-            vmLancamentos.selecionar(data: selectedDate)
-        }) {
+        .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
                     selectedDate = dataSelecionada
                     showCalendar = false
+                    vmLancamentos.selecionar(data: selectedDate)
                 }
             )
             .presentationDetents([.medium, .large])

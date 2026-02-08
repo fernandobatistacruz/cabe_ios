@@ -336,14 +336,13 @@ struct LancamentoListView: View {
         .sheet(isPresented: $mostrarNovoLancamento) {
             NovoLancamentoView(repository: viewModel.repository)
         }
-        .sheet(isPresented: $showCalendar, onDismiss: {
-            viewModel.selecionar(data: selectedDate)
-        }) {
+        .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(
                 dataInicial: selectedDate,
                 onConfirm: { dataSelecionada in
                     selectedDate = dataSelecionada
                     showCalendar = false
+                    viewModel.selecionar(data: selectedDate)
                 }
             )
             .presentationDetents([.medium, .large])
