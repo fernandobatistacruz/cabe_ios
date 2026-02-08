@@ -12,6 +12,8 @@ struct NotificacoesSettingsView: View {
     @AppStorage(AppSettings.notificacoesAtivas)
     private var notificacoesAtivas: Bool = false
     @State private var sistemaBloqueado = false
+    @EnvironmentObject var sub: SubscriptionManager
+    @State private var mostrarPaywall = false
 
     var body: some View {
         List {
@@ -19,7 +21,12 @@ struct NotificacoesSettingsView: View {
                 Toggle("Notificações", isOn: $notificacoesAtivas)
                     .onChange(of: notificacoesAtivas) { ativo in
                         if ativo {
-                            solicitarPermissaoSeNecessario()
+                            if sub.isSubscribed {
+                                solicitarPermissaoSeNecessario()
+                            } else {
+                                notificacoesAtivas = false
+                                mostrarPaywall = true
+                            }
                         } else {
                             cancelarNotificacoes()
                         }
@@ -28,10 +35,15 @@ struct NotificacoesSettingsView: View {
                 Text("Quando ativo, você será notificado quando houver um lançamento vencendo no dia.")
             }
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Notificações")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
-        .listStyle(.insetGrouped)
+        .sheet(isPresented: $mostrarPaywall) {
+            NavigationStack {
+                PaywallView()
+            }
+        }
     }
 
     // MARK: - Permissão
