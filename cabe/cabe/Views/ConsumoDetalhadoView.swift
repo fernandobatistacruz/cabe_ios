@@ -288,7 +288,7 @@ struct ConsumoRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-
+           
             Circle()
                 .fill(item.cor)
                 .frame(width: 10, height: 10)
@@ -314,6 +314,7 @@ struct ConsumoRow: View {
             }
         }
         .padding(.vertical, 8)
+        .padding(.horizontal, 2)
         .contentShape(Rectangle()) // melhora o toque
     }
 }
@@ -549,7 +550,6 @@ struct LancamentoRowConsumo: View {
             Circle()
                 .fill(lancamento.categoria?.getCor().cor ?? .gray)
                 .frame(width: 12, height: 12)
-            
             
             VStack(alignment: .leading) {
                 
