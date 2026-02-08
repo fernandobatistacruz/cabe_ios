@@ -10,6 +10,8 @@ import SwiftUI
 struct LancamentoListView: View {
     
     @ObservedObject var viewModel: LancamentoListViewModel
+    @State var filtroSelecionado: FiltroLancamento = .todos
+    @State var mostrarZoomCalendario: Bool = true
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
     @State private var lancamentoParaExcluir: LancamentoModel?
@@ -21,7 +23,6 @@ struct LancamentoListView: View {
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
-    @State private var filtroSelecionado: FiltroLancamento = .todos
     @State private var filtroTipo: FiltroTipo = .todos
     @State private var selectedDate: Date = Date()
     @State private var direcao: Edge = .trailing
@@ -176,20 +177,7 @@ struct LancamentoListView: View {
         }
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.immediately)
-        .contentShape(Rectangle()) // importante para capturar gesto em áreas vazias
-        // .animation(.easeInOut(duration: 0.25), value: selectedDate)
-        .gesture(
-            DragGesture(minimumDistance: 30)
-                .onEnded { value in
-                    let horizontal = value.translation.width
-                    
-                    if horizontal < -40 {
-                        alterarMes(+1)
-                    } else if horizontal > 40 {
-                        alterarMes(-1)
-                    }
-                }
-        )
+        .contentShape(Rectangle())        
         .navigationTitle(
             Text(
                 selectedDate
@@ -209,11 +197,13 @@ struct LancamentoListView: View {
             ) ?? Date()
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    showCalendar = true
-                } label: {
-                    Text(selectedDate, format: .dateTime.year())
+            if mostrarZoomCalendario {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showCalendar = true
+                    } label: {
+                        Text(selectedDate, format: .dateTime.year())
+                    }
                 }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -387,18 +377,6 @@ struct LancamentoListView: View {
         }
     }
     
-    private func alterarMes(_ delta: Int) {
-        direcao = delta > 0 ? .trailing : .leading
-
-        guard let novaData = Calendar.current.date(byAdding: .month, value: delta, to: selectedDate) else { return }
-
-        withAnimation(.easeInOut(duration: 0.30)) {
-            selectedDate = novaData
-        }
-
-        viewModel.selecionar(data: novaData)
-    }
-    
     private var textoFiltro: String? {
         let filtros = [
             filtroTipo == .todos ? nil : filtroTipo.titulo,
@@ -518,3 +496,4 @@ struct LancamentoSectionAcumulada {
     let items: [LancamentoItem]
     let saldoAcumulado: Decimal
 }
+

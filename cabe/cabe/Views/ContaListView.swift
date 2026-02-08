@@ -184,8 +184,6 @@ struct ContaRow: View {
 
 // MARK: - Detalhe da Conta
 
-import SwiftUI
-
 struct ContaDetalheView: View {
 
     let conta: ContaModel

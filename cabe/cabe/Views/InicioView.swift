@@ -31,7 +31,7 @@ struct InicioView: View {
                         balanco: vmLancamentos.balanco,
                         cartao: vmLancamentos.totalCartao,
                         constas: vmContas.saldoTotal,
-                        despesas: vmLancamentos.totalDespesas,
+                        aVencer: vmLancamentos.totalAVencer,
                         mostrarValores: mostrarValores,
                         moeda: vmLancamentos.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
                         vmLancamentos: vmLancamentos
@@ -64,21 +64,7 @@ struct InicioView: View {
                 .padding(.bottom, 10)
             }           
         }
-        .contentShape(Rectangle()) // importante para capturar gesto em áreas vazias
-        .gesture(
-            DragGesture(minimumDistance: 30)
-                .onEnded { value in
-                    let horizontal = value.translation.width
-                    
-                    if horizontal < -40 {
-                        // ← swipe para esquerda → próximo mês
-                        alterarMes(+1)
-                    } else if horizontal > 40 {
-                        // → swipe para direita → mês anterior
-                        alterarMes(-1)
-                    }
-                }
-        )
+        .contentShape(Rectangle())     
         .navigationTitle(
             Text(
                 selectedDate
@@ -158,18 +144,6 @@ struct InicioView: View {
         }
         
     }
-    
-    private func alterarMes(_ delta: Int) {
-        direcao = delta > 0 ? .trailing : .leading
-
-        guard let novaData = Calendar.current.date(byAdding: .month, value: delta, to: selectedDate) else { return }
-
-        withAnimation(.easeInOut(duration: 0.30)) {
-            selectedDate = novaData
-        }
-
-        vmLancamentos.selecionar(data: novaData)
-    }
 }
 
 struct FloatingButtonStyle: ButtonStyle {
@@ -185,7 +159,7 @@ struct FavoritosView: View{
     let balanco: Decimal
     let cartao: Decimal
     let constas: Decimal
-    let despesas: Decimal
+    let aVencer: Decimal
     let mostrarValores: Bool
     let moeda: String
     let vmLancamentos: LancamentoListViewModel
@@ -241,17 +215,25 @@ struct FavoritosView: View{
                         mostrarValores: mostrarValores,
                         moeda: moeda
                     )
-                }.buttonStyle(.plain)                
-                CardItem(
-                    title: String(localized: "Despesas"),
-                    value: despesas,
-                    color: .red,
-                    icone: "barcode",
-                    mostrarValores: mostrarValores,
-                    moeda: moeda
-                ).onTapGesture {
-                    deepLinkManager.selectedTab = .lancamentos
                 }
+                .buttonStyle(.plain)
+                NavigationLink {
+                    LancamentoListView(
+                        viewModel: vmLancamentos,
+                        filtroSelecionado: .naoPagos,
+                        mostrarZoomCalendario: false
+                    ).toolbar(.hidden, for: .tabBar)
+                } label: {
+                    CardItem(
+                        title: String(localized: "Em Aberto"),
+                        value: -aVencer,
+                        color: .cyan,
+                        icone: "doc.fill",
+                        mostrarValores: mostrarValores,
+                        moeda: moeda
+                    )
+                }
+                .buttonStyle(.plain)                
             }.padding(.horizontal)
         }
     }
