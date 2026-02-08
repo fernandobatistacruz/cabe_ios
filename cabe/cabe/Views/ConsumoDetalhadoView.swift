@@ -165,8 +165,7 @@ struct ConsumoDetalhadoView: View {
                                     LancamentosPorCategoriaView(
                                         vm: vm,
                                         lancamentos: currentLancamentos,
-                                        categoriaID: item.categoriaID,
-                                        categoriaNome: item.nome
+                                        categoria: item
                                     )
                                 } label: {
                                     ConsumoRow(item: item, mostraChevron: true)
@@ -323,8 +322,7 @@ struct LancamentosPorCategoriaView: View {
     
     @ObservedObject var vm: LancamentoListViewModel
     let lancamentos: [LancamentoModel]
-    let categoriaID: Int64
-    let categoriaNome: String
+    let categoria: CategoriaResumo
     
 
     // MARK: - Estado
@@ -337,23 +335,21 @@ struct LancamentosPorCategoriaView: View {
     init(
         vm: LancamentoListViewModel,
         lancamentos: [LancamentoModel],
-        categoriaID: Int64,
-        categoriaNome: String
+        categoria: CategoriaResumo,
+       
     ) {
         self.vm = vm
         self.lancamentos = lancamentos
-        self.categoriaID = categoriaID
-        self.categoriaNome = categoriaNome
-        
+        self.categoria = categoria
 
-        _expandedCategorias = State(initialValue: [categoriaID])
+        _expandedCategorias = State(initialValue: [categoria.categoriaID])
     }
 
     // MARK: - Filtros
 
     private var lancamentosCategoriaPrincipal: [LancamentoModel] {
         lancamentos.filter {
-            $0.categoriaID == categoriaID &&
+            $0.categoriaID == categoria.categoriaID &&
             $0.tipo == Tipo.despesa.rawValue
         }
     }
@@ -361,7 +357,7 @@ struct LancamentosPorCategoriaView: View {
     private var lancamentosPorSub: [Int64: [LancamentoModel]] {
         Dictionary(
             grouping: lancamentos.filter {
-                $0.categoria?.pai == categoriaID &&
+                $0.categoria?.pai == categoria.categoriaID &&
                 $0.tipo == Tipo.despesa.rawValue
             },
             by: { $0.categoriaID }
@@ -387,13 +383,14 @@ struct LancamentosPorCategoriaView: View {
         List {
 
             categoriaRow(
-                id: categoriaID,
-                nome: categoriaNome,
+                id: categoria.categoriaID,
+                nome: categoria.nome,
                 total: totalCategoriaCompleta,
-                expanded: expandedCategorias.contains(categoriaID)
+                cor: categoria.cor,
+                expanded: expandedCategorias.contains(categoria.categoriaID)
             )
 
-            if expandedCategorias.contains(categoriaID) {
+            if expandedCategorias.contains(categoria.categoriaID) {
 
                 // lançamentos diretos
                 ForEach(lancamentosCategoriaPrincipal) { lancamento in
@@ -413,6 +410,7 @@ struct LancamentosPorCategoriaView: View {
                         id: subID,
                         nome: nomeSub,
                         total: total(itens),
+                        cor: itens.first?.categoria?.getCor().cor ?? Color.gray,
                         expanded: expandedSubs.contains(subID)
                     )
 
@@ -425,7 +423,7 @@ struct LancamentosPorCategoriaView: View {
                 }
             }
         }
-        .navigationTitle(categoriaNome)
+        .navigationTitle(categoria.nome)
         .listStyle(.insetGrouped)
         .animation(.easeInOut(duration: 0.2), value: expandedCategorias)
         .animation(.easeInOut(duration: 0.2), value: expandedSubs)
@@ -434,7 +432,7 @@ struct LancamentosPorCategoriaView: View {
                 NavigationLink("Histórico") {
                     LancamentosPorCategoriaHistoricoView(
                         vm: vm,
-                        categoriaID: categoriaID
+                        categoriaID: categoria.categoriaID
                     )
                 }
             }
@@ -450,6 +448,7 @@ private extension LancamentosPorCategoriaView {
         id: Int64,
         nome: String,
         total: Decimal,
+        cor: Color,
         expanded: Bool
     ) -> some View {
 
@@ -463,7 +462,10 @@ private extension LancamentosPorCategoriaView {
                     .font(.system(size: 14, weight: .semibold))
                     .rotationEffect(.degrees(expanded ? 90 : 0))
                     .foregroundStyle(Color.accentColor)
-                   
+                
+                Circle()
+                    .fill(cor)
+                    .frame(width: 12, height: 12)
                 
                 Text(nome)
                     .font(.headline)
@@ -483,6 +485,7 @@ private extension LancamentosPorCategoriaView {
         id: Int64,
         nome: String,
         total: Decimal,
+        cor: Color,
         expanded: Bool
     ) -> some View {
 
@@ -496,6 +499,10 @@ private extension LancamentosPorCategoriaView {
                     .font(.system(size: 14, weight: .semibold))
                     .rotationEffect(.degrees(expanded ? 90 : 0))
                     .foregroundStyle(Color.accentColor)
+                
+                Circle()
+                    .fill(cor)
+                    .frame(width: 12, height: 12)
 
                 Text(nome)
                     .lineLimit(1)
@@ -546,11 +553,7 @@ struct LancamentoRowConsumo: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            
-            Circle()
-                .fill(lancamento.categoria?.getCor().cor ?? .gray)
-                .frame(width: 12, height: 12)
-            
+                        
             VStack(alignment: .leading) {
                 
                     Text(lancamento.descricao)
@@ -574,6 +577,7 @@ struct LancamentoRowConsumo: View {
             )
             .foregroundColor(.secondary)
         }
+        .padding(.leading, 22)
     }
 }
 
