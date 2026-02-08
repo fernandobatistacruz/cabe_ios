@@ -309,8 +309,11 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var totalAVencer: Decimal {
-        let aVencer = despesas.filter { !$0.pago }
-
+        let aVencer = lancamentos.filter {
+            $0.pago == false &&
+            $0.transferencia == false
+        }
+        
         return aVencer.reduce(.zero) { total, lancamento in
             total + lancamento.valorParaSaldo
         }
