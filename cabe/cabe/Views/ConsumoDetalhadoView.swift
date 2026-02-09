@@ -460,7 +460,6 @@ private extension LancamentosPorCategoriaView {
         Button {
             toggle(&expandedCategorias, id)
         } label: {
-
             HStack(spacing: 12) {
                 Circle()
                     .fill(cor)
@@ -470,19 +469,20 @@ private extension LancamentosPorCategoriaView {
                     .font(.headline)
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    .foregroundColor(.primary)
 
                 Spacer()
 
                 Text(total.currency())
                     .fontWeight(.semibold)
-                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
                 
+                Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
                     .rotationEffect(.degrees(expanded ? 90 : 0))
                     .foregroundStyle(Color.accentColor)
             }
         }
-        .buttonStyle(.plain)
     }
 
     func subcategoriaRow(
@@ -505,11 +505,12 @@ private extension LancamentosPorCategoriaView {
                 Text(nome)
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    .foregroundColor(.primary)
 
                 Spacer()
 
                 Text(total.currency())
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
@@ -517,8 +518,8 @@ private extension LancamentosPorCategoriaView {
                     .foregroundStyle(Color.accentColor)
             }
             .padding(.vertical, 2)
+            .padding(.leading, 10)
         }
-        .buttonStyle(.plain)
     }
 
     func lancamentoRow(_ lancamento: LancamentoModel) -> some View {
