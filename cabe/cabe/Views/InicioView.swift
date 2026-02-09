@@ -227,7 +227,7 @@ struct FavoritosView: View{
                     CardItem(
                         title: String(localized: "Em Aberto"),
                         value: aVencer,
-                        color: .cyan,
+                        color: .pink,
                         icone: "doc.fill",
                         mostrarValores: mostrarValores,
                         moeda: moeda

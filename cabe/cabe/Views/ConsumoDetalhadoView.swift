@@ -381,45 +381,50 @@ struct LancamentosPorCategoriaView: View {
     var body: some View {
 
         List {
-
-            categoriaRow(
-                id: categoria.categoriaID,
-                nome: categoria.nome,
-                total: totalCategoriaCompleta,
-                cor: categoria.cor,
-                expanded: expandedCategorias.contains(categoria.categoriaID)
-            )
-
-            if expandedCategorias.contains(categoria.categoriaID) {
-
-                // lançamentos diretos
-                ForEach(lancamentosCategoriaPrincipal) { lancamento in
-                    lancamentoRow(lancamento)
-                        .padding(.leading, 24)
-                }
-
-                ForEach(lancamentosPorSub.keys.sorted(), id: \.self) { subID in
-
-                    let itens = lancamentosPorSub[subID] ?? []
-
-                    let nomeSub =
+            Section {
+                
+                categoriaRow(
+                    id: categoria.categoriaID,
+                    nome: "Principal",
+                    total: total(lancamentosCategoriaPrincipal),
+                    cor: categoria.cor,
+                    expanded: expandedCategorias.contains(categoria.categoriaID)
+                )
+                
+                if expandedCategorias.contains(categoria.categoriaID) {
+                    
+                    ForEach(lancamentosCategoriaPrincipal) { lancamento in
+                        lancamentoRow(lancamento)
+                    }
+                    
+                    ForEach(lancamentosPorSub.keys.sorted(), id: \.self) { subID in
+                        
+                        let itens = lancamentosPorSub[subID] ?? []
+                        
+                        let nomeSub =
                         itens.first?.categoria?.nomeSubcategoria
                         ?? "Subcategoria"
-
-                    subcategoriaRow(
-                        id: subID,
-                        nome: nomeSub,
-                        total: total(itens),
-                        cor: itens.first?.categoria?.getCor().cor ?? Color.gray,
-                        expanded: expandedSubs.contains(subID)
-                    )
-
-                    if expandedSubs.contains(subID) {
-                        ForEach(itens) { lancamento in
-                            lancamentoRow(lancamento)
-                                .padding(.leading, 24)
+                        
+                        subcategoriaRow(
+                            id: subID,
+                            nome: nomeSub,
+                            total: total(itens),
+                            cor: itens.first?.categoria?.getCor().cor ?? Color.gray,
+                            expanded: expandedSubs.contains(subID)
+                        )
+                        
+                        if expandedSubs.contains(subID) {
+                            ForEach(itens) { lancamento in
+                                lancamentoRow(lancamento)
+                            }
                         }
                     }
+                }
+            } header: {
+                HStack {
+                    Text("Total")
+                    Spacer()
+                    Text(totalCategoriaCompleta.currency())
                 }
             }
         }
@@ -457,12 +462,6 @@ private extension LancamentosPorCategoriaView {
         } label: {
 
             HStack(spacing: 12) {
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .rotationEffect(.degrees(expanded ? 90 : 0))
-                    .foregroundStyle(Color.accentColor)
-                
                 Circle()
                     .fill(cor)
                     .frame(width: 12, height: 12)
@@ -476,6 +475,11 @@ private extension LancamentosPorCategoriaView {
 
                 Text(total.currency())
                     .fontWeight(.semibold)
+                Image(systemName: "chevron.right")
+                
+                    .font(.system(size: 14, weight: .semibold))
+                    .rotationEffect(.degrees(expanded ? 90 : 0))
+                    .foregroundStyle(Color.accentColor)
             }
         }
         .buttonStyle(.plain)
@@ -494,12 +498,6 @@ private extension LancamentosPorCategoriaView {
         } label: {
 
             HStack(spacing: 12) {
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .rotationEffect(.degrees(expanded ? 90 : 0))
-                    .foregroundStyle(Color.accentColor)
-                
                 Circle()
                     .fill(cor)
                     .frame(width: 12, height: 12)
@@ -512,6 +510,11 @@ private extension LancamentosPorCategoriaView {
 
                 Text(total.currency())
                     .foregroundStyle(.secondary)
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .rotationEffect(.degrees(expanded ? 90 : 0))
+                    .foregroundStyle(Color.accentColor)
             }
             .padding(.vertical, 2)
         }
@@ -529,7 +532,7 @@ private extension LancamentosPorCategoriaView {
             LancamentoRowConsumo(lancamento: lancamento)
         }
         .listRowInsets(
-            EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
+            EdgeInsets(top: 6, leading: 24, bottom: 6, trailing: 16)
         )
     }
 
@@ -553,18 +556,21 @@ struct LancamentoRowConsumo: View {
     
     var body: some View {
         HStack(spacing: 12) {
+            Circle()
+                .fill(lancamento.categoria?.getCor().cor ?? .gray)
+                .frame(width: 10, height: 10)
                         
             VStack(alignment: .leading) {
+                                
+                Text(lancamento.descricao)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .font(.body)
+                    .foregroundColor(.primary)
                 
-                    Text(lancamento.descricao)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .font(.body)
-                        .foregroundColor(.primary)
-                    
-                    Text(lancamento.dataVencimentoFormatada)
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+                Text(lancamento.dataVencimentoFormatada)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
             }
             
             Spacer()
@@ -577,7 +583,7 @@ struct LancamentoRowConsumo: View {
             )
             .foregroundColor(.secondary)
         }
-        .padding(.leading, 22)
+        .padding(.leading, 18)
     }
 }
 
