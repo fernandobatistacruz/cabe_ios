@@ -11,11 +11,7 @@ struct LancamentosPorCategoriaHistoricoView: View {
     
     @ObservedObject var vm: LancamentoListViewModel
     let categoriaID: Int64
-    
     @State private var historico: [LancamentoModel] = []
-    
-    // MARK: - BODY
-    
     
     var body: some View {
         
@@ -196,7 +192,7 @@ private extension LancamentosPorCategoriaHistoricoView {
         do {
             historico = try await vm.repository
                 .listarLancamentosAteAno(
-                    vm.anoAtual,
+                    Calendar.current.component(.year, from: Date()),
                     categoriaID: categoriaID
                 )
         }

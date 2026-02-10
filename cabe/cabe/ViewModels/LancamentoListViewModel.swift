@@ -297,8 +297,7 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var totalCartao: Decimal {
-        let total = lancamentosCartao.reduce(0) { $0 + $1.valorComSinal }
-        return -total
+        return lancamentosCartao.reduce(0) { $0 + $1.valorComSinal }
     }
     
     var totalDespesas: Decimal {
@@ -309,14 +308,10 @@ final class LancamentoListViewModel: ObservableObject {
     }
     
     var totalAVencer: Decimal {
-        let aVencer = lancamentos.filter {
+        return lancamentos.filter {
             $0.pago == false &&
             $0.transferencia == false
-        }
-        
-        return aVencer.reduce(.zero) { total, lancamento in
-            total + lancamento.valorComSinalDividido
-        }
+        }.reduce(0) { $0 + $1.valorComSinalDividido }
     }
     
     var totalReceitas: Decimal {

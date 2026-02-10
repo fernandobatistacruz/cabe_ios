@@ -101,7 +101,6 @@ private struct VenceHojeSection: View {
                         .tint(.accentColor)
                     }
                 }
-                 
             }
 
             ForEach(vmNotificacao.cartoesVenceHoje) { cartao in

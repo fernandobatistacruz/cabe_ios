@@ -182,6 +182,7 @@ struct FavoritosView: View{
                     CardItem(
                         title: String(localized: "Balanço"),
                         value: balanco,
+                        sinal: true,
                         color: .purple,
                         icone:  "chart.bar.fill",
                         mostrarValores: mostrarValores,
@@ -195,6 +196,7 @@ struct FavoritosView: View{
                     CardItem(
                         title: String(localized: "Cartões"),
                         value: cartao,
+                        sinal: false,
                         color: .orange,
                         icone: "creditcard.fill",
                         mostrarValores: mostrarValores,
@@ -210,6 +212,7 @@ struct FavoritosView: View{
                     CardItem(
                         title: String(localized: "Contas"),
                         value: constas,
+                        sinal: true,
                         color: .blue,
                         icone:  "wallet.bifold.fill",
                         mostrarValores: mostrarValores,
@@ -227,6 +230,7 @@ struct FavoritosView: View{
                     CardItem(
                         title: String(localized: "Em Aberto"),
                         value: aVencer,
+                        sinal: false,
                         color: .pink,
                         icone: "doc.fill",
                         mostrarValores: mostrarValores,
@@ -243,15 +247,13 @@ struct CardItem: View {
 
     let title: String
     let value: Decimal
+    let sinal: Bool
     let color: Color
     let icone: String
     let mostrarValores: Bool
     let moeda: String
-    
-    // Generates a subtle vertical gradient derived from the base color
-    // Keeps good contrast in light/dark mode and avoids fully opaque blocks
+      
     private func gradientColors(from base: Color) -> [Color] {
-        // Slightly vary opacity for depth while keeping the hue
         let top = base.opacity(0.32)
         let middle = base.opacity(0.25)
         let bottom = base.opacity(0.36)
@@ -272,7 +274,7 @@ struct CardItem: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                 if(mostrarValores){
-                    Text(formatarValor(value, moeda: moeda))
+                    Text(formatarValor(value, moeda: moeda, sinal: sinal))
                         .font(.headline)
                         .fontWeight(.heavy)
                         .foregroundStyle(color)
@@ -297,7 +299,7 @@ struct CardItem: View {
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
     
-    func formatarValor(_ valor: Decimal, moeda: String) -> String {
+    func formatarValor(_ valor: Decimal, moeda: String, sinal: Bool) -> String {
         let locale = Locale.current
 
         let formatter = NumberFormatter()
@@ -310,7 +312,7 @@ struct CardItem: View {
         formatter.internationalCurrencySymbol = ""
         formatter.positivePrefix = ""
         formatter.positiveSuffix = ""
-        formatter.negativePrefix = "-"
+        formatter.negativePrefix = sinal ? "-" : ""
         formatter.negativeSuffix = ""
 
         let absValor = (valor as NSDecimalNumber).doubleValue

@@ -12,15 +12,10 @@ struct LancamentosPorCategoriaView: View {
     @ObservedObject var vm: LancamentoListViewModel
     let lancamentos: [LancamentoModel]
     let categoria: CategoriaResumo
-    
-
-    // MARK: - Estado
-
+       
     @State private var expandedCategorias: Set<Int64>
     @State private var expandedSubs: Set<Int64> = []
-
-    // MARK: - Init (categoria já inicia aberta)
-
+ 
     init(
         vm: LancamentoListViewModel,
         lancamentos: [LancamentoModel],
@@ -33,8 +28,6 @@ struct LancamentosPorCategoriaView: View {
 
         _expandedCategorias = State(initialValue: [categoria.categoriaID])
     }
-
-    // MARK: - Filtros
 
     private var lancamentosCategoriaPrincipal: [LancamentoModel] {
         lancamentos.filter {
@@ -53,19 +46,14 @@ struct LancamentosPorCategoriaView: View {
         )
     }
 
-    // MARK: - Totais
-
     private func total(_ itens: [LancamentoModel]) -> Decimal {
         itens.reduce(0) { $0 + $1.valorDividido }
     }
-
-    /// total consolidado (principal + subs)
+  
     private var totalCategoriaCompleta: Decimal {
         total(lancamentosCategoriaPrincipal) +
         total(lancamentosPorSub.values.flatMap { $0 })
     }
-
-    // MARK: - BODY
 
     var body: some View {
 
@@ -234,9 +222,7 @@ private extension LancamentosPorCategoriaView {
 struct LancamentoRowConsumo: View {
     let lancamento: LancamentoModel
     
-    init(
-        lancamento: LancamentoModel
-    ) {
+    init(lancamento: LancamentoModel) {
         self.lancamento = lancamento
     }
     
@@ -262,7 +248,7 @@ struct LancamentoRowConsumo: View {
             Spacer()
             
             Text(
-                lancamento.valorComSinal,
+                lancamento.valorDividido,
                 format: .currency(
                     code: lancamento.currencyCode
                 )
