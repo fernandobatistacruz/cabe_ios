@@ -303,7 +303,7 @@ final class LancamentoListViewModel: ObservableObject {
     
     var totalDespesas: Decimal {
         despesas.reduce(0) { total, lancamento in
-            let valorConsiderado = lancamento.valorParaSaldo
+            let valorConsiderado = lancamento.valorDividido
             return (total + valorConsiderado)
         }
     }
@@ -315,7 +315,7 @@ final class LancamentoListViewModel: ObservableObject {
         }
         
         return aVencer.reduce(.zero) { total, lancamento in
-            total + lancamento.valorComSinalParaSaldo
+            total + lancamento.valorComSinalDividido
         }
     }
     

@@ -146,7 +146,7 @@ struct LancamentoDetalheView: View {
                             Text("Dividido")
                             Spacer()
                             Text(
-                                lancamento.valorParaSaldo,
+                                lancamento.valorDividido,
                                 format: .currency(code: lancamento.currencyCode)
                             )
                             .foregroundColor(.secondary)

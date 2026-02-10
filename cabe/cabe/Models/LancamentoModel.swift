@@ -99,6 +99,44 @@ struct LancamentoModel: Identifiable, Codable, FetchableRecord, PersistableRecor
 }
 
 extension LancamentoModel {
+    
+    var notificacaoLida: Bool {
+        get { notificacaoLidaRaw == 1 }
+        set { notificacaoLidaRaw = newValue ? 1 : 0 }
+    }
+    
+    var pago: Bool {
+        get { pagoRaw == 1 }
+        set { pagoRaw = newValue ? 1 : 0 }
+    }
+    
+    var dividido: Bool {
+        get { divididoRaw == 1 }
+        set { divididoRaw = newValue ? 1 : 0 }
+    }
+    
+    var transferencia: Bool{
+        transferenciaRaw == 1
+    }
+    
+    var valorDividido: Decimal {
+        let v = dividido ? (valor / 2) : valor
+        return v.arredondadoMoeda()
+    }
+    
+    var valorComSinal: Decimal {
+        tipo == Tipo.despesa.rawValue ? -valor : valor
+    }
+    
+    var valorComSinalDividido: Decimal {
+        let v = dividido ? (valor / 2) : valor
+        return tipo == Tipo.despesa.rawValue ? -v.arredondadoMoeda() : v.arredondadoMoeda()
+    }
+    
+    var tipoRecorrente: TipoRecorrente {
+        TipoRecorrente(rawValue: recorrente) ?? .nunca
+    }
+    
     var dataVencimento: Date {
         var components = DateComponents()
 
@@ -113,55 +151,16 @@ extension LancamentoModel {
 
         return Calendar.current.date(from: components) ?? .now
     }
-}
-
-extension LancamentoModel {
-    var notificacaoLida: Bool {
-        get { notificacaoLidaRaw == 1 }
-        set { notificacaoLidaRaw = newValue ? 1 : 0 }
+    
+    var dataVencimentoFormatada: String {
+        return dataVencimento.formatted(
+            .dateTime
+                .day(.twoDigits)
+                .month(.twoDigits)
+                .year()
+        )
     }
-}
-
-extension LancamentoModel {
-    var pago: Bool {
-        get { pagoRaw == 1 }
-        set { pagoRaw = newValue ? 1 : 0 }
-    }
-}
-
-extension LancamentoModel {
-    var dividido: Bool {
-        get { divididoRaw == 1 }
-        set { divididoRaw = newValue ? 1 : 0 }
-    }
-}
-
-extension LancamentoModel {
-    var transferencia: Bool{
-        transferenciaRaw == 1
-    }
-}
-
-extension LancamentoModel {
-    var valorComSinal: Decimal {
-        tipo == Tipo.despesa.rawValue ? -valor : valor
-    }
-}
-
-extension LancamentoModel {
-    var valorComSinalParaSaldo: Decimal {
-        var v = dividido ? (valor / 2) : valor
-        return tipo == Tipo.despesa.rawValue ? -v.arredondadoMoeda() : v.arredondadoMoeda()
-    }
-}
-
-extension LancamentoModel {
-    var tipoRecorrente: TipoRecorrente {
-        TipoRecorrente(rawValue: recorrente) ?? .nunca
-    }
-}
-
-extension LancamentoModel {
+    
     var dataFaturaFormatada: String {
         guard let dia = cartao?.vencimento,
               let data = Calendar.current.date(from: DateComponents(
@@ -179,58 +178,24 @@ extension LancamentoModel {
                 .year()
         )
     }
-}
-
-extension LancamentoModel {
     
-    var dataCompra: Date? {
+    var dataCompra: Date {
             Calendar.current.date(from: DateComponents(
                 year: anoCompra,
                 month: mesCompra,
                 day: diaCompra
-            ))
+            )) ?? Date()
         }
 
     var dataCompraFormatada: String {
-        guard let data = Calendar.current.date(from: DateComponents(
-            year: anoCompra,
-            month: mesCompra,
-            day: diaCompra
-        )) else {
-            return "—" // placeholder caso algum valor esteja ausente
-        }
-
-        return data.formatted(
+        return dataCompra.formatted(
             .dateTime
                 .day(.twoDigits)
                 .month(.twoDigits)
                 .year()
         )
     }
-}
-
-extension LancamentoModel {
-
-    var dataVencimentoFormatada: String {
-        guard let data = Calendar.current.date(from: DateComponents(
-            year: ano,
-            month: mes,
-            day: dia
-        )) else {
-            return "—"
-        }
-
-        return data.formatted(
-            .dateTime
-                .day(.twoDigits)
-                .month(.twoDigits)
-                .year()
-        )
-    }
-}
-
-extension LancamentoModel {
-
+    
     var dataCriacaoDate: Date {
         if let date = DataCivil.extrairDataCivil(dataCriacao) {
             return date
@@ -239,10 +204,7 @@ extension LancamentoModel {
         return Calendar(identifier: .gregorian)
             .startOfDay(for: Date())
     }
-}
-
-extension LancamentoModel {
-
+    
     var dataCriacaoFormatada: String {
         let c = Calendar.current.dateComponents([.day, .month, .year], from: dataCriacaoDate)
 
@@ -253,17 +215,5 @@ extension LancamentoModel {
             c.year!
         )
     }
-}
-
-private let isoFormatter: ISO8601DateFormatter = {
-    let f = ISO8601DateFormatter()
-    f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    return f
-}()
-
-extension LancamentoModel {
-    var valorParaSaldo: Decimal {
-        let v = dividido ? (valor / 2) : valor
-        return v.arredondadoMoeda()
-    }
+    
 }

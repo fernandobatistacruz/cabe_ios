@@ -133,7 +133,7 @@ private extension LancamentosPorCategoriaHistoricoView {
     
     var totalGeral: Double {
         historico.reduce(0) {
-            $0 + NSDecimalNumber(decimal: $1.valorParaSaldo).doubleValue
+            $0 + NSDecimalNumber(decimal: $1.valorDividido).doubleValue
         }
     }
     
@@ -166,7 +166,7 @@ private extension LancamentosPorCategoriaHistoricoView {
                     soma,
                     l in
                     soma + NSDecimalNumber(
-                        decimal: l.valorParaSaldo
+                        decimal: l.valorDividido
                     ).doubleValue
                 }
                 

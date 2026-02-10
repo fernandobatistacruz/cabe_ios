@@ -60,14 +60,9 @@ struct FaturaDetalharView: View {
         }
         
         resultado.sort {
-            guard let d0 = $0.dataCompra,
-                  let d1 = $1.dataCompra else {
-                return false
-            }
-            
-            return ordemData == .crescente
-            ? d0 < d1
-            : d0 > d1
+            ordemData == .crescente
+                ? $0.dataCompra < $1.dataCompra
+                : $0.dataCompra > $1.dataCompra
         }
 
         return resultado
@@ -88,7 +83,7 @@ struct FaturaDetalharView: View {
     var totalFiltrado: Decimal {
         if filtroSelecionado == .divididos {
             filtroLancamentos
-                .map(\.valorParaSaldo)
+                .map(\.valorDividido)
                 .reduce(0, +)
         } else {
             filtroLancamentos

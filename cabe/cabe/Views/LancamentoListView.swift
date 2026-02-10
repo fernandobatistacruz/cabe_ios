@@ -392,10 +392,10 @@ struct LancamentoListView: View {
         items.reduce(.zero) { parcial, item in
             switch item {
             case .simples(let lancamento):
-                return parcial + lancamento.valorComSinalParaSaldo
+                return parcial + lancamento.valorComSinalDividido
 
             case .cartaoAgrupado(_, _, let lancamentos):
-                let total = lancamentos.reduce(.zero) { $0 + $1.valorComSinalParaSaldo }
+                let total = lancamentos.reduce(.zero) { $0 + $1.valorComSinalDividido }
                 return parcial + total
             }
         }

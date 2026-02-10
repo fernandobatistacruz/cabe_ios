@@ -203,7 +203,7 @@ struct ConsumoDetalhadoView: View {
         let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
             let info = categoriaPrincipalInfo(from: lancamento.categoria)
             
-            let valorDecimal = lancamento.valorParaSaldo
+            let valorDecimal = lancamento.valorDividido
             let valor = NSDecimalNumber(decimal: valorDecimal).doubleValue
 
             return (
@@ -364,7 +364,7 @@ struct LancamentosPorCategoriaView: View {
     // MARK: - Totais
 
     private func total(_ itens: [LancamentoModel]) -> Decimal {
-        itens.reduce(0) { $0 + $1.valorParaSaldo }
+        itens.reduce(0) { $0 + $1.valorDividido }
     }
 
     /// total consolidado (principal + subs)
