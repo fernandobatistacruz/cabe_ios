@@ -61,6 +61,16 @@ struct CartaoListView: View {
                                 destination: CartaoDetalheView(cartao: cartao)
                             ) {
                                 CartaoRow(cartao: cartao)
+                                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                        Button {
+                                            Task{
+                                                await viewModel.toggleArquivado([cartao])
+                                            }
+                                        } label: {
+                                            Label(cartao.arquivado ? String(localized: "Desarquivar") : String(localized: "Arquivar"), systemImage: "archivebox.fill")
+                                                .tint(.orange)
+                                        }
+                                    }
                                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
                                             cartaoParaExcluir = cartao
@@ -78,14 +88,6 @@ struct CartaoListView: View {
                                             
                                         } label: {
                                             Label("Excluir", systemImage: "trash")
-                                        }
-                                        Button {
-                                            Task{
-                                                await viewModel.toggleArquivado([cartao])
-                                            }
-                                        } label: {
-                                            Label(cartao.arquivado ? String(localized: "Desarquivar") : String(localized: "Arquivar"), systemImage: "archivebox.fill")
-                                                .tint(.orange)
                                         }
                                     }
                             }

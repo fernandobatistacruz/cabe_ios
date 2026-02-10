@@ -85,13 +85,12 @@ extension BalanceDetailView {
                 ForEach(vm.topGastos) { item in
                     HStack {
                         Text(item.descricao)
-                            .font(.callout)
                             .lineLimit(1)
+                            .truncationMode(.tail)
                         
                         Spacer()
                         
                         Text(item.valorFormatado)
-                            .fontWeight(.medium)
                             .foregroundStyle(.secondary)
                     }
                 }
