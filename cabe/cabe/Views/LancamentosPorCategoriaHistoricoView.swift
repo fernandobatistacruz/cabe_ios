@@ -88,7 +88,7 @@ private extension LancamentosPorCategoriaHistoricoView {
 
             Circle()
                 .fill(item.cor)
-                .frame(width: 12, height: 12)
+                .frame(width: 10, height: 10)
 
             Text(item.nome)
                 .lineLimit(1)

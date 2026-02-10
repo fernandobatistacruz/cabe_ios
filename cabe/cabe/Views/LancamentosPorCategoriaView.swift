@@ -150,9 +150,9 @@ private extension LancamentosPorCategoriaView {
             HStack(spacing: 12) {
                 Circle()
                     .fill(cor)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 10, height: 10)
                 
-                Text(nome)                   
+                Text(nome)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .foregroundColor(.primary)
@@ -185,7 +185,7 @@ private extension LancamentosPorCategoriaView {
             HStack(spacing: 12) {
                 Circle()
                     .fill(cor)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 10, height: 10)
 
                 Text(nome)
                     .lineLimit(1)
