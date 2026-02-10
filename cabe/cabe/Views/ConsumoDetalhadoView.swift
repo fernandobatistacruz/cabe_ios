@@ -203,10 +203,7 @@ struct ConsumoDetalhadoView: View {
         let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
             let info = categoriaPrincipalInfo(from: lancamento.categoria)
             
-            let valorDecimal = lancamento.dividido
-                ? lancamento.valor / 2
-                : lancamento.valor
-
+            let valorDecimal = lancamento.valorParaSaldo
             let valor = NSDecimalNumber(decimal: valorDecimal).doubleValue
 
             return (

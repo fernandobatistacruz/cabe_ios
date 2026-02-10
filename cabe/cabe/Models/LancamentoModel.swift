@@ -149,6 +149,13 @@ extension LancamentoModel {
 }
 
 extension LancamentoModel {
+    var valorComSinalParaSaldo: Decimal {
+        var v = dividido ? (valor / 2) : valor
+        return tipo == Tipo.despesa.rawValue ? -v.arredondadoMoeda() : v.arredondadoMoeda()
+    }
+}
+
+extension LancamentoModel {
     var tipoRecorrente: TipoRecorrente {
         TipoRecorrente(rawValue: recorrente) ?? .nunca
     }
@@ -256,8 +263,7 @@ private let isoFormatter: ISO8601DateFormatter = {
 
 extension LancamentoModel {
     var valorParaSaldo: Decimal {
-        let v = dividido ? (valorComSinal / 2) : valorComSinal
+        let v = dividido ? (valor / 2) : valor
         return v.arredondadoMoeda()
     }
 }
-

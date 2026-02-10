@@ -208,10 +208,27 @@ struct ContaDetalheView: View {
 
     var body: some View {
         List {
-            headerView
-                .listRowInsets(.init())              // remove padding padrão da célula
-                .listRowSeparator(.hidden)           // remove linha
-                .listRowBackground(Color.clear)
+            HStack(spacing: 10) {
+                Image(systemName: "building.columns.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(conta.saldo >= 0 ? .green : .red)
+               
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(conta.nome)
+                        .font(.title3.bold())
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                    
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text(conta.saldoFormatado)
+                .font(.title3.bold())
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: true, vertical: false)
+            }
+            .padding(.vertical, 4)
             
             if !lancamentosFiltrados.isEmpty {
                 Section("Lançamentos") {
@@ -250,28 +267,6 @@ struct ContaDetalheView: View {
         .sheet(isPresented: $mostrarEdicao) {
             EditarContaView(conta: conta)
         }
-    }
-}
-
-// MARK: - Header
-
-private extension ContaDetalheView {
-
-    var headerView: some View {
-        VStack(spacing: 8) {
-
-            Image(systemName: "building.columns.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(conta.saldo >= 0 ? .green : .red)
-
-            Text(conta.nome)
-                .font(.title2.bold())
-
-            Text(conta.saldo, format: .currency(code: conta.currencyCode))
-                .font(.title3)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
     }
 }
 

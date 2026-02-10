@@ -49,21 +49,29 @@ extension BalanceDetailView {
                         value: vm.receitasFormatado,
                         color: .green,
             )
+            .padding(.trailing, 2)
+            .padding(.horizontal, 1)
             
             SummaryCard(title: "Despesas",
                         value: vm.despesasFormatado,
                         color: .red,
             )
+            .padding(.vertical, 2)
+            .padding(.horizontal, 1)
             
             SummaryCard(title: "Saldo",
                         value: vm.saldoFormatado,
                         color: .purple
             )
+            .padding(.trailing, 2)
+            .padding(.horizontal, 1)
             
             SummaryCard(title: "Percentual de Gasto",
                         value: vm.percentualGasto,
                         color: .blue
             )
+            .padding(.vertical, 2)
+            .padding(.horizontal, 1)
         }
     }
 
@@ -120,13 +128,14 @@ struct SummaryCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundColor(.secondary)
             
             Text(value)
                 .font(.headline)
-                .fontWeight(.heavy)
                 .foregroundColor(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
         .padding(.horizontal)

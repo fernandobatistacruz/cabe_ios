@@ -108,7 +108,7 @@ struct FaturaDetalharView: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(cartao.nome)
-                        .font(.title3.bold())
+                        .font(.title2.bold())
                         .lineLimit(2)
                         .truncationMode(.tail)
 

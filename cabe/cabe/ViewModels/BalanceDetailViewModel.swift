@@ -21,13 +21,13 @@ final class BalanceDetailViewModel: ObservableObject {
     // MARK: Totais
 
     var receitas: Decimal {
-        lancamentos.filter { $0.valorParaSaldo > 0 }
+        lancamentos.filter { $0.tipo == Tipo.receita.rawValue }
             .reduce(0) { $0 + $1.valorParaSaldo }
     }
 
     var despesas: Decimal {
-        lancamentos.filter { $0.valorParaSaldo < 0 }
-            .reduce(0) { $0 + abs($1.valorParaSaldo) }
+        lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
+            .reduce(0) { $0 + $1.valorParaSaldo }
     }
 
     var saldo: Decimal {
@@ -66,7 +66,7 @@ final class BalanceDetailViewModel: ObservableObject {
     }
     
     var despesasPorCategoria: [CategoriaValor] {
-        let despesas = lancamentos.filter { $0.valorParaSaldo < 0 }
+        let despesas = lancamentos.filter { $0.tipo == Tipo.despesa.rawValue }
         
         let grouped = Dictionary(grouping: despesas) {
             $0.categoria?.nome ?? "Outros"
@@ -86,13 +86,13 @@ final class BalanceDetailViewModel: ObservableObject {
     // MARK: Comparação
 
     private func totalReceita(_ arr: [LancamentoModel]) -> Decimal {
-        arr.filter { $0.valorParaSaldo > 0 }
+        arr.filter { $0.tipo == Tipo.receita.rawValue }
             .reduce(0) { $0 + $1.valorParaSaldo }
     }
 
     private func totalDespesa(_ arr: [LancamentoModel]) -> Decimal {
-        arr.filter { $0.valorParaSaldo < 0 }
-            .reduce(0) { $0 + abs($1.valorParaSaldo) }
+        arr.filter { $0.tipo == Tipo.despesa.rawValue }
+            .reduce(0) { $0 + $1.valorParaSaldo }
     }
 
     private func percentualVariacao(atual: Decimal, anterior: Decimal) -> Double {

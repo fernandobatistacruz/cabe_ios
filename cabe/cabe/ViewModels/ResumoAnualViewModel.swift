@@ -63,19 +63,13 @@ private extension ResumoAnualViewModel {
         
         var totalDespesas: Decimal {
             despesas.reduce(0) { total, lancamento in
-                let valorConsiderado = lancamento.dividido
-                    ? lancamento.valor / 2
-                    : lancamento.valor
-                
+                let valorConsiderado = lancamento.valorParaSaldo
                 return (total + valorConsiderado)
             }
         }
         
         var saldo: Decimal {
-            lancamentos.reduce(0) { total, lancamento in
-                let valorConsiderado = lancamento.valorParaSaldo
-                return total + valorConsiderado
-            }
+            totalReceita - totalDespesas
         }
         
         let taxa = totalReceita > 0 ? saldo / totalReceita : 0
@@ -107,10 +101,7 @@ private extension ResumoAnualViewModel {
             
             var despesa: Decimal {
                 despesas.reduce(0) { total, lancamento in
-                    let valorConsiderado = lancamento.dividido
-                        ? lancamento.valor / 2
-                        : lancamento.valor
-                    
+                    let valorConsiderado = lancamento.valorParaSaldo
                     return (total + valorConsiderado)
                 }
             }
@@ -167,12 +158,12 @@ private extension ResumoAnualViewModel {
             if let existente = acumulado[categoriaPaiID] {
                 acumulado[categoriaPaiID] = (
                     categoria: existente.categoria,
-                    total: existente.total + lancamento.valor
+                    total: existente.total + lancamento.valorParaSaldo
                 )
             } else {
                 acumulado[categoriaPaiID] = (
                     categoria: categoriaPai,
-                    total: lancamento.valor
+                    total: lancamento.valorParaSaldo
                 )
             }
         }

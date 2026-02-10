@@ -25,8 +25,8 @@ struct BuscarView: View {
                         HStack{
                             LancamentoRow(
                                 lancamento: lancamento,
-                                mostrarPagamento: false,
-                                mostrarValores: true
+                                mostrarPagamento: false,                               
+                                mostrarVencimento: true
                             )
                             Spacer()
                             

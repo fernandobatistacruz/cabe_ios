@@ -364,7 +364,7 @@ struct CardResumoView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(titulo)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundColor(.secondary)
             
             Text(valor.abreviado(currencyCode: currencyCode))

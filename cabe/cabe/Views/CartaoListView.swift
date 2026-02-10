@@ -64,7 +64,7 @@ struct CartaoListView: View {
                                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
                                             cartaoParaExcluir = cartao
-                                           
+                                            
                                             Task{
                                                 let existe = try await LancamentoRepository().existeLancamentoParaCartao(
                                                     cartaoUuid: cartao.uuid)
@@ -79,11 +79,6 @@ struct CartaoListView: View {
                                         } label: {
                                             Label("Excluir", systemImage: "trash")
                                         }
-                                    }
-                                    .swipeActions(
-                                        edge: .trailing,
-                                        allowsFullSwipe: false
-                                    ) {
                                         Button {
                                             Task{
                                                 await viewModel.toggleArquivado([cartao])
