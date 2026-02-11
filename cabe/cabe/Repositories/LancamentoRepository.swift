@@ -375,12 +375,15 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             
             var atualizado = lancamento
             
-            atualizado.dia = calendar.component(.day, from: dataVencimento)
-            atualizado.mes = calendar.component(.month, from: dataVencimento)
-            atualizado.ano = calendar.component(.year, from: dataVencimento)
-            atualizado.diaCompra = novo.diaCompra
-            atualizado.mesCompra = novo.mesCompra
-            atualizado.anoCompra = novo.anoCompra
+            if novo.tipoRecorrente != .parcelado {
+                atualizado.dia = calendar.component(.day, from: dataVencimento)
+                atualizado.mes = calendar.component(.month, from: dataVencimento)
+                atualizado.ano = calendar.component(.year, from: dataVencimento)
+                atualizado.diaCompra = novo.diaCompra
+                atualizado.mesCompra = novo.mesCompra
+                atualizado.anoCompra = novo.anoCompra
+            }
+           
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor
@@ -427,9 +430,12 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
 
             var atualizado = lancamento
             
-            atualizado.diaCompra = novo.diaCompra
-            atualizado.mesCompra = novo.mesCompra
-            atualizado.anoCompra = novo.anoCompra
+            if novo.tipoRecorrente != .parcelado {
+                atualizado.diaCompra = novo.diaCompra
+                atualizado.mesCompra = novo.mesCompra
+                atualizado.anoCompra = novo.anoCompra
+            }
+            
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor

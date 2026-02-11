@@ -85,7 +85,7 @@ struct RecorrenciaPolicy {
 
     var requerConfirmacaoEscopoAoAlterarValor: Bool {
         switch tipoAtual {
-        case .mensal, .semanal, .quinzenal:
+        case .mensal, .semanal, .quinzenal, .parcelado:
             return true
         default:
             return false

@@ -37,7 +37,7 @@ struct NotificacoesView: View {
                     Button {
                         showConfirmMarcarLidos = true
                     } label: {
-                        Image(systemName: "checklist")
+                        Image(systemName: "checklist.checked")
                     }
                 }
             }
