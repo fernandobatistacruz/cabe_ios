@@ -224,7 +224,7 @@ struct EditarLancamentoView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task {
-                            if vm.recorrenciaPolicy.requerConfirmacaoEscopoAoAlterarValor {
+                            if vm.recorrenciaPolicy.requerConfirmacaoEscopoAlterar {
                                 mostrarConfirmacaoEscopo = true
                                 return
                             }

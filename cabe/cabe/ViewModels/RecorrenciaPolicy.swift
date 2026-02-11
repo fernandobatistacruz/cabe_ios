@@ -17,9 +17,6 @@ struct RecorrenciaPolicy {
     let tipoAnterior: TipoRecorrente
     let contexto: Contexto
     
-
-    // MARK: - Recorrências permitidas
-
     var recorrenciasPermitidas: [TipoRecorrente] {
         guard let meioPagamento else {
             return [.nunca]
@@ -70,8 +67,6 @@ struct RecorrenciaPolicy {
         }
     }
 
-    // MARK: - Pode alterar tipo?
-
     var podeAlterarTipo: Bool {
         switch tipoAtual {
         case .nunca:
@@ -81,9 +76,7 @@ struct RecorrenciaPolicy {
         }
     }
 
-    // MARK: - Valor pode afetar série?
-
-    var requerConfirmacaoEscopoAoAlterarValor: Bool {
+    var requerConfirmacaoEscopoAlterar: Bool {
         switch tipoAtual {
         case .mensal, .semanal, .quinzenal, .parcelado:
             return true
@@ -105,8 +98,6 @@ struct RecorrenciaPolicy {
             return false
         }
     }
-
-    // MARK: - Sugestão inicial
 
     static func sugestaoInicial(
         meioPagamento: MeioPagamento?
