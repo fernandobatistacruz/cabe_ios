@@ -76,8 +76,36 @@ private struct VenceHojeSection: View {
     @ObservedObject var vmNotificacao: NotificacaoViewModel
     @ObservedObject var vmLancamentos: LancamentoListViewModel
 
+    private var totalLancamentosHoje: Decimal {
+        vmNotificacao.vencemHoje.reduce(0) { $0 + $1.valorComSinalDividido }
+    }
+
+    private var totalCartoesHoje: Decimal {
+        vmNotificacao.cartoesVenceHoje.reduce(0) { partial, cartao in
+            partial + cartao.lancamentos.reduce(0) { $0 + $1.valorComSinalDividido }
+        }
+    }
+
+    private var totalHoje: Decimal { totalLancamentosHoje + totalCartoesHoje }
+
+    private func formatarValor(_ valor: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        // Try to infer currency from first available item; fallback to system currency
+        let currencyCode = vmNotificacao.vencemHoje.first?.cartao?.conta?.currencyCode
+            ?? vmNotificacao.cartoesVenceHoje.first?.lancamentos.first?.currencyCode
+            ?? Locale.systemCurrencyCode
+        formatter.currencyCode = currencyCode
+        return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
+    }
+
     var body: some View {
-        Section("Vence Hoje") {
+        Section(header: HStack {
+            Text("Vence Hoje")
+            Spacer()
+            Text(formatarValor(totalHoje))
+                .foregroundColor(.secondary)
+        }) {
             ForEach(vmNotificacao.vencemHoje) { lancamento in
                 NavigationLink {
                     LancamentoDetalheView(
@@ -150,8 +178,35 @@ private struct VencidosSection: View {
     @ObservedObject var vmNotificacao: NotificacaoViewModel
     @ObservedObject var vmLancamentos: LancamentoListViewModel
 
+    private var totalLancamentosVencidos: Decimal {
+        vmNotificacao.vencidos.reduce(0) { $0 + $1.valorComSinalDividido }
+    }
+
+    private var totalCartoesVencidos: Decimal {
+        vmNotificacao.cartoesVencidos.reduce(0) { partial, cartao in
+            partial + cartao.lancamentos.reduce(0) { $0 + $1.valorComSinalDividido }
+        }
+    }
+
+    private var totalVencidos: Decimal { totalLancamentosVencidos + totalCartoesVencidos }
+
+    private func formatarValor(_ valor: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        let currencyCode = vmNotificacao.vencidos.first?.cartao?.conta?.currencyCode
+            ?? vmNotificacao.cartoesVencidos.first?.lancamentos.first?.currencyCode
+            ?? Locale.systemCurrencyCode
+        formatter.currencyCode = currencyCode
+        return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
+    }
+
     var body: some View {
-        Section("Vencidos") {
+        Section(header: HStack {
+            Text("Vencidos")
+            Spacer()
+            Text(formatarValor(totalVencidos))
+                .foregroundColor(.secondary)
+        }) {
             ForEach(vmNotificacao.vencidos) { lancamento in
                 NavigationLink {
                     LancamentoDetalheView(
@@ -259,3 +314,4 @@ struct CartaoRowNotification: View {
         return formatter.string(from: valor as NSDecimalNumber) ?? "\(valor)"
     }
 }
+
