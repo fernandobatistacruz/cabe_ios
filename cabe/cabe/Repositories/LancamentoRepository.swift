@@ -16,6 +16,31 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         self.db = db
     }
     
+    // MARK: - SQL Helpers
+    private nonisolated enum SQL {
+        static let selectBase = """
+            SELECT
+                l.*,
+                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
+                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
+                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
+                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
+                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
+                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+        """
+
+        static let fromJoins = """
+            FROM lancamento l
+            LEFT JOIN conta c ON l.conta_uuid = c.uuid
+            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
+            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+        """
+    }
+
+    private nonisolated func baseSelectQuery() -> String {
+        SQL.selectBase + "\n" + SQL.fromJoins
+    }
+    
     func observeLancamentos(
         mes: Int? = nil,
         ano: Int? = nil,
@@ -90,19 +115,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         uuid: String
     ) throws -> LancamentoModel? {
 
-        let sql = """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-            FROM lancamento l
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+        let sql = baseSelectQuery() + "\n" + """
             WHERE l.id = ? AND l.uuid = ?
             LIMIT 1
         """
@@ -128,19 +141,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         db: Database
     ) throws -> [LancamentoModel] {
 
-        let sql = """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-            FROM lancamento l
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+        let sql = baseSelectQuery() + "\n" + """
             WHERE
                 l.notificado = 0
             AND l.pago = 0
@@ -168,19 +169,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         db: Database
     ) throws -> [LancamentoModel] {
 
-        let sql = """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-            FROM lancamento l
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+        let sql = baseSelectQuery() + "\n" + """
             WHERE
                 l.notificado = 0
             AND l.pago = 0
@@ -202,19 +191,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
     }
     
     private func listarLancamentosRecentes(db: Database) throws -> [LancamentoModel] {
-        let sql = """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-            FROM lancamento l
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+        let sql = baseSelectQuery() + "\n" + """
             WHERE l.id IN (
                 SELECT MIN(id) 
                 FROM lancamento 
@@ -283,11 +260,9 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
     
     func salvar(_ lancamento: LancamentoModel) async throws {
         try await db.dbQueue.write { db in
-
-            // 1. Insere o lançamento
+            
             try lancamento.insert(db)
-
-            // 2. Se já nasce pago, impacta o saldo
+           
             if lancamento.pago {
                 try atualizarSaldoConta(
                     contaUuid: lancamento.contaUuid,
@@ -584,7 +559,6 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    // MARK: - Nova função pública para ViewModel
     func listarLancamentosDoAno(ano: Int) async throws -> [LancamentoModel] {
         do {
             return try await db.dbQueue.read { db in
@@ -615,22 +589,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         categoriaID: Int64
     ) throws -> [LancamentoModel] {
 
-        let sql = """
-            SELECT
-                l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-
-            FROM lancamento l
-
-            LEFT JOIN conta c ON l.conta_uuid = c.uuid
-            LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-            LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
-
+        let sql = baseSelectQuery() + "\n" + """
             WHERE
                 l.ano <= ?
                 AND (cat.id = ? OR cat.pai = ?)
@@ -661,19 +620,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         let termo = "%\(texto.lowercased())%"
 
         return try await db.dbQueue.read { db in
-            let sql = """
-                SELECT
-                    l.*,
-                    c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                    ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                    ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                    ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                    cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                    cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-                FROM lancamento l
-                LEFT JOIN conta c ON l.conta_uuid = c.uuid
-                LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-                LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
+            let sql = baseSelectQuery() + "\n" + """
                 WHERE lower(l.notas) LIKE ?
                 AND l.id IN (
                     SELECT MIN(id)
@@ -703,20 +650,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             ano: Int? = nil
     ) throws -> [LancamentoModel] {
         
-        var sql = """
-                SELECT
-                    l.*,
-                    c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
-                    ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
-                    ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
-                    ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
-                    cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                    cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
-                FROM lancamento l
-                LEFT JOIN conta c ON l.conta_uuid = c.uuid
-                LEFT JOIN cartao ca ON l.cartao_uuid = ca.uuid
-                LEFT JOIN categoria cat ON l.categoria = cat.id AND l.tipo = cat.tipo
-            """
+        var sql = baseSelectQuery()
         
         var arguments: [DatabaseValueConvertible] = []
         
@@ -821,8 +755,6 @@ protocol LancamentoRepositoryProtocol {
     func removerRecorrentes(uuid: String) async throws
 }
 
-// MARK: - Saldo helpers
-
 private extension LancamentoRepository {
 
     private nonisolated func atualizarSaldoConta(
@@ -852,8 +784,7 @@ private extension LancamentoRepository {
         let estavaPago = antigo.pago
         let valorAntigo = antigo.valorDividido
         let contaAntiga = try contaImpactada(lancamento: antigo)
-
-        // 🗑 Remoção
+      
         if removendo {
             if estavaPago {
                 try atualizarSaldoConta(
