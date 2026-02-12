@@ -39,7 +39,8 @@ struct LancamentoRow: View {
                 if lancamento.transferencia {
                     return "arrow.left.arrow.right"
                 } else {
-                    return lancamento.categoria?.getIcone().systemName ?? "questionmark"
+                    return lancamento.categoria?
+                        .icone.systemName ?? "questionmark"
                 }
             }()
 
@@ -47,7 +48,7 @@ struct LancamentoRow: View {
                 if lancamento.transferencia {
                     return lancamento.tipo == Tipo.despesa.rawValue ? .red : .green
                 } else {
-                    return lancamento.categoria?.getCor().cor ?? .primary
+                    return lancamento.categoria?.cor.cor ?? .primary
                 }
             }()
 

@@ -768,8 +768,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 nomeKey: row["cat.nomeKey"],
                 nomeSubcategoria: row["cat.nomeSubcategoria"],
                 tipo: row["cat.tipo"],
-                icone: row["cat.icone"],
-                cor: row["cat.cor"],
+                iconeRaw: row["cat.icone"],
+                corRaw: row["cat.cor"],
                 pai: row["cat.pai"]
             ) : nil
 

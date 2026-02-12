@@ -59,8 +59,12 @@ struct CategoriaFormView: View {
         self._categoria = State(initialValue: categoria)
         self._isEditar = State(initialValue: isEditar)
         self._nome = State(initialValue: categoria?.nome ?? "")
-        self._corSelecionada = State(initialValue: categoria?.getCor() ?? CorModel.cores.first!)
-        self._iconeSelecionado = State(initialValue: categoria?.getIcone() ?? IconeModel.icones.first!)
+        self._corSelecionada = State(
+            initialValue: categoria?.cor ?? CorModel.cores.first!
+        )
+        self._iconeSelecionado = State(
+            initialValue: categoria?.icone ?? IconeModel.icones.first!
+        )
         self._tipoFiltro = State(initialValue: categoria.map { Tipo(rawValue: $0.tipo) ?? .despesa } ?? .despesa)
     }
 
@@ -90,10 +94,14 @@ struct CategoriaFormView: View {
                             VStack(spacing: 16) {
                                 ZStack {
                                     Circle()
-                                        .fill(categoriaPai?.getCor().cor ?? corSelecionada.cor)
+                                        .fill(
+                                            categoriaPai?.cor.cor ?? corSelecionada.cor
+                                        )
                                         .frame(width: 80, height: 80)
                                     
-                                    Image(systemName: categoriaPai?.getIcone().systemName ?? iconeSelecionado.systemName)
+                                    Image(
+                                        systemName: categoriaPai?.icone.systemName ?? iconeSelecionado.systemName
+                                    )
                                         .font(.system(size: 36))
                                         .foregroundColor(.white)
                                 }
@@ -344,8 +352,8 @@ struct CategoriaFormView: View {
             id: novoId,
             nomeRaw: nome,
             tipo: isEditar ? categoria?.tipo ?? 1 : tipoFiltro.rawValue,
-            icone: iconeSelecionado.id,
-            cor: corSelecionada.id,
+            iconeRaw: iconeSelecionado.id,
+            corRaw: corSelecionada.id,
         )
 
         do {
@@ -355,8 +363,8 @@ struct CategoriaFormView: View {
                 
                 subcategorias = subcategorias.map { categoria in
                     var nova = categoria
-                    nova.cor = corSelecionada.id
-                    nova.icone = iconeSelecionado.id
+                    nova.corRaw = corSelecionada.id
+                    nova.iconeRaw = iconeSelecionado.id
                     return nova
                 }
                 
@@ -440,8 +448,8 @@ struct SubcategoriaSheet: View {
             nomeRaw: categoriaPai.nome,
             nomeSubcategoria: nome,
             tipo: categoriaPai.tipo,
-            icone: categoriaPai.icone,
-            cor: categoriaPai.cor,
+            iconeRaw: categoriaPai.iconeRaw,
+            corRaw: categoriaPai.corRaw,
             pai: categoriaPai.id
         )
 

@@ -172,9 +172,9 @@ struct CategoriaListRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: categoria.getIcone().systemName)
+            Image(systemName: categoria.icone.systemName)
                 .frame(width: 24)
-                .foregroundColor(categoria.getCor().cor)
+                .foregroundColor(categoria.cor.cor)
 
             Text(categoria.nome)
                 .font(.body)

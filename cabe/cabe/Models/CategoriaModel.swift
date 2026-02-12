@@ -16,8 +16,8 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
     var nomeKey: String?
     var nomeSubcategoria: String?
     var tipo: Int
-    var icone: Int
-    var cor: Int
+    var iconeRaw: Int
+    var corRaw: Int
     var pai: Int64?
     
     enum CodingKeys: String, CodingKey {
@@ -26,8 +26,8 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
         case nomeKey
         case nomeSubcategoria
         case tipo
-        case icone
-        case cor
+        case iconeRaw = "icone"
+        case corRaw = "cor"
         case pai
     }
     
@@ -37,17 +37,20 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
         static let nomeKey = Column("nomeKey")
         static let nomeSubcategoria = Column("nomeSubcategoria")
         static let tipo = Column("tipo")
-        static let icone = Column("icone")
-        static let cor = Column("cor")
+        static let iconeRaw = Column("icone")
+        static let corRaw = Column("cor")
         static let pai = Column("pai")
     }
-    
-    func getCor() -> CorModel {
-        CorModel.cores[safe: cor] ?? CorModel.default
-    }
+}
 
-    func getIcone() -> IconeModel {
-        IconeModel.icones[safe: icone] ?? IconeModel.default
+extension CategoriaModel {
+    
+    var cor: CorModel {
+        return CorModel.cores[safe: corRaw] ?? CorModel.default
+    }
+    
+    var icone: IconeModel {
+        return IconeModel.icones[safe: iconeRaw] ?? IconeModel.default
     }
 }
 
@@ -186,8 +189,8 @@ extension CategoriaModel {
             nomeRaw: "Outros",
             nomeSubcategoria: nil,
             tipo: Tipo.despesa.rawValue, // importante
-            icone: IconeModel.default.id,
-            cor: CorModel.default.id,
+            iconeRaw: IconeModel.default.id,
+            corRaw: CorModel.default.id,
             pai: nil
         )
     }

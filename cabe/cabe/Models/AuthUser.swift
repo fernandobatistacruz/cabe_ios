@@ -14,4 +14,3 @@ struct AuthUser {
     let photoURL: URL?
     let creationDate: Date?
 }
-

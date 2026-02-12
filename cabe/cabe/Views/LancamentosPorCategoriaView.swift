@@ -86,7 +86,7 @@ struct LancamentosPorCategoriaView: View {
                             id: subID,
                             nome: nomeSub,
                             total: total(itens),
-                            cor: itens.first?.categoria?.getCor().cor ?? Color.gray,
+                            cor: itens.first?.categoria?.cor.cor ?? Color.gray,
                             expanded: expandedSubs.contains(subID)
                         )
                         
@@ -229,7 +229,7 @@ struct LancamentoRowConsumo: View {
     var body: some View {
         HStack(spacing: 12) {
             Circle()
-                .fill(lancamento.categoria?.getCor().cor ?? .gray)
+                .fill(lancamento.categoria?.cor.cor ?? .gray)
                 .frame(width: 10, height: 10)
                         
             VStack(alignment: .leading) {

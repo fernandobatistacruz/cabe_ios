@@ -45,7 +45,10 @@ struct LancamentoDetalheView: View {
                         Image(
                             systemName: lancamento.transferencia
                             ? "arrow.left.arrow.right"
-                            : (lancamento.categoria?.getIcone().systemName ?? "questionmark")
+                            : (
+                                lancamento.categoria?
+                                    .icone.systemName ?? "questionmark"
+                            )
                         )
                         .resizable()
                         .scaledToFit()
@@ -53,7 +56,7 @@ struct LancamentoDetalheView: View {
                         .foregroundColor(
                             lancamento.transferencia
                             ? (lancamento.tipo == Tipo.despesa.rawValue ? .red : .green)
-                            : (lancamento.categoria?.getCor().cor ?? .primary)
+                            : (lancamento.categoria?.cor.cor ?? .primary)
                         )
 
                         VStack(alignment: .leading) {

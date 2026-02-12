@@ -34,9 +34,9 @@ struct ZoomCategoriaView: View {
                 } label: {
                     HStack {
                         if categoria.pai == nil {
-                            Image(systemName: categoria.getIcone().systemName)
+                            Image(systemName: categoria.icone.systemName)
                                 .frame(width: 24)
-                                .foregroundColor(categoria.getCor().cor)
+                                .foregroundColor(categoria.cor.cor)
 
                             Text(categoria.nome)
                                 .foregroundColor(.primary)
@@ -45,7 +45,7 @@ struct ZoomCategoriaView: View {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 10))
                                 .frame(width: 24)
-                                .foregroundColor(categoria.getCor().cor)
+                                .foregroundColor(categoria.cor.cor)
 
                             Text(categoria.nomeSubcategoria ?? "")
                                 .foregroundColor(.primary)

@@ -250,14 +250,14 @@ struct ConsumoDetalhadoView: View {
             return (
                 id: paiID,
                 nome: categoria.nome,
-                cor: categoria.getCor().cor
+                cor: categoria.cor.cor
             )
         }
 
         return (
             id: categoria?.id ?? 0,
             nome: categoria?.nome ?? "",
-            cor: categoria?.getCor().cor ?? .gray
+            cor: categoria?.cor.cor ?? .gray
         )
     }
         
