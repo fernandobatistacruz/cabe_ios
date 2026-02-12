@@ -374,16 +374,13 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         for lancamento in lancamentos {
             
             var atualizado = lancamento
-            
-            if novo.tipoRecorrente != .parcelado {
-                atualizado.dia = calendar.component(.day, from: dataVencimento)
-                atualizado.mes = calendar.component(.month, from: dataVencimento)
-                atualizado.ano = calendar.component(.year, from: dataVencimento)
-                atualizado.diaCompra = novo.diaCompra
-                atualizado.mesCompra = novo.mesCompra
-                atualizado.anoCompra = novo.anoCompra
-            }
            
+            atualizado.dia = calendar.component(.day, from: dataVencimento)
+            atualizado.mes = calendar.component(.month, from: dataVencimento)
+            atualizado.ano = calendar.component(.year, from: dataVencimento)
+            atualizado.diaCompra = novo.diaCompra
+            atualizado.mesCompra = novo.mesCompra
+            atualizado.anoCompra = novo.anoCompra
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor
@@ -404,9 +401,9 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             try atualizado.update(db)
             
             switch atualizado.tipoRecorrente {
-            case .nunca, .parcelado:
+            case .nunca:
                 break
-            case .mensal:
+            case .mensal, .parcelado:
                 dataVencimento = calendar.date(byAdding: .month, value: 1, to: dataVencimento)!
             case .quinzenal:
                 dataVencimento = calendar.date(byAdding: .day, value: 14, to: dataVencimento)!
@@ -430,12 +427,9 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
 
             var atualizado = lancamento
             
-            if novo.tipoRecorrente != .parcelado {
-                atualizado.diaCompra = novo.diaCompra
-                atualizado.mesCompra = novo.mesCompra
-                atualizado.anoCompra = novo.anoCompra
-            }
-            
+            atualizado.diaCompra = novo.diaCompra
+            atualizado.mesCompra = novo.mesCompra
+            atualizado.anoCompra = novo.anoCompra
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor
