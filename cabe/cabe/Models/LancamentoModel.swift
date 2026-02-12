@@ -207,13 +207,16 @@ extension LancamentoModel {
     
     var dataCriacaoFormatada: String {
         let c = Calendar.current.dateComponents([.day, .month, .year], from: dataCriacaoDate)
-
+        
+        if c.day == 1 && c.month == 1 && c.year == 1990 {
+            return "-"
+        }
+                
         return String(
             format: "%02d/%02d/%04d",
             c.day!,
             c.month!,
             c.year!
         )
-    }
-    
+    }    
 }
