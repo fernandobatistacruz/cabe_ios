@@ -27,34 +27,24 @@ private enum CampoFoco {
 
 struct CategoriaFormView: View {
     @Environment(\.dismiss) private var dismiss
-
-    // MARK: - Inputs
+       
     @State var categoria: CategoriaModel?
     @State var isEditar: Bool
-
-    // MARK: - Campos do Form
     @State private var nome: String
     @State private var corSelecionada: CorModel
     @State private var iconeSelecionado: IconeModel
     @State private var tipoFiltro: Tipo
     @State private var categoriaPai: CategoriaModel?
-
-    // MARK: - Subcategorias
     @State private var subcategorias: [CategoriaModel] = []
     @State private var todasCategorias: [CategoriaModel] = []
-
-    // MARK: - Sheet
     @State private var sheetSubcategoria: SubcategoriaSheetMode?
     @FocusState private var campoFocado: CampoFoco?
-    
     @EnvironmentObject var sub: SubscriptionManager
     @State private var mostrarPaywall = false
-    
     @State private var mostrarAlerta = false
     @State private var mostrarConfirmacao = false
     @State private var categoriaParaExcluir: CategoriaModel?
-
-    // MARK: - Init
+   
     init(categoria: CategoriaModel? = nil, isEditar: Bool = false) {
         self._categoria = State(initialValue: categoria)
         self._isEditar = State(initialValue: isEditar)
@@ -67,258 +57,244 @@ struct CategoriaFormView: View {
         )
         self._tipoFiltro = State(initialValue: categoria.map { Tipo(rawValue: $0.tipo) ?? .despesa } ?? .despesa)
     }
-
+    
     var body: some View {
         NavigationStack {
-            ZStack {
-                // MARK: - Fundo fixo
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    // MARK: - Tipo
-                    if !isEditar {
-                        Picker("Tipo", selection: $tipoFiltro) {
-                            ForEach(Tipo.allCases.reversed(), id: \.self) {
-                                Text($0.descricao).tag($0)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal)
-                        .padding(.top)
-                    }
-                    List {
-                        
-                        // MARK: - Card Ícone + Nome
-                        Section {
-                            VStack(spacing: 16) {
-                                ZStack {
-                                    Circle()
-                                        .fill(
-                                            categoriaPai?.cor.cor ?? corSelecionada.cor
-                                        )
-                                        .frame(width: 80, height: 80)
-                                    
-                                    Image(
-                                        systemName: categoriaPai?.icone.systemName ?? iconeSelecionado.systemName
-                                    )
-                                        .font(.system(size: 36))
-                                        .foregroundColor(.white)
-                                }
-                                
-                                TextField(
-                                    categoriaPai == nil ? "Nome da Categoria" : "Nome da Subcategoria",
-                                    text: $nome
+            List {
+                Section {
+                    VStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    categoriaPai?.cor.cor ?? corSelecionada.cor
                                 )
-                                .padding()
-                                .background(Color(.systemGroupedBackground))
-                                .cornerRadius(22)
-                                .multilineTextAlignment(.center)
-                                .textInputAutocapitalization(.words)
-                                .focused($campoFocado, equals: .nome)
-                            }
-                            .padding()
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .cornerRadius(22)
+                                .frame(width: 80, height: 80)
+                            
+                            Image(
+                                systemName: categoriaPai?.icone.systemName ?? iconeSelecionado.systemName
+                            )
+                            .font(.system(size: 36))
+                            .foregroundColor(.white)
                         }
-                        .listRowInsets(.init())
-                        .listRowBackground(Color.clear)
                         
-                        // MARK: - Subcategorias
-                        if isEditar {
-                            Section {
-                                if subcategorias.isEmpty {
-                                    Text("Nenhuma Subcategoria")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-
-                                } else {
-                                    ForEach(subcategorias) { sub in
-                                        subcategoriaRow(sub)
-                                            .contentShape(Rectangle())
-                                            .onTapGesture {
-                                                sheetSubcategoria = .editar(sub)
-                                            }
-                                            .swipeActions {
-                                                Button(role: .destructive) {
-                                                    Task{
-                                                        let existe = try await LancamentoRepository()
-                                                            .existeLancamentoParaCategoria(
-                                                                id: sub.id ?? 0,
-                                                                tipo: sub.tipo
-                                                            )
-                                                        if existe {
-                                                            mostrarAlerta = true
-                                                        } else {
-                                                            categoriaParaExcluir = sub
-                                                            mostrarConfirmacao = true
-                                                        }
-                                                    }
-                                                } label: {
-                                                    Label("Excluir", systemImage: "trash")
+                        TextField(
+                            categoriaPai == nil ? "Nome da Categoria" : "Nome da Subcategoria",
+                            text: $nome
+                        )
+                        .padding()
+                        .background(Color(.systemGroupedBackground))
+                        .cornerRadius(22)
+                        .multilineTextAlignment(.center)
+                        .textInputAutocapitalization(.words)
+                        .focused($campoFocado, equals: .nome)
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .cornerRadius(22)
+                }
+                .listRowInsets(.init())
+                .listRowBackground(Color.clear)
+             
+                if isEditar {
+                    Section {
+                        if subcategorias.isEmpty {
+                            Text("Nenhuma Subcategoria")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                            
+                        } else {
+                            ForEach(subcategorias) { sub in
+                                subcategoriaRow(sub)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        sheetSubcategoria = .editar(sub)
+                                    }
+                                    .swipeActions {
+                                        Button(role: .destructive) {
+                                            Task{
+                                                let existe = try await LancamentoRepository()
+                                                    .existeLancamentoParaCategoria(
+                                                        id: sub.id ?? 0,
+                                                        tipo: sub.tipo
+                                                    )
+                                                if existe {
+                                                    mostrarAlerta = true
+                                                } else {
+                                                    categoriaParaExcluir = sub
+                                                    mostrarConfirmacao = true
                                                 }
                                             }
-                                    }
-                                }
-                            } header: {
-                                HStack {
-                                    Text("Subcategorias")
-                                    Spacer()
-                                    Button {
-                                        if sub.isSubscribed {
-                                            sheetSubcategoria = .nova
-                                        } else {
-                                            mostrarPaywall = true
+                                        } label: {
+                                            Label("Excluir", systemImage: "trash")
                                         }
-                                    } label: {
-                                        Image(systemName: "plus")
                                     }
-                                }
                             }
                         }
-                        
-                        // MARK: - Cores
-                        if categoriaPai == nil {
-                            Section {
-                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
-                                    ForEach(CorModel.cores, id: \.id) { cor in
+                    } header: {
+                        HStack {
+                            Text("Subcategorias")
+                            Spacer()
+                            Button {
+                                if sub.isSubscribed {
+                                    sheetSubcategoria = .nova
+                                } else {
+                                    mostrarPaywall = true
+                                }
+                            } label: {
+                                Image(systemName: "plus")
+                            }
+                        }
+                    }
+                }
+                              
+                if categoriaPai == nil {
+                    Section {
+                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
+                            ForEach(CorModel.cores, id: \.id) { cor in
+                                Circle()
+                                    .fill(cor.cor)
+                                    .frame(width: 32, height: 32)
+                                    .overlay(
                                         Circle()
-                                            .fill(cor.cor)
-                                            .frame(width: 32, height: 32)
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(
-                                                        Color.primary,
-                                                        lineWidth: cor.id == corSelecionada.id ? 3 : 0
-                                                    )
+                                            .stroke(
+                                                Color.primary,
+                                                lineWidth: cor.id == corSelecionada.id ? 3 : 0
                                             )
-                                            .onTapGesture { corSelecionada = cor }
-                                    }
-                                }
-                                .padding()
-                                .background(Color(.secondarySystemGroupedBackground))
-                                .cornerRadius(22)
-                            } header: {
-                                HStack {
-                                    Text("Cor")
-                                }.padding(.horizontal)
-                            }
-                            .listRowInsets(.init())
-                            .listRowBackground(Color.clear)
-                            
-                            // MARK: - Ícones
-                            Section {
-                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
-                                    ForEach(IconeModel.icones, id: \.id) { icone in
-                                        Image(systemName: icone.systemName)
-                                            .frame(width: 32, height: 32)
-                                            .padding(8)
-                                            .foregroundColor(icone.id == iconeSelecionado.id
-                                                             ? Color.white
-                                                             : Color.primary)
-                                            .background(
-                                                icone.id == iconeSelecionado.id
-                                                ? Color.accentColor
-                                                : Color.clear
-                                            )
-                                            .cornerRadius(8)
-                                            .onTapGesture { iconeSelecionado = icone }
-                                    }
-                                }
-                                .padding()
-                                .background(Color(.secondarySystemGroupedBackground))
-                                .cornerRadius(22)
-                            } header: {
-                                HStack {
-                                    Text("Ícone")
-                                }.padding(.horizontal)
-                            }
-                            .listRowInsets(.init())
-                            .listRowBackground(Color.clear)
-                        }
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .scrollDismissesKeyboard(.immediately)
-                .navigationTitle(isEditar ? "Editar Categoria" : "Nova Categoria")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button { dismiss() } label: { Image(systemName: "xmark") }
-                    }
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            if sub.isSubscribed {
-                                Task{
-                                    await salvar()
-                                }
-                            } else {
-                                mostrarPaywall = true
-                            }
-                        } label: {
-                            Image(systemName: "checkmark").foregroundColor(.white)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(nome.isEmpty)
-                    }
-                }
-                .alert("", isPresented: $mostrarAlerta) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text("Esta subcategoria está um uso e não poderá ser excluída.")
-                }
-                .alert(
-                    "Excluir Categoria?",
-                    isPresented: $mostrarConfirmacao
-                ) {
-                    Button("Excluir", role: .destructive) {
-                        Task {
-                            guard let categoria = categoriaParaExcluir else { return }
-                            await removerSubcategoria(categoria)
-                        }
-                    }
-                    Button("Cancelar", role: .cancel) { }
-                } message: {
-                    Text("Essa ação não poderá ser desfeita.")
-                }
-                .onAppear {
-                    todasCategorias = try! CategoriaRepository().listar()
-                    if let cat = categoria, isEditar {
-                        subcategorias = todasCategorias.filter { $0.pai == cat.id }
-                    }
-                    if !isEditar{
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            campoFocado = .nome
-                        }
-                    }
-                }
-                .sheet(isPresented: $mostrarPaywall) {
-                    NavigationStack {
-                        PaywallView()
-                    }
-                }
-                .sheet(item: $sheetSubcategoria) { mode in
-                    SubcategoriaSheet(
-                        categoriaPai: categoria!,
-                        subcategoria: {
-                            if case let .editar(sub) = mode { return sub }
-                            return nil
-                        }(),
-                        onSalvar: { sub in
-                            if let i = subcategorias.firstIndex(where: { $0.id == sub.id }) {
-                                subcategorias[i] = sub
-                            } else {
-                                subcategorias.append(sub)
+                                    )
+                                    .onTapGesture { corSelecionada = cor }
                             }
                         }
-                    )
+                        .padding()
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .cornerRadius(22)
+                    } header: {
+                        HStack {
+                            Text("Cor")
+                        }.padding(.horizontal)
+                    }
+                    .listRowInsets(.init())
+                    .listRowBackground(Color.clear)
+                    
+                    Section {
+                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
+                            ForEach(IconeModel.icones, id: \.id) { icone in
+                                Image(systemName: icone.systemName)
+                                    .frame(width: 32, height: 32)
+                                    .padding(8)
+                                    .foregroundColor(icone.id == iconeSelecionado.id
+                                                     ? Color.white
+                                                     : Color.primary)
+                                    .background(
+                                        icone.id == iconeSelecionado.id
+                                        ? Color.accentColor
+                                        : Color.clear
+                                    )
+                                    .cornerRadius(8)
+                                    .onTapGesture { iconeSelecionado = icone }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .cornerRadius(22)
+                    } header: {
+                        HStack {
+                            Text("Ícone")
+                        }.padding(.horizontal)
+                    }
+                    .listRowInsets(.init())
+                    .listRowBackground(Color.clear)
                 }
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
+        .navigationTitle(isEditar ? "Editar Categoria" : "Nova Categoria")
+        .navigationBarTitleDisplayMode(.inline)
+        .safeAreaInset(edge: .top) {
+            if !isEditar {
+                Picker("Tipo", selection: $tipoFiltro) {
+                    ForEach(Tipo.allCases.reversed(), id: \.self) {
+                        Text($0.descricao).tag($0)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() } label: { Image(systemName: "xmark") }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    if sub.isSubscribed {
+                        Task{
+                            await salvar()
+                        }
+                    } else {
+                        mostrarPaywall = true
+                    }
+                } label: {
+                    Image(systemName: "checkmark").foregroundColor(.white)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(nome.isEmpty)
+            }
+        }
+        .alert("", isPresented: $mostrarAlerta) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Esta subcategoria está um uso e não poderá ser excluída.")
+        }
+        .alert(
+            "Excluir Categoria?",
+            isPresented: $mostrarConfirmacao
+        ) {
+            Button("Excluir", role: .destructive) {
+                Task {
+                    guard let categoria = categoriaParaExcluir else { return }
+                    await removerSubcategoria(categoria)
+                }
+            }
+            Button("Cancelar", role: .cancel) { }
+        } message: {
+            Text("Essa ação não poderá ser desfeita.")
+        }
+        .onAppear {
+            todasCategorias = try! CategoriaRepository().listar()
+            if let cat = categoria, isEditar {
+                subcategorias = todasCategorias.filter { $0.pai == cat.id }
+            }
+            if !isEditar{
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    campoFocado = .nome
+                }
+            }
+        }
+        .sheet(isPresented: $mostrarPaywall) {
+            NavigationStack {
+                PaywallView()
+            }
+        }
+        .sheet(item: $sheetSubcategoria) { mode in
+            SubcategoriaSheet(
+                categoriaPai: categoria!,
+                subcategoria: {
+                    if case let .editar(sub) = mode { return sub }
+                    return nil
+                }(),
+                onSalvar: { sub in
+                    if let i = subcategorias.firstIndex(where: { $0.id == sub.id }) {
+                        subcategorias[i] = sub
+                    } else {
+                        subcategorias.append(sub)
+                    }
+                }
+            )
+        }
     }
-    
-    // MARK: - Row Subcategoria
+  
     private func subcategoriaRow(_ sub: CategoriaModel) -> some View {
         HStack {
             Circle()
@@ -337,8 +313,7 @@ struct CategoriaFormView: View {
         try? await CategoriaRepository().remover(id: sub.id ?? 0, tipo: sub.tipo)
         subcategorias.removeAll { $0.id == sub.id }
     }
-    
-    // MARK: - Salvar categoria principal
+  
     private func salvar() async {
         let proximoId: Int64 = (try! CategoriaRepository()
             .listar()

@@ -32,7 +32,7 @@ struct CategoriaListView: View {
     var categoriasFiltradas: [CategoriaModel] {
         viewModel.categorias.filter { categoria in
             let matchesSearch = searchText.isEmpty ||
-                categoria.nome.localizedCaseInsensitiveContains(searchText)
+            categoria.nome.localizedCaseInsensitiveContains(searchText)
             let matchesTipo = categoria.tipo == tipoFiltro.rawValue
             let isRootCategory = categoria.pai == nil  //
             return matchesSearch && matchesTipo && isRootCategory
@@ -40,65 +40,64 @@ struct CategoriaListView: View {
     }
     
     var body: some View {
-        VStack {
+        List(categoriasFiltradas) { categoria in
+            CategoriaListRow(categoria: categoria)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    categoriaSelecionada = categoria
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        categoriaParaExcluir = categoria
+                        
+                        Task {
+                            let existe = try await LancamentoRepository()
+                                .existeLancamentoParaCategoria(
+                                    id: categoria.id ?? 0,
+                                    tipo: categoria.tipo
+                                )
+                            if existe {
+                                mostrarAlerta = true
+                            } else {
+                                mostrarConfirmacao = true
+                            }
+                        }
+                    } label: {
+                        Label("Excluir", systemImage: "trash")
+                    }
+                }
+        }
+        .sheet(item: $categoriaSelecionada) { categoria in
+            NavigationStack {
+                CategoriaFormView(categoria: categoria, isEditar: true)
+            }
+        }
+        .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
+        .scrollContentBackground(.hidden) // garante fundo igual ao da view
+        .background(Color(.systemGroupedBackground))
+        .overlay(
+            Group {
+                if categoriasFiltradas.isEmpty {
+                    Text("Nenhuma Categoria")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)
+                }
+            }
+        )
+        .navigationTitle("Categorias")
+        .background(Color(.systemGroupedBackground))
+        .toolbar(.hidden, for: .tabBar)
+        .safeAreaInset(edge: .top) {
             Picker("Tipo", selection: $tipoFiltro) {
                 ForEach(Tipo.allCases.reversed(), id: \.self) { tipo in
                     Text(tipo.descricao).tag(tipo)
                 }
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal)
-            
-            List(categoriasFiltradas) { categoria in
-                CategoriaListRow(categoria: categoria)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        categoriaSelecionada = categoria
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            categoriaParaExcluir = categoria
-                           
-                            Task {
-                                let existe = try await LancamentoRepository()
-                                    .existeLancamentoParaCategoria(
-                                        id: categoria.id ?? 0,
-                                        tipo: categoria.tipo
-                                    )
-                                if existe {
-                                    mostrarAlerta = true
-                                } else {
-                                    mostrarConfirmacao = true
-                                }
-                            }
-                        } label: {
-                            Label("Excluir", systemImage: "trash")
-                        }
-                    }
-            }
-            .sheet(item: $categoriaSelecionada) { categoria in
-                NavigationStack {
-                    CategoriaFormView(categoria: categoria, isEditar: true)
-                }
-            }
-            .listStyle(.insetGrouped)
-            .scrollDismissesKeyboard(.immediately)
-            .scrollContentBackground(.hidden) // garante fundo igual ao da view
-            .background(Color(.systemGroupedBackground))
-            .overlay(
-                Group {
-                    if categoriasFiltradas.isEmpty {
-                        Text("Nenhuma Categoria")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .multilineTextAlignment(.center)                        
-                    }
-                }
-            )
+            .padding()
         }
-        .navigationTitle("Categorias")
-        .background(Color(.systemGroupedBackground))
-        .toolbar(.hidden, for: .tabBar)
         .alert("", isPresented: $mostrarAlerta) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -142,7 +141,7 @@ struct CategoriaListView: View {
                 if !searchText.isEmpty {
                     Spacer()
                     Button {
-                        searchText = ""                       
+                        searchText = ""
                         UIApplication.shared.endEditing()
                     } label: {
                         Image(systemName: "xmark")

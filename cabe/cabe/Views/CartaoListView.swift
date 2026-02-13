@@ -41,84 +41,78 @@ struct CartaoListView: View {
     }
     
     var body: some View {
-        ZStack {
-            Color(uiColor: .systemGroupedBackground)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                Picker("Filtro", selection: $filtroSelecionado) {
-                    ForEach(FiltroCartao.allCases) { filtro in
-                        Text(filtro.titulo).tag(filtro)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-                
-                List {
-                    Section {
-                        ForEach(cartoesFiltrados) { cartao in
-                            NavigationLink(
-                                destination: CartaoDetalheView(cartao: cartao)
-                            ) {
-                                CartaoRow(cartao: cartao)
-                                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                        Button {
-                                            Task{
-                                                await viewModel.toggleArquivado([cartao])
-                                            }
-                                        } label: {
-                                            Label(cartao.arquivado ? String(localized: "Desarquivar") : String(localized: "Arquivar"), systemImage: "archivebox.fill")
-                                                .tint(.orange)
-                                        }
+        List {
+            Section {
+                ForEach(cartoesFiltrados) { cartao in
+                    NavigationLink(
+                        destination: CartaoDetalheView(cartao: cartao)
+                    ) {
+                        CartaoRow(cartao: cartao)
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    Task{
+                                        await viewModel.toggleArquivado([cartao])
                                     }
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                        Button(role: .destructive) {
-                                            cartaoParaExcluir = cartao
-                                            
-                                            Task{
-                                                let existe = try await LancamentoRepository().existeLancamentoParaCartao(
-                                                    cartaoUuid: cartao.uuid)
-                                                
-                                                if existe {
-                                                    mostrarAlerta = true
-                                                } else {
-                                                    mostrarConfirmacao = true
-                                                }
-                                            }
-                                            
-                                        } label: {
-                                            Label("Excluir", systemImage: "trash")
-                                        }
-                                    }
+                                } label: {
+                                    Label(cartao.arquivado ? String(localized: "Desarquivar") : String(localized: "Arquivar"), systemImage: "archivebox.fill")
+                                        .tint(.orange)
+                                }
                             }
-                            .listRowInsets(
-                                EdgeInsets(
-                                    top: 8,
-                                    leading: 16,
-                                    bottom: 8,
-                                    trailing: 16
-                                )
-                            )
-                        }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    cartaoParaExcluir = cartao
+                                    
+                                    Task{
+                                        let existe = try await LancamentoRepository().existeLancamentoParaCartao(
+                                            cartaoUuid: cartao.uuid)
+                                        
+                                        if existe {
+                                            mostrarAlerta = true
+                                        } else {
+                                            mostrarConfirmacao = true
+                                        }
+                                    }
+                                    
+                                } label: {
+                                    Label("Excluir", systemImage: "trash")
+                                }
+                            }
                     }
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: 8,
+                            leading: 16,
+                            bottom: 8,
+                            trailing: 16
+                        )
+                    )
                 }
-                .listStyle(.insetGrouped)
-                .scrollDismissesKeyboard(.immediately)
-                .scrollContentBackground(.hidden)
-                .overlay(
-                    Group {
-                        if cartoesFiltrados.isEmpty {
-                            Text("Nenhum Cartão")
-                                .font(.title2)
-                                .fontWeight(.medium)
-                                .multilineTextAlignment(.center)                            
-                        }
-                    }
-                )
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
+        .scrollContentBackground(.hidden)
+        .overlay(
+            Group {
+                if cartoesFiltrados.isEmpty {
+                    Text("Nenhum Cartão")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)
+                }
+            }
+        )
         .navigationTitle("Cartões")
         .toolbar(.hidden, for: .tabBar)
+        .safeAreaInset(edge: .top) {
+            Picker("Filtro", selection: $filtroSelecionado) {
+                ForEach(FiltroCartao.allCases) { filtro in
+                    Text(filtro.titulo).tag(filtro)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding()
+        }
         .alert("", isPresented: $mostrarAlerta) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -168,17 +162,19 @@ struct CartaoListView: View {
                 if !searchText.isEmpty {
                     Spacer()
                     Button {
-                        searchText = ""                        
+                        searchText = ""
                         UIApplication.shared.endEditing()
                     } label: {
                         Image(systemName: "xmark")
                     }
-                    .disabled(searchText.isEmpty)                    
+                    .disabled(searchText.isEmpty)
                 }
             }
         }
     }
 }
+    
+
 
 // MARK: - Row
 
