@@ -104,6 +104,7 @@ struct CartaoListView: View {
         )
         .navigationTitle("Cartões")
         .toolbar(.hidden, for: .tabBar)
+        .background(Color(.systemGroupedBackground))
         .safeAreaInset(edge: .top) {
             Picker("Filtro", selection: $filtroSelecionado) {
                 ForEach(FiltroCartao.allCases) { filtro in
