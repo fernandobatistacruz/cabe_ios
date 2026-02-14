@@ -91,10 +91,9 @@ struct ZoomPagamentoView: View {
             Group {
                 if viewModel.cartoes.isEmpty && viewModel.contas.isEmpty {
                     Text("Nenhum Registro")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding()
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)                        
                 }
             }
         )

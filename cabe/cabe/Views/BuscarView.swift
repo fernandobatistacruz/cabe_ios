@@ -64,8 +64,8 @@ struct BuscarView: View {
             } else if vm.buscou && vm.resultados.isEmpty {
                 Group {
                     Text("Nenhum Resultado")
-                        .font(.title2)
-                        .fontWeight(.medium)
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                 }
             }

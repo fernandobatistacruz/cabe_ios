@@ -127,7 +127,7 @@ struct FaturaDetalharView: View {
             }
 
             if !filtroLancamentos.isEmpty {
-                Section("Entries") {
+                Section("Lançamentos") {
                     ForEach(filtroLancamentos) { lancamento in
                         if modoConferencia {
                             LancamentoConferenciaRow(

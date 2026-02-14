@@ -27,7 +27,7 @@ struct TransferenciaView: View {
         Form {
            
             Section {
-                Picker("Conta de Origem", selection: $vm.contaOrigemUuid) {
+                Picker(String(localized: "Conta de Origem"), selection: $vm.contaOrigemUuid) {
                     Text("Selecione")
                         .tag(String?.none)
 
@@ -39,7 +39,7 @@ struct TransferenciaView: View {
             }
            
             Section {
-                Picker("Conta de Destino", selection: $vm.contaDestinoUuid) {
+                Picker(String(localized: "Conta de Destino"), selection: $vm.contaDestinoUuid) {
                     Text("Selecione")
                         .tag(String?.none)
 

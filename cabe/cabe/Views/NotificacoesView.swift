@@ -30,6 +30,8 @@ struct NotificacoesView: View {
         .navigationTitle("Notificações")
         .listStyle(.insetGrouped)
         .toolbar(.hidden, for: .tabBar)
+        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
         .toolbar {
             if vmNotificacao.temVencidos || vmNotificacao.temVenceHoje
             {
@@ -62,10 +64,9 @@ struct NotificacoesView: View {
                 if !vmNotificacao.temVencidos && !vmNotificacao.temVenceHoje
                 {
                     Text("Nenhuma Notificação")
-                        .font(.title2)
-                        .fontWeight(.medium)
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .multilineTextAlignment(.center)
-                    
                 }
             }
         }

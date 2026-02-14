@@ -177,7 +177,9 @@ struct LancamentoListView: View {
         }
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.immediately)
-        .contentShape(Rectangle())        
+        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
+        .contentShape(Rectangle())
         .navigationTitle(
             Text(
                 selectedDate
@@ -369,24 +371,13 @@ struct LancamentoListView: View {
             if lancamentosFiltrados.isEmpty {
                 Group {
                     Text("Nenhum Lançamento")
-                        .font(.title2)
-                        .fontWeight(.medium)
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                 }
             }
         }
-    }
-    
-    private var textoFiltro: String? {
-        let filtros = [
-            filtroTipo == .todos ? nil : filtroTipo.titulo,
-            filtroSelecionado == .todos ? nil : filtroSelecionado.titulo
-        ]
-        .compactMap { $0 }
-        .joined(separator: " + ")
-
-        return filtros.isEmpty ? nil : filtros
-    }
+    }   
     
     private func totalDaSection(_ items: [LancamentoItem]) -> Decimal {
         items.reduce(.zero) { parcial, item in

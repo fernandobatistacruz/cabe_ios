@@ -63,11 +63,14 @@ struct ContaListView: View {
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Contas")
+        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
         .overlay(
             Group {
                 if contasFiltradas.isEmpty {                   
                     Text("Nenhuma Conta")
-                        .font(.title2)
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .fontWeight(.medium)
                         .multilineTextAlignment(.center)
                 }

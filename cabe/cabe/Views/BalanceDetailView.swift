@@ -28,9 +28,13 @@ struct BalanceDetailView: View {
 
                 resumoCards
 
-                maioresGastosSection
-
-                insightsView
+                if !vm.topGastos.isEmpty {
+                    maioresGastosSection
+                }
+                
+                if !vm.insights.isEmpty {
+                    insightsView
+                }
             }
             .padding()
         }
@@ -45,28 +49,28 @@ extension BalanceDetailView {
 
     private var resumoCards: some View {
         LazyVGrid(columns: [.init(), .init()]) {
-            SummaryCard(title: "Receitas",
+            SummaryCard(title: String(localized: "Receitas"),
                         value: vm.receitasFormatado,
                         color: .green,
             )
             .padding(.trailing, 2)
             .padding(.horizontal, 1)
             
-            SummaryCard(title: "Despesas",
+            SummaryCard(title: String(localized: "Despesas"),
                         value: vm.despesasFormatado,
                         color: .red,
             )
             .padding(.vertical, 2)
             .padding(.horizontal, 1)
             
-            SummaryCard(title: "Saldo",
+            SummaryCard(title: String(localized: "Saldo"),
                         value: vm.saldoFormatado,
                         color: .purple
             )
             .padding(.trailing, 2)
             .padding(.horizontal, 1)
             
-            SummaryCard(title: "Percentual de Gasto",
+            SummaryCard(title: String(localized: "Percentual de Gastos"),
                         value: vm.percentualGasto,
                         color: .blue
             )
@@ -77,10 +81,13 @@ extension BalanceDetailView {
 
     private var maioresGastosSection: some View {
         VStack (alignment: .leading) {
-            Text("Maiores Gastos")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
+            
+                Text("Maiores Gastos")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+            
+            
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(vm.topGastos) { item in
                     HStack {
@@ -106,11 +113,13 @@ extension BalanceDetailView {
 
     var insightsView: some View {
         VStack(alignment: .leading, spacing: 8) {
+            
             Text("Análises")
                 .font(.headline)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
-
+            
+            
             ForEach(vm.insights.indices, id: \.self) { index in
                 let texto = vm.insights[index]
                 InsightRowView(texto: texto)

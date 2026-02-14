@@ -5,6 +5,8 @@
 //  Created by Fernando Batista da Cruz on 24/01/26.
 //
 
+import Foundation
+
 
 enum FiltroLancamento: String, CaseIterable, Identifiable {
     case todos
@@ -15,7 +17,7 @@ enum FiltroLancamento: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var titulo: String {
+    var titulo: LocalizedStringResource {
         switch self {
         case .todos: return "Todos"
         case .parcelados: return "Parcelados"
@@ -34,7 +36,7 @@ enum FiltroLancamentoFatura: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var titulo: String {
+    var titulo: LocalizedStringResource {
         switch self {
         case .todos: return "Todos"
         case .parcelados: return "Parcelados"
@@ -51,7 +53,7 @@ enum FiltroTipo: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var titulo: String {
+    var titulo: LocalizedStringResource {
         switch self {
         case .todos: return "Todos"
         case .receita: return "Receitas"

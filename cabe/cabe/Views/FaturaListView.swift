@@ -79,10 +79,9 @@ struct FaturaListView: View {
             if lancamentosAgrupados.isEmpty {
                 Group {
                     Text("Nenhuma Fatura")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding()
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)                      
                 }
             }
         }
@@ -90,6 +89,8 @@ struct FaturaListView: View {
         .navigationTitle("Faturas")
         .navigationBarTitleDisplayMode(.large)
         .toolbar(.hidden, for: .tabBar)
+        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

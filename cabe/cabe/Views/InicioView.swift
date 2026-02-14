@@ -456,9 +456,11 @@ struct RecentesListView: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 12) {
             
-            Text("Recentes")
-                .font(.title3)
-                .fontWeight(.semibold)                
+            if !viewModel.lancamentosRecentesAgrupadosSimples.isEmpty {
+                Text("Recentes")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+            }
             
             ForEach(viewModel.lancamentosRecentesAgrupadosSimples, id: \.date) { grupo in
                 

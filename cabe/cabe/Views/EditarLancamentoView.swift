@@ -265,13 +265,13 @@ struct EditarLancamentoView: View {
                 vm.sugerirDataFatura()
             }
             .alert(
-                "Este lançamento faz parte de uma recorrência",
+                "Este lançamento faz parte de uma recorrência.",
                 isPresented: $mostrarConfirmacaoEscopo
             ) {
-                Button("Somente este") {
+                Button("Somente Este") {
                     salvarAsync(.somenteEste)
                 }
-                Button("Este e próximos") {
+                Button("Este e Próximos") {
                     salvarAsync(.esteEProximos)
                 }
                 Button("Todos") {

@@ -65,6 +65,8 @@ struct ZoomCategoriaView: View {
         .navigationTitle("Categorias")
         .navigationBarTitleDisplayMode(.inline)
         .scrollDismissesKeyboard(.immediately)
+        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
         .onAppear {
             guard categorias.isEmpty else { return }
             categorias = (try? repository.listar(tipo: tipo)) ?? []
@@ -73,8 +75,8 @@ struct ZoomCategoriaView: View {
             Group {
                 if categoriasFiltradas.isEmpty {
                     Text("Nenhuma Categoria")
-                        .font(.title2)
-                        .fontWeight(.medium)
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                 }
             }
