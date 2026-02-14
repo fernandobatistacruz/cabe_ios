@@ -23,7 +23,7 @@ final class AuthViewModel: ObservableObject {
     @Published var pendingLinkCredential: AuthCredential?
     @Published private(set) var user: AuthUser?
     @Published var infoMessage: String?
-    
+        
     // MARK: - Email/Password
     @Published var email: String = ""
     @Published var password: String = ""
@@ -32,6 +32,7 @@ final class AuthViewModel: ObservableObject {
     private let appleService = AppleSignInService()
     private let googleService = GoogleSignInService()
     private var authListener: AuthStateDidChangeListenerHandle?
+    private let backupViewModel = BackupViewModel()
     
     init() {
             state = .loading
@@ -290,6 +291,8 @@ final class AuthViewModel: ObservableObject {
     }
     
     func removerConta() async {
+        
+        
         guard let user = Auth.auth().currentUser else {
             infoMessage = "Nenhum usuário logado."
             return
@@ -309,6 +312,9 @@ final class AuthViewModel: ObservableObject {
             if let bundleId = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleId)
             }
+            
+            // Apaga Backup iCloud
+            backupViewModel.apagarBackup()
 
             // 4️⃣ Informar o usuário que a conta foi removida
             self.infoMessage = "Conta removida com sucesso."

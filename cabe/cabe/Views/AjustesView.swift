@@ -185,7 +185,7 @@ struct AjustesView: View {
                                 .scaledToFit()
                                 .frame(width: 20, height: 20)
                                 .foregroundStyle(.orange)
-                            Text("Cartão de Crédito")
+                            Text("Cartões")
                         }
                     }
                     
