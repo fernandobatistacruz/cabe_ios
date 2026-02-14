@@ -5,6 +5,8 @@
 //  Created by Fernando Batista da Cruz on 22/12/25.
 //
 
+import Foundation
+
 
 enum OperadoraCartao: Int, CaseIterable, Identifiable {
     case visa = 1
@@ -17,7 +19,7 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var nome: String {
+    var nome: LocalizedStringResource {
         switch self {
         case .visa: return "Visa"
         case .mastercard: return "Mastercard"

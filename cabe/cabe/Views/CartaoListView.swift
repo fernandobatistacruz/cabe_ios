@@ -318,7 +318,7 @@ struct NovoCartaoView: View {
                         Text("Operadora")
                             .foregroundColor(.primary)
                         Spacer()
-                        Text(viewModel.operadora?.nome ?? String(localized: "Selecione"))
+                        Text(viewModel.operadora?.nome ?? "Selecione")
                             .foregroundColor(.secondary)
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)

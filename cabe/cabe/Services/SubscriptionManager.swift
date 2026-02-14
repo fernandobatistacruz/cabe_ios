@@ -37,7 +37,7 @@ final class SubscriptionManager: ObservableObject {
         case basic
         case complete
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .basic:
                 return "Básica"

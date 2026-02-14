@@ -120,11 +120,11 @@ private extension PaywallView {
 
     var basicPlan: some View {
         PlanCard(
-            title: "Básica",
-            price: "Grátis",
+            title: String(localized: "Básica"),
+            price: String(localized: "Grátis"),
             features: [
-                "Contas, cartões e categorias limitados",
-                "Com anúncios"
+                String(localized: "Contas, cartões e categorias limitados"),
+                String(localized: "Com anúncios")
             ],
             isSelected: selectedPlan == .basic,
             showsButton: false,
@@ -139,16 +139,16 @@ private extension PaywallView {
 
     var completePlan: some View {
         PlanCard(
-            title: "Completa",
+            title: String(localized: "Completa"),
             price: sub.isLoadingProduct
-                ? "Carregando…"
-                : sub.product?.displayPrice ?? "Indisponível",
+            ? String(localized: "Carregando…")
+            : sub.product?.displayPrice ?? String(localized: "Indisponível"),
             features: [
-                "Acesso ilimitado aos cadastros",
-                "Exportação de dados para CSV",
-                "Backup no iCloud",
-                "Notificação de vencimento",
-                "Sem anúncios"
+                String(localized: "Acesso ilimitado aos cadastros"),
+                String(localized: "Exportação de dados para CSV"),
+                String(localized: "Backup no iCloud"),
+                String(localized: "Notificação de vencimento"),
+                String(localized: "Sem anúncios")
             ],
             isSelected: selectedPlan == .complete,
             showsButton: true,
@@ -160,8 +160,8 @@ private extension PaywallView {
             isPurchasing: sub.isPurchasing,
             isButtonEnabled:
                 selectedPlan == .complete &&
-                sub.product != nil &&
-                !sub.isPurchasing
+            sub.product != nil &&
+            !sub.isPurchasing
         )
         .onTapGesture {
             selectedPlan = .complete
