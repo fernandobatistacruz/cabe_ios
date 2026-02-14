@@ -69,7 +69,7 @@ final class AnalyticsService {
     func passwordResetRequested() {
         Analytics.logEvent("password_reset_request", parameters: nil)
     }
-   
+ 
     func accountDeleted() {
         Analytics.logEvent("account_deleted", parameters: nil)
     }

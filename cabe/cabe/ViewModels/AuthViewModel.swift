@@ -83,11 +83,11 @@ final class AuthViewModel: ObservableObject {
     func handleAppleResult(_ authorization: ASAuthorization) async {
         do {
             let credential = try await appleService.signIn(authorization: authorization)
-            AnalyticsService.shared.loginAttempt(method: .apple)
+            //AnalyticsService.shared.loginAttempt(method: .apple)
             
             try await signInOrLink(credential)
             
-            AnalyticsService.shared.loginSuccess(method: .apple)
+            //AnalyticsService.shared.loginSuccess(method: .apple)
         } catch {
             AnalyticsService.shared.loginError(
                         method: .apple,
@@ -100,11 +100,11 @@ final class AuthViewModel: ObservableObject {
     // MARK: - Google
 
     func signInWithGoogle() async {
-        AnalyticsService.shared.loginAttempt(method: .google)
+        //AnalyticsService.shared.loginAttempt(method: .google)
         do {
             let credential = try await googleService.signIn()
             try await signInOrLink(credential)
-            AnalyticsService.shared.loginSuccess(method: .google)
+            //AnalyticsService.shared.loginSuccess(method: .google)
         } catch {
             AnalyticsService.shared.loginError(
                 method: .google,
@@ -162,7 +162,7 @@ final class AuthViewModel: ObservableObject {
         GIDSignIn.sharedInstance.signOut()
         self.user = nil
         self.state = .unauthenticated
-        AnalyticsService.shared.logout()
+        //AnalyticsService.shared.logout()
     }
 
 
@@ -180,25 +180,22 @@ final class AuthViewModel: ObservableObject {
         infoMessage = nil
         state = .loading
         
-        AnalyticsService.shared.loginAttempt(method: .email)
+        //AnalyticsService.shared.loginAttempt(method: .email)
         
         do {
             let result = try await Auth.auth()
                 .signIn(withEmail: email, password: password)
-            
-            
-            // 🔒 Verificação de e-mail
+                                    
             guard result.user.isEmailVerified else {
                 infoMessage = "Verifique seu e-mail para ativar sua conta."
                 try Auth.auth().signOut()
                 state = .unauthenticated
                 return
             }
-                                    
-            // ✅ Login OK
+           
             updateUser(result.user)
             state = .authenticated
-            AnalyticsService.shared.loginSuccess(method: .email)
+            //AnalyticsService.shared.loginSuccess(method: .email)
             
         } catch let authError as NSError {
             state = .unauthenticated
@@ -238,7 +235,7 @@ final class AuthViewModel: ObservableObject {
             self.errorMessage = nil
             self.infoMessage = "Conta criada! Verifique seu e-mail para ativar a conta."
             
-            AnalyticsService.shared.signUpCompleted(method: .email)
+            //AnalyticsService.shared.signUpCompleted(method: .email)
             
             // Envia e-mail de verificação
             try await result.user.sendEmailVerification()
@@ -279,7 +276,7 @@ final class AuthViewModel: ObservableObject {
             try await Auth.auth().sendPasswordReset(withEmail: email)
             errorMessage = nil
             infoMessage = "Se houver uma conta, enviaremos as instruções por e-mail."
-            AnalyticsService.shared.passwordResetRequested()
+            //AnalyticsService.shared.passwordResetRequested()
         } catch let authError as NSError {
             switch authError.code {
             case AuthErrorCode.invalidEmail.rawValue:

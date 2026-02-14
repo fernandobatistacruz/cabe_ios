@@ -173,13 +173,7 @@ struct LoginView: View {
             .fullScreenCover(isPresented: $showRegister) {
                 RegisterView()
                     .environmentObject(auth)
-            }
-            .onAppear {
-                AnalyticsService.shared.logScreen(
-                    .login,
-                    viewClass: "LoginView"
-                )
-            }
+            }            
         }
     }
 }
