@@ -43,13 +43,13 @@ struct AboutView: View {
                 VStack(spacing: 16) {
                     //TODO: Ajustar o links de privacidade e termos de uso
                     LinkRow(
-                        title: "Política de Privacidade",
+                        title: String(localized: "Política de Privacidade"),
                         systemImage: "hand.raised",
                         url: URL(string: "https://sites.google.com/view/cabeapp/privacidade")!
                     )
 
                     LinkRow(
-                        title: "Termos de Uso (EULA)",
+                        title: String(localized: "Termos de Uso (EULA)"),
                         systemImage: "doc.text",
                         url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula")!
                     )

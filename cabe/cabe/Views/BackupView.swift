@@ -92,7 +92,7 @@ struct BackupView: View {
     }
 
     private var ultimoBackupTexto: String {
-        guard ultimoBackupTimestamp > 0 else { return "Nunca" }
+        guard ultimoBackupTimestamp > 0 else { return String(localized: "Nunca") }
         let date = Date(timeIntervalSince1970: ultimoBackupTimestamp)
         return date.formatted(date: .abbreviated, time: .shortened)
     }

@@ -10,8 +10,7 @@ import SwiftUI
 
 struct BuscarView: View {
     
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss) private var dismiss    
     @StateObject private var vm = BuscarViewModel()
     @StateObject var vmLancamentos: LancamentoListViewModel
     @Binding var searchText: String

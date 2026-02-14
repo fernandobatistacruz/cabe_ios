@@ -248,7 +248,7 @@ struct CategoriaFormView: View {
             Text("Esta subcategoria está um uso e não poderá ser excluída.")
         }
         .alert(
-            "Excluir Categoria?",
+            "Excluir Subcategoria?",
             isPresented: $mostrarConfirmacao
         ) {
             Button("Excluir", role: .destructive) {

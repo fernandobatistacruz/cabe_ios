@@ -102,8 +102,8 @@ private extension PaywallView {
 
     var statusDescription: String {
         sub.currentPlan == .complete
-        ? "Você tem acesso a todos os recursos da assinatura completa."
-        : "Você está usando a assinatura básica."
+        ? String(localized: "Você tem acesso a todos os recursos da assinatura completa.")
+        : String(localized: "Você está usando a assinatura básica.")
     }
 }
 

@@ -398,16 +398,3 @@ struct LancamentoConferenciaRow: View {
         .animation(.easeInOut(duration: 0.15), value: selecionado)
     }
 }
-
-enum OrdemData: CaseIterable {
-    case crescente
-    case decrescente
-
-    var titulo: String {
-        self == .crescente ? "Crescente" : "Decrescente"
-    }
-
-    var icon: String {
-        self == .crescente ? "arrow.up" : "arrow.down"
-    }
-}

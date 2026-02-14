@@ -58,7 +58,7 @@ struct TabMenuView: View {
                 }
                 Tab("Ajustes", systemImage: "gear", value: TabItem.ajustes) {
                     NavigationStack {
-                        AjustesView()
+                        AjustesView(vmLancamentos: vmLancamentos)
                     }
                 }
                 Tab(value: TabItem.buscar, role: .search) {
@@ -104,7 +104,7 @@ struct TabMenuView: View {
                 .tag(TabItem.resumo)
 
                 NavigationStack {
-                    AjustesView()
+                    AjustesView(vmLancamentos: vmLancamentos,)
                 }
                 .tabItem {
                     Label("Ajustes", systemImage: "gear")

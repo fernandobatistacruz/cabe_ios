@@ -62,7 +62,7 @@ struct LancamentosPorCategoriaView: View {
                 
                 categoriaRow(
                     id: categoria.categoriaID,
-                    nome: "Principal",
+                    nome: String(localized: "Principal"),
                     total: total(lancamentosCategoriaPrincipal),
                     cor: categoria.cor,
                     expanded: expandedCategorias.contains(categoria.categoriaID)

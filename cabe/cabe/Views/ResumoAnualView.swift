@@ -220,6 +220,8 @@ struct ResumoAnualView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Análises")
                 .font(.headline)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
 
             ForEach(vm.insights.indices, id: \.self) { index in
                 let texto = vm.insights[index]

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AjustesView: View {
+    @StateObject var vmLancamentos: LancamentoListViewModel
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var auth: AuthViewModel
     @EnvironmentObject var sub: SubscriptionManager
@@ -187,6 +188,19 @@ struct AjustesView: View {
                             Text("Cartão de Crédito")
                         }
                     }
+                    
+                    NavigationLink {
+                        ContaListView(vmLancamentos: vmLancamentos)
+                    } label: {
+                        HStack (){
+                            Image(systemName: "building.columns.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(.blue)
+                            Text("Contas")
+                        }
+                    }
                 }
             }
             .listStyle(.insetGrouped)
@@ -201,8 +215,4 @@ struct AjustesView: View {
             }
         }
     }
-}
-
-#Preview {
-    AjustesView().environmentObject(ThemeManager())
 }
