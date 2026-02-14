@@ -271,7 +271,7 @@ struct EditarLancamentoView: View {
                 Button("Somente Este") {
                     salvarAsync(.somenteEste)
                 }
-                Button("Este e Próximos") {
+                Button("Este e os Próximos") {
                     salvarAsync(.esteEProximos)
                 }
                 Button("Todos") {

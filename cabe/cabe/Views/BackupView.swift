@@ -46,7 +46,7 @@ struct BackupView: View {
                 )
             }
             footer: {
-                Text("Quando ativado, seus dados serão salvos automaticamente no iCloud periódicamente.")
+                Text("Quando ativado, seus dados serão salvos diariamente no iCloud.")
             }
 
             Section {

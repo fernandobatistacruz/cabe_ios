@@ -239,14 +239,14 @@ struct CartaoDetalheView: View {
             
             Section(header: Text("Detalhes Financeiros")) {
                 HStack {
-                    Text("Dia de Vencimento")
+                    Text("Dia do Vencimento")
                     Spacer()
                     Text("\(cartao.vencimento)")
                         .foregroundColor(.secondary)
                 }
                 
                 HStack {
-                    Text("Dia de Fechamento")
+                    Text("Dia do Fechamento")
                     Spacer()
                     Text("\(cartao.fechamento)")
                         .foregroundColor(.secondary)

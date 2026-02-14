@@ -23,7 +23,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Warning, you've spent almost all of your income."
+            "value" : "⚠️ Careful, you've spent almost all of your income."
           }
         }
       }
@@ -71,7 +71,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔁 %@%% of the expenses were recurring."
+            "value" : "🔁 %@%% of the expenses were frequently."
           }
         }
       }
@@ -83,7 +83,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The subscription will automatically renew at %@ per month until cancelled."
+            "value" : "The subscription will automatically renew at %@ per month until it is cancelled."
           }
         }
       }
@@ -147,7 +147,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Annotation"
+            "value" : "Note"
           }
         }
       }
@@ -301,7 +301,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic Backup"
+            "value" : "Auto Backup"
           }
         }
       }
@@ -472,12 +472,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Water / Sewage"
+            "value" : "Water and Sewage"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Água e Esgoto"
           }
         }
@@ -489,12 +489,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Groceries"
+            "value" : "Food"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Alimentação"
           }
         }
@@ -523,12 +523,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fitness"
+            "value" : "Workout"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Atividade Física"
           }
         }
@@ -540,12 +540,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Barber / Salon"
+            "value" : "Barber and Salon"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Barbearia e Salão"
           }
         }
@@ -625,12 +625,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "13th Salary"
+            "value" : "Bonus"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Décimo"
           }
         }
@@ -642,12 +642,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Housekeeper"
+            "value" : "Maid"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Diarista"
           }
         }
@@ -744,12 +744,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aesthetics"
+            "value" : "Beauty"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Estética"
           }
         }
@@ -778,12 +778,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Financing"
+            "value" : "Loan and Mortgage"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Financiamento"
           }
         }
@@ -846,12 +846,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Leisure / Hobby"
+            "value" : "Travel and Hobby"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Lazer e Hobby"
           }
         }
@@ -999,12 +999,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Streaming & TV"
+            "value" : "Streaming and TV"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Streaming e TV"
           }
         }
@@ -1097,7 +1097,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paste the email into the app of your choice."
+            "value" : "Paste the email into any app you like."
           }
         }
       }
@@ -1131,7 +1131,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conference"
+            "value" : "Check"
           }
         }
       }
@@ -1213,7 +1213,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Origin Account"
+            "value" : "Source Account"
           }
         }
       }
@@ -1280,7 +1280,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Growing"
+            "value" : "Ascending"
           }
         }
       }
@@ -1302,7 +1302,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Create an account with E-mail"
+            "value" : "Create an account with Email"
           }
         }
       }
@@ -1324,7 +1324,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Date of Registration"
+            "value" : "Registration Date"
           }
         }
       }
@@ -1336,7 +1336,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Decreasing"
+            "value" : "Descending"
           }
         }
       }
@@ -1484,30 +1484,6 @@
         }
       }
     },
-    "Dia de Fechamento" : {
-      "comment" : "A label displayed next to the closing day of a bank account.",
-      "isCommentAutoGenerated" : true,
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Closing Day"
-          }
-        }
-      }
-    },
-    "Dia de Vencimento" : {
-      "comment" : "A label for the expiration date of a bank account.",
-      "isCommentAutoGenerated" : true,
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Expiration Day"
-          }
-        }
-      }
-    },
     "Dia do Fechamento" : {
       "comment" : "A label describing the field for entering the due date of a bank account.",
       "isCommentAutoGenerated" : true,
@@ -1515,7 +1491,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Closing Day"
+            "value" : "Closing Date"
           }
         }
       }
@@ -1527,7 +1503,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Expiration Day"
+            "value" : "Due Date"
           }
         }
       }
@@ -1577,7 +1553,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "E-mail"
+            "value" : "Email"
           }
         }
       }
@@ -1587,7 +1563,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "E-mail copied"
+            "value" : "Email copied"
           }
         }
       }
@@ -1695,7 +1671,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose how the app should behave in relation to Light and Dark mode. Automatic."
+            "value" : "Choose how the app should behave with Light and Dark mode."
           }
         }
       }
@@ -1753,7 +1729,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This category is a use and cannot be deleted."
+            "value" : "This category is in use and cannot be deleted."
           }
         }
       }
@@ -1763,7 +1739,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This account is a use and cannot be deleted."
+            "value" : "This account is in use and cannot be deleted."
           }
         }
       }
@@ -1785,17 +1761,17 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This card is a use and cannot be deleted."
+            "value" : "This card is in use and cannot be deleted."
           }
         }
       }
     },
-    "Este e Próximos" : {
+    "Este e os Próximos" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This and Next"
+            "value" : "This and the Next Ones"
           }
         }
       }
@@ -1805,7 +1781,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This entry is part of a recurring series."
+            "value" : "This entry is part of a recurring payment."
           }
         }
       }
@@ -1875,7 +1851,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Delete This and the Following ones"
+            "value" : "Delete This and the Next Ones"
           }
         }
       }
@@ -1949,7 +1925,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Invoices"
+            "value" : "Card Statement"
           }
         }
       }
@@ -1961,7 +1937,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Invoice"
+            "value" : "Card Statements"
           }
         }
       }
@@ -2060,7 +2036,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historic"
+            "value" : "History"
           }
         }
       }
@@ -2117,7 +2093,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter the name of the card."
+            "value" : "Enter the card name."
           }
         }
       }
@@ -2129,7 +2105,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Report or number of parcel."
+            "value" : "Enter the number of payments"
           }
         }
       }
@@ -2141,7 +2117,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter a closing day between 1 and 31."
+            "value" : "Enter a closing date between 1 and 31."
           }
         }
       }
@@ -2153,7 +2129,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter a pay day between 1 and 31."
+            "value" : "Enter a due date between 1 and 31."
           }
         }
       }
@@ -2278,7 +2254,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mark Everything as Read?"
+            "value" : "Mark All as Read?"
           }
         }
       }
@@ -2330,7 +2306,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not Paid"
+            "value" : "Unpaid"
           }
         }
       }
@@ -2340,7 +2316,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not Paid"
+            "value" : "Unpaids"
           }
         }
       }
@@ -2458,7 +2434,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No Invoice"
+            "value" : "No Card Statement"
           }
         }
       }
@@ -2470,7 +2446,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No Notifications"
+            "value" : "No Notification"
           }
         }
       }
@@ -2522,7 +2498,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Expiration notification"
+            "value" : "Due date notification"
           }
         }
       }
@@ -2600,7 +2576,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Number of parcel"
+            "value" : "Number of payments"
           }
         }
       }
@@ -2628,7 +2604,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Operator"
+            "value" : "Credit Card Company"
           }
         }
       }
@@ -2638,7 +2614,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Another Operator"
+            "value" : "Another Company"
           }
         }
       }
@@ -2684,7 +2660,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pay by Card"
+            "value" : "Paid by Card"
           }
         }
       }
@@ -2696,7 +2672,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pay with Account"
+            "value" : "Paid by Account"
           }
         }
       }
@@ -2718,7 +2694,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parcel"
+            "value" : "Payment Number"
           }
         }
       }
@@ -2730,7 +2706,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parcel"
+            "value" : "In Installments"
           }
         }
       }
@@ -2742,7 +2718,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parcel"
+            "value" : "In Installments"
           }
         }
       }
@@ -2754,7 +2730,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Percentage of Expenses"
+            "value" : "Expense Ratio"
           }
         }
       }
@@ -2783,14 +2759,14 @@
         }
       }
     },
-    "Quando ativado, seus dados serão salvos automaticamente no iCloud periódicamente." : {
-      "comment" : "A footer text for the backup section, explaining that the data will be automatically backed up to iCloud periodically when enabled.",
+    "Quando ativado, seus dados serão salvos diariamente no iCloud." : {
+      "comment" : "A footer text in the BackupView, explaining that the user's data will be backed up daily to iCloud when enabled.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When enabled, your data will be automatically saved in iCloud periodically."
+            "value" : "When enable, your data will be saved daily to iCloud."
           }
         }
       }
@@ -2802,7 +2778,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When enabled, you will be notified when there is a payment due on that day."
+            "value" : "When enabled, you will be notified when a due payments occurs on the day."
           }
         }
       }
@@ -2814,7 +2790,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fortnightly"
+            "value" : "Biweekly"
           }
         }
       }
@@ -2838,7 +2814,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Income"
+            "value" : "Incomes"
           }
         }
       }
@@ -2850,7 +2826,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recent"
+            "value" : "Recents"
           }
         }
       }
@@ -2862,7 +2838,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appellants"
+            "value" : "Recurrings"
           }
         }
       }
@@ -2966,7 +2942,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select the card operator."
+            "value" : "Select the credit card company."
           }
         }
       }
@@ -3339,7 +3315,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Defeated"
+            "value" : "Past Due"
           }
         }
       }
@@ -3351,7 +3327,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pay"
+            "value" : "Due Date"
           }
         }
       }
