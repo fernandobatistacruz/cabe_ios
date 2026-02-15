@@ -16,13 +16,11 @@ struct AboutView: View {
         ?? "App"
 
     private let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "-"
-    private let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "-"
 
     var body: some View {
         ScrollView {
             VStack(spacing: 32) {
-
-                // MARK: - Header
+             
                 VStack(spacing: 12) {
                     Image(uiImage: UIImage(named: "app_icon_ui") ?? UIImage())
                         .resizable()
@@ -33,21 +31,31 @@ struct AboutView: View {
                         .font(.title2)
                         .fontWeight(.bold)
 
-                    Text("Versão \(version) (\(build))")
+                    Text("Versão \(version)")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 .padding(.top, 40)
-
-                // MARK: - Links
+               
                 VStack(spacing: 16) {
-                    //TODO: Ajustar o links de privacidade e termos de uso
-                    LinkRow(
-                        title: String(localized: "Política de Privacidade"),
-                        systemImage: "hand.raised",
-                        url: URL(string: "https://sites.google.com/view/cabeapp/privacidade")!
-                    )
-
+                    
+                    if let idioma = Bundle.main.preferredLocalizations.first {
+                        let languageCode = Locale(identifier: idioma).language.languageCode?.identifier ?? ""
+                        
+                        if languageCode == "pt" {
+                            LinkRow(
+                                title: String(localized: "Política de Privacidade"),
+                                systemImage: "hand.raised",
+                                url: URL(string: "https://sites.google.com/view/cabeapp/privacidade")!
+                            )
+                        } else {
+                            LinkRow(
+                                title: String(localized: "Política de Privacidade"),
+                                systemImage: "hand.raised",
+                                url: URL(string: "https://sites.google.com/view/cabeapp/privacy-policy")!
+                            )
+                        }
+                    }
                     LinkRow(
                         title: String(localized: "Termos de Uso (EULA)"),
                         systemImage: "doc.text",
@@ -55,11 +63,7 @@ struct AboutView: View {
                     )
                 }
                 .padding(.horizontal)
-                
-                
-                
-
-                // MARK: - Support
+             
                 VStack(spacing: 8) {
                     Text("Suporte")
                         .font(.headline)
@@ -87,8 +91,7 @@ struct AboutView: View {
                         Text("Cole o e-mail no app de sua preferência.")
                     }
                 }
-
-                // MARK: - Footer
+               
                 Text("Desenvolvido por Fernando Batista da Cruz")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
