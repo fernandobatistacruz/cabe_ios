@@ -54,12 +54,10 @@ struct PaywallView: View {
         }
     }
 
-    // MARK: - Footer
-
     var footerText: some View {
         Group {
             if let product = sub.product {
-                Text("A assinatura será automaticamente renovada por \(product.displayPrice) por mês até ser cancelada.")
+                Text("A assinatura será automaticamente renovada por \(product.displayPrice)/mês até ser cancelada.")
             } else {
                 Text("Carregando informações da assinatura…")
             }
@@ -69,8 +67,6 @@ struct PaywallView: View {
         .multilineTextAlignment(.center)
     }
 }
-
-// MARK: - Header
 
 private extension PaywallView {
 
@@ -106,8 +102,6 @@ private extension PaywallView {
         : String(localized: "Você está usando a assinatura básica.")
     }
 }
-
-// MARK: - Plans
 
 private extension PaywallView {
 
@@ -168,8 +162,6 @@ private extension PaywallView {
         }
     }
 }
-
-// MARK: - PlanCard
 
 struct PlanCard: View {
 
