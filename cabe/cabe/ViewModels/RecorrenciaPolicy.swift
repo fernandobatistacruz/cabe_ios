@@ -77,7 +77,7 @@ struct RecorrenciaPolicy {
     }
 
     var requerConfirmacaoEscopoAlterar: Bool {
-        switch tipoAtual {
+        switch tipoAnterior {
         case .mensal, .semanal, .quinzenal, .parcelado:
             return true
         default:
