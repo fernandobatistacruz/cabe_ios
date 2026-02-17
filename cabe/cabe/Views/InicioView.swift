@@ -252,13 +252,6 @@ struct CardItem: View {
     let icone: String
     let mostrarValores: Bool
     let moeda: String
-      
-    private func gradientColors(from base: Color) -> [Color] {
-        let top = base.opacity(0.32)
-        let middle = base.opacity(0.25)
-        let bottom = base.opacity(0.36)
-        return [top, middle, bottom]
-    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -266,36 +259,30 @@ struct CardItem: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
-                .foregroundStyle(color)
+                .foregroundStyle(.white)
             
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.white)
                 if(mostrarValores){
                     Text(formatarValor(value, moeda: moeda, sinal: sinal))
                         .font(.headline)
                         .fontWeight(.heavy)
-                        .foregroundStyle(color)
+                        .foregroundStyle(.white)
                 }else{
                     Text("•••")
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundStyle(color)
+                        .foregroundStyle(.white)
                 }
             }
             .padding(.vertical,2)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            LinearGradient(
-                colors: gradientColors(from: color),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
+        .background(color.gradient.opacity(0.75))
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
     

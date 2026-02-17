@@ -341,11 +341,11 @@ struct DonutChartView: View {
                 ForEach(items.indices, id: \.self) { index in
                     let start = startAngle(for: index)
                     let end = endAngle(for: index)
-                    if end - start > 0.0001 { // desenha apenas se visível
+                    if end - start > 0.0001 {
                         Circle()
                             .trim(from: start, to: end)
                             .stroke(
-                                items[index].cor,
+                                items[index].cor.gradient,
                                 style: StrokeStyle(
                                     lineWidth: lineWidth,
                                     lineCap: .round
