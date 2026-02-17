@@ -251,7 +251,15 @@ struct LancamentoListView: View {
                     )
                     .symbolRenderingMode(filtroAtivo ? .palette : .monochrome)
                     .foregroundStyle(
-                        filtroAtivo ? Color.white : Color.primary,
+                        filtroAtivo
+                        ? Color.white
+                        : {
+                            if #available(iOS 26, *) {
+                                return Color.primary
+                            } else {
+                                return Color.accentColor
+                            }
+                        }(),
                         Color.accentColor
                     )
                 }
@@ -422,8 +430,7 @@ struct LancamentoListView: View {
         let porData = Dictionary(grouping: lancamentosFiltrados) {
             Calendar.current.startOfDay(for: $0.dataVencimento)
         }
-
-        // 1️⃣ monta as sections base
+       
         let sectionsBase: [(date: Date, items: [LancamentoItem])] =
             porData.map { (date, lancamentosDoDia) in
 
@@ -455,8 +462,7 @@ struct LancamentoListView: View {
                 
                 return (date: date, items: itensSimples + itensCartao)
             }
-
-        // 2️⃣ ordena CRESCENTE para calcular o fluxo
+      
         let ordenadasParaCalculo = sectionsBase.sorted { $0.date < $1.date }
 
         var saldo: Decimal = .zero
@@ -472,8 +478,7 @@ struct LancamentoListView: View {
                     saldoAcumulado: saldo
                 )
             }
-
-        // 3️⃣ reordena para exibição (DECRESCENTE)
+      
         return comSaldoCalculado.sorted { $0.date > $1.date }
     }
     

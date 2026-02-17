@@ -214,7 +214,7 @@ struct FavoritosView: View{
                         value: constas,
                         sinal: true,
                         color: .blue,
-                        icone:  "wallet.bifold.fill",
+                        icone:  iconePagamento,
                         mostrarValores: mostrarValores,
                         moeda: moeda
                     )
@@ -239,6 +239,14 @@ struct FavoritosView: View{
                 }
                 .buttonStyle(.plain)                
             }.padding(.horizontal)
+        }
+    }
+    
+    var iconePagamento: String {
+        if #available(iOS 26, *) {
+            return "wallet.bifold.fill"
+        } else {
+            return "building.columns.fill"
         }
     }
 }

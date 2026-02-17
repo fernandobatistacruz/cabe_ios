@@ -146,7 +146,7 @@ struct AjustesView: View {
                             )
                     } label: {
                         HStack {
-                            Image(systemName: "wallet.bifold.fill")
+                            Image(systemName: "banknote.fill")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 20, height: 20)

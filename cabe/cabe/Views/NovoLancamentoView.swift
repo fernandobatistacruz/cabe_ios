@@ -228,7 +228,7 @@ struct NovoLancamentoView: View {
                         .presentationDetents([.medium, .large])
                         .presentationDragIndicator(.hidden)
                     }
-                }
+                }                    
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

@@ -83,7 +83,7 @@ struct TabMenuView: View {
                         }
                 }
                 .tabItem {
-                    Label("Início", systemImage: "text.rectangle.page.fill")
+                    Label("Início", systemImage: "doc.text.image.fill")
                 }
                 .tag(TabItem.inicio)
                 

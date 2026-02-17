@@ -259,7 +259,7 @@ struct ResumoAnualView: View {
 
     private func primeiraLetraDoMes(_ mes: Int) -> String {
         guard mes >= 1 && mes <= Self.monthSymbols.count else { return "" }
-        return String(Self.monthSymbols[mes - 1].prefix(1))
+        return String(Self.monthSymbols[mes - 1].prefix(1)).capitalized
     }
     
     var insightsView: some View {

@@ -247,7 +247,15 @@ struct FaturaDetalharView: View {
                     )
                     .symbolRenderingMode(filtroAtivo ? .palette : .monochrome)
                     .foregroundStyle(
-                        filtroAtivo ? Color.white : Color.primary,
+                        filtroAtivo
+                        ? Color.white
+                        : {
+                            if #available(iOS 26, *) {
+                                return Color.primary
+                            } else {
+                                return Color.accentColor
+                            }
+                        }(),
                         Color.accentColor
                     )
                 }
