@@ -18,7 +18,6 @@ struct InicioView: View {
     @AppStorage("mostrarValores") private var mostrarValores: Bool = true
     @State private var selectedDate: Date = Date()
     @State private var direcao: Edge = .trailing
-   
     
     var body: some View {
         ZStack {
@@ -260,6 +259,8 @@ struct CardItem: View {
     let icone: String
     let mostrarValores: Bool
     let moeda: String
+    
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: 12) {
@@ -290,7 +291,11 @@ struct CardItem: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.gradient.opacity(0.75))
+        .background(
+            color
+                .gradient
+                .opacity(colorScheme == .dark ? 0.75 : 0.75)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
     
