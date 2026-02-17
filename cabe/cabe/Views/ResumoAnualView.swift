@@ -192,69 +192,27 @@ struct ResumoAnualView: View {
             )
         }
     }
-    
-    struct SerieMensal: Identifiable {
-        let id = UUID()
-        let mes: Int
-        let tipo: String
-        let valor: Double
-    }
-    
-    private var dadosAgrupados: [SerieMensal] {
-        vm.resumoMensal.flatMap { item in
-            [
-                SerieMensal(
-                    mes: item.mes,
-                    tipo: "Receita",
-                    valor: item.receita.doubleValue
-                ),
-                SerieMensal(
-                    mes: item.mes,
-                    tipo: "Despesa",
-                    valor: item.despesa.doubleValue
-                )
-            ]
-        }
-    }
-    
-    private var greenGradient: LinearGradient {
-        LinearGradient(
-            colors: [
-                Color.green,
-                Color.green.opacity(0.55)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-    
-    private var redGradient: LinearGradient {
-        LinearGradient(
-            colors: [
-                Color.red,
-                Color.red.opacity(0.55)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
   
     var graficoReceitaDespesa: some View {
         ChartCard(titulo: "Evolução Mensal") {
-            Chart (dadosAgrupados) { item in
-                
+            Chart(vm.resumoMensal, id: \.mes) { item in
                 BarMark(
                     x: .value("Mês", "\(item.mes)"),
-                    y: .value("Valor", item.valor),
+                    y: .value("Valor", item.receita.doubleValue),
                     width: .fixed(10)
                 )
                 .cornerRadius(3)
-                .position(by: .value("Tipo", item.tipo))
-                .foregroundStyle(
-                    item.tipo == "Receita"
-                    ? greenGradient
-                    : redGradient
+                .position(by: .value("Tipo", "Receita"))
+                .foregroundStyle(.green.gradient)
+               
+                BarMark(
+                    x: .value("Mês", "\(item.mes)"),
+                    y: .value("Valor", item.despesa.doubleValue),
+                    width: .fixed(10)
                 )
+                .cornerRadius(3)
+                .position(by: .value("Tipo", "Despesa"))
+                .foregroundStyle(.red.gradient)
             }
             .chartForegroundStyleScale([
                 "Receita": .green,
@@ -262,7 +220,7 @@ struct ResumoAnualView: View {
             ])
             .chartLegend(position: .bottom, spacing: 16)
             .chartXAxis {
-                AxisMarks(values: dadosAgrupados.map { "\($0.mes)" }) { value in
+                AxisMarks(values: vm.resumoMensal.map { "\($0.mes)" }) { value in
                     AxisGridLine()
                     AxisTick()
                     AxisValueLabel {
@@ -288,9 +246,6 @@ struct ResumoAnualView: View {
                         }
                     }
                 }
-            }
-            .chartYAxis {
-                AxisMarks(position: .leading)
             }
             .frame(height: 240)
         }
