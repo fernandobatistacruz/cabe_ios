@@ -28,8 +28,7 @@ final class ResumoAnualViewModel: ObservableObject {
         self.anoSelecionado = ano
         self.repository = repository
     }
-
-    // MARK: - Carregar dados
+   
     func carregarDados() async {
         do {
             lancamentos =  try await repository.listarLancamentosDoAno(ano: anoSelecionado)
@@ -47,7 +46,6 @@ final class ResumoAnualViewModel: ObservableObject {
     }
 }
 
-// MARK: - Funções auxiliares
 private extension ResumoAnualViewModel {
 
     func calcularResumoAnual(_ lancamentos: [LancamentoModel]) {
@@ -213,10 +211,8 @@ private extension ResumoAnualViewModel {
         
         insights = frases
     }
-
 }
 
-// MARK: - Models
 struct ResumoAnualModel {
     let ano: Int
     let receitaTotal: Decimal
@@ -235,7 +231,7 @@ struct ResumoMensalModel: Identifiable {
 
     var mesNome: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.locale = .current
         return formatter.monthSymbols[mes - 1]
     }
 }

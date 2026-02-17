@@ -1,7 +1,6 @@
 import SwiftUI
 import Charts
 
-// MARK: - View
 struct ResumoAnualView: View {
 
     @StateObject private var vm: ResumoAnualViewModel
@@ -39,6 +38,7 @@ struct ResumoAnualView: View {
                     
                     graficoReceitaDespesa
                     graficoCategorias
+                    
                     if !vm.insights.isEmpty {
                         insightsView
                     }
@@ -167,8 +167,7 @@ struct ResumoAnualView: View {
             print("Erro ao exportar CSV:", error)
         }
     }
-
-    // MARK: - Cards
+   
     func cardsResumo(_ resumo: ResumoAnualModel) -> some View {
         let currentCode = vm.lancamentos.first?.currencyCode ?? ""
         
@@ -193,29 +192,121 @@ struct ResumoAnualView: View {
             )
         }
     }
-
-    // MARK: - Evolução Mensal
-    var graficoReceitaDespesa: some View {
-        ChartCard(titulo: "Evolução Mensal") {
-            Chart(vm.resumoMensal) { item in
-                BarMark(
-                    x: .value("Mês", item.mes),
-                    y: .value("Receita", item.receita.doubleValue)
+    
+    struct SerieMensal: Identifiable {
+        let id = UUID()
+        let mes: Int
+        let tipo: String
+        let valor: Double
+    }
+    
+    private var dadosAgrupados: [SerieMensal] {
+        vm.resumoMensal.flatMap { item in
+            [
+                SerieMensal(
+                    mes: item.mes,
+                    tipo: "Receita",
+                    valor: item.receita.doubleValue
+                ),
+                SerieMensal(
+                    mes: item.mes,
+                    tipo: "Despesa",
+                    valor: item.despesa.doubleValue
                 )
-                .foregroundStyle(.green)
-
-                BarMark(
-                    x: .value("Mês", item.mes),
-                    y: .value("Despesa", item.despesa.doubleValue)
-                )
-                .foregroundStyle(.red)
-            }
-            .frame(height: 220)
+            ]
         }
     }
+    
+    private var greenGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color.green,
+                Color.green.opacity(0.55)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+    
+    private var redGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color.red,
+                Color.red.opacity(0.55)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+  
+    var graficoReceitaDespesa: some View {
+        ChartCard(titulo: "Evolução Mensal") {
+            Chart (dadosAgrupados) { item in
+                
+                BarMark(
+                    x: .value("Mês", "\(item.mes)"),
+                    y: .value("Valor", item.valor),
+                    width: .fixed(10)
+                )
+                .cornerRadius(3)
+                .position(by: .value("Tipo", item.tipo))
+                .foregroundStyle(
+                    item.tipo == "Receita"
+                    ? greenGradient
+                    : redGradient
+                )
+            }
+            .chartForegroundStyleScale([
+                "Receita": .green,
+                "Despesa": .red
+            ])
+            .chartLegend(position: .bottom, spacing: 16)
+            .chartXAxis {
+                AxisMarks(values: dadosAgrupados.map { "\($0.mes)" }) { value in
+                    AxisGridLine()
+                    AxisTick()
+                    AxisValueLabel {
+                        if let mesString = value.as(String.self),
+                           let mesInt = Int(mesString) {
+                            Text(primeiraLetraDoMes(mesInt))
+                                .font(.caption2)
+                        }
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic) { value in
+                    AxisGridLine()
+                    AxisTick()
+                    AxisValueLabel {
+                        if let doubleValue = value.as(Double.self),
+                           doubleValue != 0 {
+                            Text(
+                                Decimal(doubleValue)
+                                    .abreviado(currencyCode: vm.lancamentos.first?.currencyCode ?? "")
+                            )
+                        }
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading)
+            }
+            .frame(height: 240)
+        }
+    }
+    
+    private static let monthSymbols: [String] = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        return formatter.monthSymbols
+    }()
 
-
-    // MARK: - Insights
+    private func primeiraLetraDoMes(_ mes: Int) -> String {
+        guard mes >= 1 && mes <= Self.monthSymbols.count else { return "" }
+        return String(Self.monthSymbols[mes - 1].prefix(1))
+    }
+    
     var insightsView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Análises")
@@ -233,14 +324,31 @@ struct ResumoAnualView: View {
     func graficoCategoriasHorizontal(_ categorias: [DespesaPorCategoriaModel],_ currencyCode: String) -> some View {
         Chart(categorias) { item in
             BarMark(
-                x: .value("Total", item.total.doubleValue),
-                y: .value("Categoria", item.categoria.nome)
+                x: .value("Total", item.total),
+                y: .value("Categoria", item.categoria.nome),
+                width: .fixed(10)
             )
-            .foregroundStyle(.blue)
+            .cornerRadius(3)
+            .foregroundStyle(.blue.gradient)
             .annotation(position: .trailing) {
                 Text(item.total.abreviado(currencyCode: currencyCode))
                     .font(.caption)
                     .foregroundColor(.secondary)
+            }
+        }
+        .chartXAxis {
+            AxisMarks(values: .automatic) { value in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel {
+                    if let doubleValue = value.as(Double.self),
+                       doubleValue != 0 {
+                        Text(
+                            Decimal(doubleValue)
+                                .abreviado(currencyCode: currencyCode)
+                        )
+                    }
+                }
             }
         }
         .frame(
@@ -355,8 +463,6 @@ extension Decimal {
     }
 }
 
-
-// MARK: - Card Resumo
 struct CardResumoView: View {
     let titulo: LocalizedStringKey
     let valor: Decimal
@@ -385,9 +491,6 @@ struct CardResumoView: View {
     }
 }
 
-
-
-// MARK: - Insight Row
 struct InsightRowView: View {
     let texto: LocalizedStringKey
 
