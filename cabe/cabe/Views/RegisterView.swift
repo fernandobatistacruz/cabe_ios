@@ -23,7 +23,7 @@ struct RegisterView: View {
                 Image("app_icon_ui")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 100, height: 100)
+                    .frame(width: 80, height: 80)
                     .cornerRadius(20)
                     .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                     .overlay(
@@ -32,7 +32,7 @@ struct RegisterView: View {
                     )
                 
                 Text("Criar Conta")
-                    .font(.largeTitle)
+                    .font(.title)
                     .fontWeight(.bold)
                 
                 // MARK: - Campos
