@@ -7,6 +7,8 @@ struct ZoomCalendarioView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var dataSelecionada: Date
+    @State private var hasPositioned = false
+    @State private var didAttemptInitialPosition = false
 
     init(
         dataInicial: Date,
@@ -44,9 +46,6 @@ struct ZoomCalendarioView: View {
                 }
         }
     }
-}
-
-private extension ZoomCalendarioView {
 
     var mainContent: some View {
         ScrollViewReader { proxy in
@@ -57,13 +56,29 @@ private extension ZoomCalendarioView {
                     Color.clear.frame(height: 24)
                 }
             }
+            .opacity(hasPositioned ? 1 : 0)
             .onAppear {
+                guard !didAttemptInitialPosition else { return }
+                didAttemptInitialPosition = true
+
+                // Defer to the next runloop to allow the sheet to finish its presentation layout
                 DispatchQueue.main.async {
-                    proxy.scrollTo(selectedYear, anchor: .center)
+                    // Defer one more tick to ensure LazyVStack has laid out its children
+                    DispatchQueue.main.async {
+                        var txn = Transaction()
+                        txn.disablesAnimations = true
+                        withTransaction(txn) {
+                            proxy.scrollTo(selectedYear, anchor: .center)
+                        }
+                        hasPositioned = true
+                    }
                 }
             }
         }
     }
+}
+
+private extension ZoomCalendarioView {
 
     var yearsList: some View {
         ForEach(years, id: \.self) { year in
@@ -96,7 +111,7 @@ private extension ZoomCalendarioView {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Hoje") {
                 selectToday()
-            }          
+            }
         }
     }
 }

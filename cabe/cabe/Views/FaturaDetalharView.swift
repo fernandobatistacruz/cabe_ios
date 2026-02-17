@@ -309,8 +309,8 @@ struct FaturaDetalharView: View {
         )
         .sheet(item: $shareItem) { item in
             ShareSheetView(
-                message: "Fatura de \(String(vencimento.formatted(.dateTime.month(.wide).year()))) do cartão \(String(cartao.nome)) extraído do Cabe",
-                subject: "Fatura de \(String(vencimento.formatted(.dateTime.month(.wide).year()))) do cartão \(String(cartao.nome)) extraído do Cabe",
+                message: String(localized: "Fatura de \(String(vencimento.formatted(.dateTime.month(.wide).year()))) do cartão \(String(cartao.nome)) extraído do Cabe"),
+                subject: String(localized: "Fatura de \(String(vencimento.formatted(.dateTime.month(.wide).year()))) do cartão \(String(cartao.nome)) extraído do Cabe"),
                 fileURL: item.url
             )
         }
@@ -374,7 +374,7 @@ struct FaturaDetalharView: View {
         do {
             let url = try await ExportarLancamentos.export(
                 lancamentos: lancamentos,
-                fileName: "lancamentos_fatura.csv"
+                fileName: String(localized: "lancamentos_fatura.csv")
             )
             shareItem = ShareItem(url: url)
         } catch {

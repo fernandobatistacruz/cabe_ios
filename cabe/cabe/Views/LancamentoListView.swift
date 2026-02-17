@@ -360,8 +360,8 @@ struct LancamentoListView: View {
         }
         .sheet(item: $shareItem) { item in
             ShareSheetView(
-                message: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe",
-                subject: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe",
+                message: String(localized: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe"),
+                subject: String(localized: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe"),
                 fileURL: item.url
             )
         }
@@ -411,12 +411,12 @@ struct LancamentoListView: View {
             let mesPorExtenso = selectedDate.formatted(
                 .dateTime
                     .month(.wide)
-                    .locale(Locale(identifier: "pt_BR"))
+                    .locale(Locale.current)
             )
             
             let url = try await ExportarLancamentos.export(
                 lancamentos: viewModel.lancamentos,
-                fileName: "lancamentos_\(mesPorExtenso).csv"
+                fileName: String(localized: "lancamentos_\(mesPorExtenso).csv")
             )
 
             shareItem = ShareItem(url: url)

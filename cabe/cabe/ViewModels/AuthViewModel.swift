@@ -22,12 +22,12 @@ final class AuthViewModel: ObservableObject {
     @Published var error: AuthError?
     @Published var pendingLinkCredential: AuthCredential?
     @Published private(set) var user: AuthUser?
-    @Published var infoMessage: String?
+    @Published var infoMessage: LocalizedStringResource?
         
     // MARK: - Email/Password
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var errorMessage: String?
+    @Published var errorMessage: LocalizedStringResource?
 
     private let appleService = AppleSignInService()
     private let googleService = GoogleSignInService()
@@ -216,7 +216,7 @@ final class AuthViewModel: ObservableObject {
             case AuthErrorCode.userDisabled.rawValue:
                 errorMessage = "Esta conta foi desativada."
             default:
-                errorMessage = authError.localizedDescription
+                errorMessage = "Erro desconhecido. Tente novamente."
             }
         }
     }
@@ -250,7 +250,7 @@ final class AuthViewModel: ObservableObject {
             case AuthErrorCode.weakPassword.rawValue:
                 self.errorMessage = "Senha muito fraca. Use pelo menos 6 caracteres."
             default:
-                self.errorMessage = authError.localizedDescription
+                self.errorMessage = "Erro desconhecido. Tente novamente."
             }
         }
     }
@@ -285,7 +285,7 @@ final class AuthViewModel: ObservableObject {
             case AuthErrorCode.userNotFound.rawValue:
                 errorMessage = "Nenhuma conta encontrada com esse e-mail."
             default:
-                errorMessage = authError.localizedDescription
+                errorMessage = "Erro desconhecido. Tente novamente."
             }
         }
     }
@@ -323,7 +323,7 @@ final class AuthViewModel: ObservableObject {
             if error.code == AuthErrorCode.requiresRecentLogin.rawValue {
                 self.errorMessage = "Para remover a conta, faça login novamente."
             } else {
-                self.errorMessage = error.localizedDescription
+                self.errorMessage = "Erro desconhecido. Tente novamente."
             }
         }
     }

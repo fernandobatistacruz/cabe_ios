@@ -12,6 +12,7 @@ struct ResumoAnualView: View {
     @State private var showingYearPicker = false
     @State private var tempDate = Date()
     @State private var anoDraft: Int = 0
+    @State private var isLoadingData = false
     
     init(
         ano: Int = Calendar.current.component(.year, from: .now),
@@ -29,21 +30,31 @@ struct ResumoAnualView: View {
         ZStack {
             Color(uiColor: .systemGroupedBackground)
                 .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(spacing: 24) {
-                    if let resumo = vm.resumoAnual {
-                        cardsResumo(resumo)
-                    }
-                    
-                    graficoReceitaDespesa
-                    graficoCategorias
-                    
-                    if !vm.insights.isEmpty {
-                        insightsView
-                    }
+
+            if isLoadingData {
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.2)
+                        .padding(.top, 8)
                 }
-                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        if let resumo = vm.resumoAnual {
+                            cardsResumo(resumo)
+                        }
+                        
+                        graficoReceitaDespesa
+                        graficoCategorias
+                        
+                        if !vm.insights.isEmpty {
+                            insightsView
+                        }
+                    }
+                    .padding()
+                }
             }
         }
         .navigationTitle("Resumo")
@@ -92,7 +103,6 @@ struct ResumoAnualView: View {
                     anoDraft = vm.anoSelecionado
                 }
                 .toolbar {
-
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Hoje") {
                             anoDraft = anoAtual
@@ -100,7 +110,6 @@ struct ResumoAnualView: View {
                             showingYearPicker = false
                         }
                     }
-
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("OK") {
                             vm.anoSelecionado = anoDraft
@@ -108,15 +117,18 @@ struct ResumoAnualView: View {
                         }
                     }
                 }
-                .presentationDetents([.fraction(0.35)])
-            }
+            } .presentationDetents([.fraction(0.35)])
         }
         .task {
+            isLoadingData = true
             await vm.carregarDados()
+            isLoadingData = false
         }
         .onChange(of: vm.anoSelecionado) { _ in
             Task {
+                isLoadingData = true
                 await vm.carregarDados()
+                isLoadingData = false
             }
         }
         .sheet(isPresented: $showingPaywall) {
@@ -126,8 +138,8 @@ struct ResumoAnualView: View {
         }
         .sheet(item: $shareItem) { item in
             ShareSheetView(
-                message: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe",
-                subject: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe",
+                message: String(localized: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe"),
+                subject: String(localized: "Relatório anual de \(String(vm.anoSelecionado)) extraído do Cabe"),
                 fileURL: item.url
             )
         }
@@ -159,7 +171,7 @@ struct ResumoAnualView: View {
         do {
             let url = try await ExportarLancamentos.export(
                 lancamentos: vm.lancamentos,
-                fileName: "lancamentos_anuais.csv"
+                fileName: String(localized: "lancamentos_anuais.csv")
             )
 
             shareItem = ShareItem(url: url)
@@ -470,3 +482,4 @@ struct ChartCard<Content: View>: View {
         )
     }
 }
+
