@@ -340,15 +340,7 @@ struct ResumoAnualView: View {
             AxisMarks(values: .automatic) { value in
                 AxisGridLine()
                 AxisTick()
-                AxisValueLabel {
-                    if let doubleValue = value.as(Double.self),
-                       doubleValue != 0 {
-                        Text(
-                            Decimal(doubleValue)
-                                .abreviado(currencyCode: currencyCode)
-                        )
-                    }
-                }
+                AxisValueLabel {}
             }
         }
         .frame(
