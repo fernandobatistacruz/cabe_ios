@@ -215,8 +215,8 @@ struct ResumoAnualView: View {
                 .foregroundStyle(.red.gradient)
             }
             .chartForegroundStyleScale([
-                "Receita": .green,
-                "Despesa": .red
+                String(localized: "Receita"): .green,
+                String(localized: "Despesa"): .red
             ])
             .chartLegend(position: .bottom, spacing: 16)
             .chartXAxis {
