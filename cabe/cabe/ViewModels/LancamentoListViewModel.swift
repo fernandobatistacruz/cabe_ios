@@ -167,7 +167,7 @@ final class LancamentoListViewModel: ObservableObject {
             resultado.append(
                 CategoriaResumo(
                     categoriaID: -1,
-                    nome: "Outros",
+                    nome: String(localized: "Outros"),
                     valor: valorOutros,
                     percentual: (valorOutros / totalGeral) * 100,
                     cor: .gray,

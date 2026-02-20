@@ -359,9 +359,12 @@ struct LancamentoListView: View {
             }
         }
         .sheet(item: $shareItem) { item in
+            
+            let mes = selectedDate.formatted(.dateTime.month(.wide)).capitalized
+            
             ShareSheetView(
-                message: String(localized: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe"),
-                subject: String(localized: "Lançamentos de \(String(viewModel.mesAtual))/\(String(viewModel.anoAtual)) extraído do Cabe"),
+                message: String(localized: "Lançamentos de \(mes)/\(String(viewModel.anoAtual)) extraído do Cabe"),
+                subject: String(localized: "Lançamentos de \(mes))/\(String(viewModel.anoAtual)) extraído do Cabe"),
                 fileURL: item.url
             )
         }

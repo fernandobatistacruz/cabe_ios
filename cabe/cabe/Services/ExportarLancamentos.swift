@@ -41,13 +41,14 @@ struct ExportarLancamentos {
     // MARK: - Header
 
     private static let header =
-    """
+    String(localized: """
     Data Vencimento;\
     Data Compra;\
     Descrição;\
     Anotação;\
     Tipo;\
     Categoria;\
+    Subcategoria;\
     Conta;\
     Cartão;\
     Valor;\
@@ -56,7 +57,7 @@ struct ExportarLancamentos {
     Parcelas;\
     Transferência;\
     Criado em
-    """
+    """)
     .replacingOccurrences(of: "\n", with: "")
 
     // MARK: - Row
@@ -73,13 +74,14 @@ struct ExportarLancamentos {
             sanitize(l.anotacao),
             tipo,
             sanitize(l.categoria?.nome ?? ""),
+            sanitize(l.categoria?.nomeSubcategoria ?? ""),
             sanitize(l.conta?.nome ?? ""),
             sanitize(l.cartao?.nome ?? ""),
             formatDecimal(l.valorComSinal),
-            l.pago ? "Sim" : "Não",
+            l.pago ? String(localized: "Sim") : String(localized: "Não"),
             recorrencia,
             "\(l.parcelas)",
-            l.transferencia ? "Sim" : "Não",
+            l.transferencia ? String(localized: "Sim") : String(localized: "Não"),
             formatDate(l.dataCriacaoDate)
         ].joined(separator: ";")
     }
