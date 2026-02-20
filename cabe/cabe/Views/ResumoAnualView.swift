@@ -260,6 +260,7 @@ struct ResumoAnualView: View {
                 }
             }
             .frame(height: 240)
+            .padding(.vertical, 5)
         }
     }
     
@@ -436,6 +437,7 @@ struct CardResumoView: View {
             
             Text(valor.abreviado(currencyCode: currencyCode))
                 .font(.headline)
+                .fontDesign(.rounded)
                 .foregroundColor(cor)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)

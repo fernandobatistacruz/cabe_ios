@@ -141,6 +141,7 @@ struct SummaryCard: View {
             
             Text(value)
                 .font(.headline)
+                .fontDesign(.rounded)
                 .foregroundColor(color)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)

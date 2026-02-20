@@ -268,23 +268,24 @@ struct CardItem: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
-                .foregroundStyle(.white)
+                .foregroundStyle(.white.opacity(0.9))
             
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.white.opacity(0.9))
                 if(mostrarValores){
                     Text(formatarValor(value, moeda: moeda, sinal: sinal))
                         .font(.headline)
+                        .fontDesign(.rounded)
                         .fontWeight(.heavy)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.white.opacity(0.9))
                 }else{
                     Text("•••")
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.white.opacity(0.9))
                 }
             }
             .padding(.vertical,2)
@@ -294,7 +295,7 @@ struct CardItem: View {
         .background(
             color
                 .gradient
-                .opacity(colorScheme == .dark ? 0.75 : 0.75)
+                .opacity(colorScheme == .dark ? 0.70 : 0.70)
         )
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
