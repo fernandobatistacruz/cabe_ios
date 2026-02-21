@@ -16,6 +16,7 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
     case hipercard = 5
     case elo = 6
     case outra = 7
+    case discover = 8
 
     var id: Int { rawValue }
 
@@ -27,7 +28,8 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
         case .diners: return "Diners Club"
         case .hipercard: return "Hipercard"
         case .elo: return "Elo"
-        case .outra: return "Outra Operadora"
+        case .outra: return "Outras"
+        case .discover: return "Discover"
         }
     }
 
@@ -40,6 +42,7 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
         case .hipercard: return "hipercard"
         case .elo: return "elo"
         case .outra: return "outra"
+        case .discover: return "discover"
         }
     }
 }

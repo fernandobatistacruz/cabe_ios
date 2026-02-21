@@ -12,7 +12,11 @@ struct ZoomOperadoraView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        List(OperadoraCartao.allCases) { operadora in
+        List(OperadoraCartao.allCases
+            .sorted {
+                String(localized: $0.nome)
+                    .localizedCompare(String(localized: $1.nome)) == .orderedAscending
+            }) { operadora in
             HStack(spacing: 12) {
                 Image(operadora.imageName)
                     .resizable()
