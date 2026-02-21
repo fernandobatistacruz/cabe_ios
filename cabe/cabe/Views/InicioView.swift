@@ -267,10 +267,10 @@ struct CardItem: View {
             Image(systemName: icone)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 20, height: 20)
+                .frame(width: 22, height: 22)
                 .foregroundStyle(.white.opacity(0.9))
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.body)
                     .fontWeight(.medium)
@@ -288,16 +288,37 @@ struct CardItem: View {
                         .foregroundStyle(.white.opacity(0.9))
                 }
             }
-            .padding(.vertical,2)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            color
-                .gradient
-                .opacity(colorScheme == .dark ? 0.70 : 0.70)
+            ZStack {
+                
+                // Gradiente principal (base)
+                LinearGradient(
+                    colors: [
+                        color.opacity(0.75),
+                        color
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                
+                // Realce vertical do lado esquerdo
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.white.opacity(0.25), location: 0),
+                        .init(color: Color.white.opacity(0.10), location: 0.25),
+                        .init(color: .clear, location: 0.6)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .blendMode(.softLight)
+            }
         )
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 6)
     }
     
     func formatarValor(_ valor: Decimal, moeda: String, sinal: Bool) -> String {

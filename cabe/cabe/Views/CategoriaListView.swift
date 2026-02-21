@@ -80,7 +80,7 @@ struct CategoriaListView: View {
                 if categoriasFiltradas.isEmpty {
                     Text("Nenhuma Categoria")
                         .font(.title2)
-                        .fontWeight(.medium)
+                        .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                 }
             }
