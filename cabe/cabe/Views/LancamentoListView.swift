@@ -415,7 +415,7 @@ struct LancamentoListView: View {
                 .dateTime
                     .month(.wide)
                     .locale(Locale.current)
-            )
+            ).lowercased()
             
             let url = try await ExportarLancamentos.export(
                 lancamentos: viewModel.lancamentos,
