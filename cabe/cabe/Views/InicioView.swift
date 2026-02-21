@@ -297,7 +297,7 @@ struct CardItem: View {
                 // Gradiente principal (base)
                 LinearGradient(
                     colors: [
-                        color.opacity(0.75),
+                        color.opacity(0.65),
                         color
                     ],
                     startPoint: .topLeading,
