@@ -56,7 +56,7 @@ struct LancamentoDetalheView: View {
                         .foregroundColor(
                             lancamento.transferencia
                             ? (lancamento.tipo == Tipo.despesa.rawValue ? .red : .green)
-                            : (lancamento.categoria?.cor.cor ?? .primary)
+                            : (lancamento.categoria?.cor ?? .primary)
                         )
 
                         VStack(alignment: .leading) {

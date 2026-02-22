@@ -240,14 +240,14 @@ final class LancamentoListViewModel: ObservableObject {
             return (
                 id: paiID,
                 nome: categoria.nome,
-                cor: categoria.cor.cor
+                cor: categoria.cor
             )
         }
 
         return (
             id: categoria?.id ?? 0,
             nome: categoria?.nome ?? "",
-            cor: categoria?.cor.cor ?? .gray
+            cor: categoria?.cor ?? .gray
         )
     }
     

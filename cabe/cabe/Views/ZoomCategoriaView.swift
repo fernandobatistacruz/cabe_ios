@@ -36,7 +36,7 @@ struct ZoomCategoriaView: View {
                         if categoria.pai == nil {
                             Image(systemName: categoria.icone.systemName)
                                 .frame(width: 24)
-                                .foregroundColor(categoria.cor.cor)
+                                .foregroundColor(categoria.cor)
 
                             Text(categoria.nome)
                                 .foregroundColor(.primary)
@@ -45,7 +45,7 @@ struct ZoomCategoriaView: View {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 10))
                                 .frame(width: 24)
-                                .foregroundColor(categoria.cor.cor)
+                                .foregroundColor(categoria.cor)
 
                             Text(categoria.nomeSubcategoria ?? "")
                                 .foregroundColor(.primary)

@@ -7,8 +7,52 @@
 
 import GRDB
 import SwiftUI
+import UIKit
+
+enum DefaultColorPalette {
+    
+    static let palette: [(Double, Double, Double, Double)] = [
+        (0, 1, 0, 1),
+        (0, 1, 0, 0.7),
+        (0, 0.5, 0.5, 1),
+        (0, 1, 1, 1),
+        (1, 1, 0, 1),
+        (1, 1, 0, 0.8),
+        (1, 1, 0, 0.6),
+        (1, 0.5, 0, 1),
+        (1, 0.5, 0, 0.8),
+        (1, 0.5, 0, 0.5),
+        (1, 0, 0.5, 1),
+        (1, 0, 0, 1),
+        (1, 0, 0, 0.8),
+        (1, 0, 0.5, 0.8),
+        (0, 0, 1, 1),
+        (0, 0, 1, 0.8),
+        (0, 0, 1, 0.6),
+        (0, 1, 1, 0.6),
+        (0.29, 0, 0.51, 1),
+        (0, 0.5, 0.5, 0.6),
+        (0.29, 0, 0.51, 0.6),
+        (1, 0, 0.5, 0.4),
+        (0.5, 0, 0.5, 1),
+        (0.5, 0, 0.5, 0.8),
+        (0.5, 0, 0.5, 0.6),
+        (0.5, 0, 0.5, 0.5),
+        (0.5, 0.5, 0.5, 1),
+        (0.5, 0.5, 0.5, 0.6),
+        (0.6, 1, 0.8, 1),
+        (0.6, 0.4, 0.2, 1)
+    ]
+    
+    static func rgba(for index: Int) -> (Double, Double, Double, Double) {
+        palette.indices.contains(index)
+        ? palette[index]
+        : (0.5, 0.5, 0.5, 1)
+    }
+}
 
 struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    
     static let databaseTableName = "categoria"
     
     var id: Int64?
@@ -17,7 +61,10 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
     var nomeSubcategoria: String?
     var tipo: Int
     var iconeRaw: Int
-    var corRaw: Int
+    var red: Double
+    var green: Double
+    var blue: Double
+    var opacity: Double
     var pai: Int64?
     
     enum CodingKeys: String, CodingKey {
@@ -27,7 +74,10 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
         case nomeSubcategoria
         case tipo
         case iconeRaw = "icone"
-        case corRaw = "cor"
+        case red
+        case green
+        case blue
+        case opacity
         case pai
     }
     
@@ -38,19 +88,50 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
         static let nomeSubcategoria = Column("nomeSubcategoria")
         static let tipo = Column("tipo")
         static let iconeRaw = Column("icone")
-        static let corRaw = Column("cor")
+        static let red = Column("red")
+        static let green = Column("green")
+        static let blue = Column("blue")
+        static let opacity = Column("opacity")
         static let pai = Column("pai")
     }
 }
 
 extension CategoriaModel {
     
-    var cor: CorModel {
-        return CorModel.cores[safe: corRaw] ?? CorModel.default
+    static func defaultCategoria(
+        id: Int64,
+        nomeKey: String,
+        tipo: Int,
+        iconeRaw: Int,
+        corIndex: Int
+    ) -> CategoriaModel {
+        
+        let rgba = DefaultColorPalette.rgba(for: corIndex)
+        
+        return CategoriaModel(
+            id: id,
+            nomeRaw: "",
+            nomeKey: nomeKey,
+            nomeSubcategoria: nil,
+            tipo: tipo,
+            iconeRaw: iconeRaw,
+            red: rgba.0,
+            green: rgba.1,
+            blue: rgba.2,
+            opacity: rgba.3,
+            pai: nil
+        )
+    }
+}
+
+extension CategoriaModel {
+  
+    var cor: Color {
+        Color(red: red, green: green, blue: blue, opacity: opacity)
     }
     
     var icone: IconeModel {
-        return IconeModel.icones[safe: iconeRaw] ?? IconeModel.default
+        IconeModel.icones[safe: iconeRaw] ?? IconeModel.default
     }
     
     var nome: String {
@@ -61,48 +142,23 @@ extension CategoriaModel {
     }
     
     var isSub: Bool {
-        return pai != nil
+        pai != nil
     }
 }
 
-struct CorModel {
-    let id: Int
-    let cor: Color
-
-    static let cores: [CorModel] = [
-        CorModel(id: 0, cor: .green),
-        CorModel(id: 1, cor: .green.opacity(0.7)),
-        CorModel(id: 2, cor: .teal),
-        CorModel(id: 3, cor: .cyan),
-        CorModel(id: 4, cor: .yellow),
-        CorModel(id: 5, cor: .yellow.opacity(0.8)),
-        CorModel(id: 6, cor: .yellow.opacity(0.6)),
-        CorModel(id: 7, cor: .orange),
-        CorModel(id: 8, cor: .orange.opacity(0.8)),
-        CorModel(id: 9, cor: .orange.opacity(0.5)),
-        CorModel(id: 10, cor: .pink),
-        CorModel(id: 11, cor: .red),
-        CorModel(id: 12, cor: .red.opacity(0.8)),
-        CorModel(id: 13, cor: .pink.opacity(0.8)),
-        CorModel(id: 14, cor: .blue),
-        CorModel(id: 15, cor: .blue.opacity(0.8)),
-        CorModel(id: 16, cor: .blue.opacity(0.6)),
-        CorModel(id: 17, cor: .cyan.opacity(0.6)),
-        CorModel(id: 18, cor: .indigo),
-        CorModel(id: 19, cor: .teal.opacity(0.6)),
-        CorModel(id: 20, cor: .indigo.opacity(0.6)),
-        CorModel(id: 21, cor: .pink.opacity(0.4)),
-        CorModel(id: 22, cor: .purple),
-        CorModel(id: 23, cor: .purple.opacity(0.8)),
-        CorModel(id: 24, cor: .purple.opacity(0.6)),
-        CorModel(id: 25, cor: .purple.opacity(0.5)),
-        CorModel(id: 26, cor: .gray),
-        CorModel(id: 27, cor: .gray.opacity(0.6)),
-        CorModel(id: 28, cor: .mint),
-        CorModel(id: 29, cor: .brown)
-    ]
-
-    static let `default` = CorModel(id: -1, cor: .gray)
+extension Color {
+    func components() -> (red: Double, green: Double, blue: Double, opacity: Double) {
+        let uiColor = UIColor(self)
+        
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        return (Double(r), Double(g), Double(b), Double(a))
+    }
 }
 
 struct IconeModel {

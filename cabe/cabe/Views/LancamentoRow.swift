@@ -48,7 +48,7 @@ struct LancamentoRow: View {
                 if lancamento.transferencia {
                     return lancamento.tipo == Tipo.despesa.rawValue ? .red : .green
                 } else {
-                    return lancamento.categoria?.cor.cor ?? .primary
+                    return lancamento.categoria?.cor ?? .primary
                 }
             }()
 

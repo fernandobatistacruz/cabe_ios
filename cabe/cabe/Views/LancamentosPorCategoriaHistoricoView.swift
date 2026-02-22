@@ -169,7 +169,7 @@ private extension LancamentosPorCategoriaHistoricoView {
                 return ResumoCategoriaAno(
                     nome: categoria?.isSub ?? false ? categoria?.nomeSubcategoria ?? "" : categoria?.nome ?? "",
                     valor: total,
-                    cor: categoria?.cor.cor ?? .gray,
+                    cor: categoria?.cor ?? .gray,
                     currencyCode: itens.first?.currencyCode ?? Locale.systemCurrencyCode
                 )
             }

@@ -31,7 +31,7 @@ struct CategoriaFormView: View {
     @State var categoria: CategoriaModel?
     @State var isEditar: Bool
     @State private var nome: String
-    @State private var corSelecionada: CorModel
+    @State private var corSelecionada: Color
     @State private var iconeSelecionado: IconeModel
     @State private var tipoFiltro: Tipo
     @State private var categoriaPai: CategoriaModel?
@@ -49,9 +49,7 @@ struct CategoriaFormView: View {
         self._categoria = State(initialValue: categoria)
         self._isEditar = State(initialValue: isEditar)
         self._nome = State(initialValue: categoria?.nome ?? "")
-        self._corSelecionada = State(
-            initialValue: categoria?.cor ?? CorModel.cores.first!
-        )
+        self._corSelecionada = State(initialValue: categoria?.cor ?? .blue)
         self._iconeSelecionado = State(
             initialValue: categoria?.icone ?? IconeModel.icones.first!
         )
@@ -66,7 +64,7 @@ struct CategoriaFormView: View {
                         ZStack {
                             Circle()
                                 .fill(
-                                    categoriaPai?.cor.cor.gradient ?? corSelecionada.cor.gradient
+                                    categoriaPai?.cor.gradient ?? corSelecionada.gradient
                                 )
                                 .frame(width: 80, height: 80)
                             
@@ -147,35 +145,14 @@ struct CategoriaFormView: View {
                         }
                     }
                 }
+                
+                HStack {
+                    Text("Cor")
+                    Spacer()
+                    ColorPicker("", selection: $corSelecionada)
+                }
                               
                 if categoriaPai == nil {
-                    Section {
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
-                            ForEach(CorModel.cores, id: \.id) { cor in
-                                Circle()
-                                    .fill(cor.cor)
-                                    .frame(width: 32, height: 32)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(
-                                                Color.primary,
-                                                lineWidth: cor.id == corSelecionada.id ? 3 : 0
-                                            )
-                                    )
-                                    .onTapGesture { corSelecionada = cor }
-                            }
-                        }
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .cornerRadius(22)
-                    } header: {
-                        HStack {
-                            Text("Cor")
-                        }.padding(.horizontal)
-                    }
-                    .listRowInsets(.init())
-                    .listRowBackground(Color.clear)
-                    
                     Section {
                         LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
                             ForEach(IconeModel.icones, id: \.id) { icone in
@@ -298,7 +275,7 @@ struct CategoriaFormView: View {
     private func subcategoriaRow(_ sub: CategoriaModel) -> some View {
         HStack {
             Circle()
-                .fill(corSelecionada.cor)
+                .fill(corSelecionada)
                 .frame(width: 10, height: 10)
             
             Text(sub.nomeSubcategoria ?? sub.nome)
@@ -323,12 +300,17 @@ struct CategoriaFormView: View {
         let novoId: Int64 = isEditar ? categoria?.id ?? proximoId : proximoId
 
         //TODO: Revisa para quando for editar categoria considerando o nomeKey
+        let comp = corSelecionada.components()
+        
         let novaCategoria = CategoriaModel(
             id: novoId,
             nomeRaw: nome,
             tipo: isEditar ? categoria?.tipo ?? 1 : tipoFiltro.rawValue,
             iconeRaw: iconeSelecionado.id,
-            corRaw: corSelecionada.id,
+            red: comp.red,
+            green: comp.green,
+            blue: comp.blue,
+            opacity: comp.opacity,
         )
 
         do {
@@ -338,7 +320,10 @@ struct CategoriaFormView: View {
                 
                 subcategorias = subcategorias.map { categoria in
                     var nova = categoria
-                    nova.corRaw = corSelecionada.id
+                    nova.red = novaCategoria.red
+                    nova.green = novaCategoria.green
+                    nova.blue = novaCategoria.blue
+                    nova.opacity = novaCategoria.opacity
                     nova.iconeRaw = iconeSelecionado.id
                     return nova
                 }
@@ -417,6 +402,8 @@ struct SubcategoriaSheet: View {
             ((try! CategoriaRepository().listar()
                 .compactMap { $0.id }
                 .max() ?? 0) + 1)
+        
+        
 
         let nova = CategoriaModel(
             id: id,
@@ -424,7 +411,10 @@ struct SubcategoriaSheet: View {
             nomeSubcategoria: nome,
             tipo: categoriaPai.tipo,
             iconeRaw: categoriaPai.iconeRaw,
-            corRaw: categoriaPai.corRaw,
+            red: categoriaPai.red,
+            green: categoriaPai.green,
+            blue: categoriaPai.blue,
+            opacity: categoriaPai.opacity,
             pai: categoriaPai.id
         )
 

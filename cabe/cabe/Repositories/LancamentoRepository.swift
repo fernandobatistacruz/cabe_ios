@@ -26,7 +26,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
                 ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
                 cat.id AS "cat.id", cat.nome AS "cat.nome", cat.nomeKey AS "cat.nomeKey", cat.nomeSubcategoria AS "cat.nomeSubcategoria",
-                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.cor AS "cat.cor", cat.pai AS "cat.pai"
+                cat.tipo AS "cat.tipo", cat.icone AS "cat.icone", cat.red AS "cat.red", cat.green AS "cat.green", cat.blue AS "cat.blue", cat.opacity AS "cat.opacity", cat.pai AS "cat.pai"
         """
 
         static let fromJoins = """
@@ -703,7 +703,10 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 nomeSubcategoria: row["cat.nomeSubcategoria"],
                 tipo: row["cat.tipo"],
                 iconeRaw: row["cat.icone"],
-                corRaw: row["cat.cor"],
+                red: row["cat.red"],
+                green: row["cat.green"],
+                blue: row["cat.blue"],
+                opacity: row["cat.opacity"],
                 pai: row["cat.pai"]
             ) : nil
 
