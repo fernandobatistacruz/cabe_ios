@@ -782,7 +782,7 @@ private extension LancamentoRepository {
     ) throws {
 
         let estavaPago = antigo.pago
-        let valorAntigo = antigo.valorDividido
+        let valorAntigo = antigo.valorComSinalDividido
         let contaAntiga = try contaImpactada(lancamento: antigo)
       
         if removendo {
@@ -799,7 +799,7 @@ private extension LancamentoRepository {
         guard let novo else { return }
 
         let estaPagoAgora = novo.pago
-        let valorNovo = novo.valorDividido
+        let valorNovo = novo.valorComSinalDividido
         let contaNova = try contaImpactada(lancamento: novo)
 
         // 🔄 Caso 1: estava pago → agora não pago
