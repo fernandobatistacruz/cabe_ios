@@ -42,17 +42,19 @@ struct InicioView: View {
                         )
                     }
                     
-                    NavigationLink {
-                        ConsumoDetalhadoView(
-                            vm: vmLancamentos                            
-                        )
-                    } label: {
-                        ConsumoCardView(
-                            dados: vmLancamentos.gastosPorCategoriaResumo,
-                            mostrarValores: mostrarValores
-                        )
-                    }
-                    .buttonStyle(.plain)
+                    if !vmLancamentos.lancamentos.isEmpty {
+                        NavigationLink {
+                            ConsumoDetalhadoView(
+                                vm: vmLancamentos
+                            )
+                        } label: {
+                            ConsumoCardView(
+                                dados: vmLancamentos.gastosPorCategoriaResumo,
+                                mostrarValores: mostrarValores
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }                    
                     
                     RecentesListView(
                         viewModel: vmLancamentos,
@@ -427,46 +429,26 @@ struct ConsumoCardView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
+            
+            HStack(spacing: 24) {
+                ConsumoListView(items: dados, mostrarValores: mostrarValores)
+                    .frame(maxWidth: .infinity, minHeight: 80)
+                    .padding()
 
-            if dados.isEmpty {
-                emptyState
-            } else {
-                content
+                DonutChartView(
+                    items: dados,
+                    lineWidth: 18,
+                    size: 70,
+                    currencyCode: dados.first?.currencyCode ?? Locale.systemCurrencyCode
+                )
+                    .padding(.trailing, 30)
             }
-        }
-    }
-
-    private var content: some View {
-        HStack(spacing: 24) {
-            ConsumoListView(items: dados, mostrarValores: mostrarValores)
-                .frame(maxWidth: .infinity, minHeight: 80)
-                .padding()
-
-            DonutChartView(
-                items: dados,
-                lineWidth: 18,
-                size: 70,
-                currencyCode: dados.first?.currencyCode ?? Locale.systemCurrencyCode
-            )
-                .padding(.trailing, 30)
-        }
-        .background(
-            RoundedRectangle(cornerRadius: 22)
-                .fill(Color(.secondarySystemGroupedBackground))
-        )
-        .padding(.horizontal)
-    }
-
-    private var emptyState: some View {
-        Text("Nenhum Consumo")
-            .font(.headline)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, minHeight: 100)
             .background(
                 RoundedRectangle(cornerRadius: 22)
                     .fill(Color(.secondarySystemGroupedBackground))
             )
             .padding(.horizontal)
+        }
     }
 }
 

@@ -32,28 +32,13 @@ struct ResumoAnualView: View {
                 .ignoresSafeArea()
 
             if isLoadingData {
-                VStack {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .scaleEffect(1.2)
-                        .padding(.top, 8)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                loadingState
             } else {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        if let resumo = vm.resumoAnual {
-                            cardsResumo(resumo)
-                        }
-                        
-                        graficoReceitaDespesa
-                        graficoCategorias
-                        
-                        if !vm.insights.isEmpty {
-                            insightsView
-                        }
-                    }
-                    .padding()
+                if vm.lancamentos.isEmpty {
+                    emptyState
+                }
+                else {
+                    contentState
                 }
             }
         }
@@ -155,6 +140,49 @@ struct ResumoAnualView: View {
                 }
             }
         }
+    }
+    
+    private var contentState: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                if let resumo = vm.resumoAnual {
+                    cardsResumo(resumo)
+                }
+                
+                graficoReceitaDespesa
+                graficoCategorias
+                
+                if !vm.insights.isEmpty {
+                    insightsView
+                }
+            }
+            .padding()
+        }
+    }
+    
+    private var loadingState: some View {
+        VStack {
+            ProgressView()
+                .progressViewStyle(.circular)
+                .scaleEffect(1.2)
+                .padding(.top, 8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            
+            Text("Nenhum Registro")
+                .font(.title3)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .padding()
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
     }
     
     private var anoAtual: Int {

@@ -266,8 +266,8 @@ struct ConsumoDetalhadoView: View {
             Spacer()
             
             Text("Nenhum Consumo")
-                .font(.title2)
-                .foregroundColor(.secondary)
+                .font(.title3)
+                .fontWeight(.bold)
                 .multilineTextAlignment(.center)
                 .padding()
 

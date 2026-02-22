@@ -79,7 +79,7 @@ struct CategoriaListView: View {
             Group {
                 if categoriasFiltradas.isEmpty {
                     Text("Nenhuma Categoria")
-                        .font(.title2)
+                        .font(.title3)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                 }

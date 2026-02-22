@@ -96,8 +96,8 @@ struct CartaoListView: View {
             Group {
                 if cartoesFiltrados.isEmpty {
                     Text("Nenhum Cartão")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(.title3)
+                        .fontWeight(.bold)    
                         .multilineTextAlignment(.center)
                 }
             }

@@ -40,8 +40,8 @@ struct ZoomContaView: View {
             Group {
                 if contas.isEmpty {
                     Text("Nenhuma Conta")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                         .padding()
                 }

@@ -301,9 +301,9 @@ struct FaturaDetalharView: View {
             Group {
                 if filtroLancamentos.isEmpty {
                     Text("Nenhum Lançamento")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .multilineTextAlignment(.center)                    
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
                 }
             }
         )

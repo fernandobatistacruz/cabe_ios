@@ -70,8 +70,7 @@ struct ContaListView: View {
                 if contasFiltradas.isEmpty {                   
                     Text("Nenhuma Conta")
                         .font(.title3)
-                        .fontWeight(.bold)
-                        .fontWeight(.medium)
+                        .fontWeight(.bold)                       
                         .multilineTextAlignment(.center)
                 }
             }
