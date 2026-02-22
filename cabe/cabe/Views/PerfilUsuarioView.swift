@@ -22,7 +22,7 @@ struct PerfilUsuarioView: View {
             } placeholder: {
                 Image(systemName: "person.circle.fill")
                     .resizable()
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.white, .blue.gradient)
             }
             .frame(width: 100, height: 100)
             .clipShape(Circle())

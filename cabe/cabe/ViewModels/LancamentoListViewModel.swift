@@ -133,7 +133,7 @@ final class LancamentoListViewModel: ObservableObject {
         let totalGeral = totais.reduce(0) { $0 + $1.valor }
         guard totalGeral > 0 else { return [] }
 
-        // ✅ regra: até 3 categorias, senão a 3ª vira "Outros"
+        // regra: até 3 categorias, senão a 3ª vira "Outros"
         var resultado: [CategoriaResumo] = []
 
         if totais.count <= 3 {

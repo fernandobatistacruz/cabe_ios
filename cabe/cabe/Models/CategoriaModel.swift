@@ -52,6 +52,17 @@ extension CategoriaModel {
     var icone: IconeModel {
         return IconeModel.icones[safe: iconeRaw] ?? IconeModel.default
     }
+    
+    var nome: String {
+        if let nomeKey, nomeRaw.isEmpty {
+            return NSLocalizedString(nomeKey, comment: "")
+        }
+        return nomeRaw
+    }
+    
+    var isSub: Bool {
+        return pai != nil
+    }
 }
 
 struct CorModel {
@@ -60,7 +71,7 @@ struct CorModel {
 
     static let cores: [CorModel] = [
         CorModel(id: 0, cor: .green),
-        CorModel(id: 1, cor: .green),
+        CorModel(id: 1, cor: .green.opacity(0.7)),
         CorModel(id: 2, cor: .teal),
         CorModel(id: 3, cor: .cyan),
         CorModel(id: 4, cor: .yellow),
@@ -68,26 +79,26 @@ struct CorModel {
         CorModel(id: 6, cor: .yellow.opacity(0.6)),
         CorModel(id: 7, cor: .orange),
         CorModel(id: 8, cor: .orange.opacity(0.8)),
-        CorModel(id: 9, cor: .orange),
+        CorModel(id: 9, cor: .orange.opacity(0.5)),
         CorModel(id: 10, cor: .pink),
         CorModel(id: 11, cor: .red),
         CorModel(id: 12, cor: .red.opacity(0.8)),
         CorModel(id: 13, cor: .pink.opacity(0.8)),
         CorModel(id: 14, cor: .blue),
-        CorModel(id: 15, cor: .blue),
+        CorModel(id: 15, cor: .blue.opacity(0.8)),
         CorModel(id: 16, cor: .blue.opacity(0.6)),
         CorModel(id: 17, cor: .cyan.opacity(0.6)),
         CorModel(id: 18, cor: .indigo),
-        CorModel(id: 19, cor: .teal),
-        CorModel(id: 20, cor: .indigo),
+        CorModel(id: 19, cor: .teal.opacity(0.6)),
+        CorModel(id: 20, cor: .indigo.opacity(0.6)),
         CorModel(id: 21, cor: .pink.opacity(0.4)),
         CorModel(id: 22, cor: .purple),
-        CorModel(id: 23, cor: .purple),
-        CorModel(id: 24, cor: .purple.opacity(0.7)),
-        CorModel(id: 25, cor: .purple.opacity(0.8)),
+        CorModel(id: 23, cor: .purple.opacity(0.8)),
+        CorModel(id: 24, cor: .purple.opacity(0.6)),
+        CorModel(id: 25, cor: .purple.opacity(0.5)),
         CorModel(id: 26, cor: .gray),
-        CorModel(id: 27, cor: .gray.opacity(0.7)),
-        CorModel(id: 28, cor: .blue.opacity(0.4)),
+        CorModel(id: 27, cor: .gray.opacity(0.6)),
+        CorModel(id: 28, cor: .mint),
         CorModel(id: 29, cor: .brown)
     ]
 
@@ -179,34 +190,5 @@ struct IconeModel {
 extension Array {
     subscript(safe index: Int) -> Element? {
         indices.contains(index) ? self[index] : nil
-    }
-}
-
-extension CategoriaModel {
-    static var outros: CategoriaModel {
-        CategoriaModel(
-            id: nil,                     // não vem do banco
-            nomeRaw: "Outros",
-            nomeSubcategoria: nil,
-            tipo: Tipo.despesa.rawValue, // importante
-            iconeRaw: IconeModel.default.id,
-            corRaw: CorModel.default.id,
-            pai: nil
-        )
-    }
-}
-
-extension CategoriaModel {
-    var nome: String {
-        if let nomeKey, nomeRaw.isEmpty {
-            return NSLocalizedString(nomeKey, comment: "")
-        }
-        return nomeRaw
-    }
-}
-
-extension CategoriaModel {
-    var isSub: Bool {
-       return pai != nil
     }
 }

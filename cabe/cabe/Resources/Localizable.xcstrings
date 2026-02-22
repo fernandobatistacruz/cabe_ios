@@ -467,7 +467,7 @@
       }
     },
     "category.agua_esgoto" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -484,7 +484,7 @@
       }
     },
     "category.alimentacao" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -501,7 +501,7 @@
       }
     },
     "category.aluguel" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -518,7 +518,7 @@
       }
     },
     "category.atividade_fisica" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -535,7 +535,7 @@
       }
     },
     "category.barbearia_salao" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -552,7 +552,7 @@
       }
     },
     "category.casa" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -569,7 +569,7 @@
       }
     },
     "category.combustivel" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -586,24 +586,24 @@
       }
     },
     "category.condominio" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Condo"
+            "value" : "HOA fee"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Condomínio"
           }
         }
       }
     },
     "category.cuidados_pessoais" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -620,7 +620,7 @@
       }
     },
     "category.decimo" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -637,7 +637,7 @@
       }
     },
     "category.diarista" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -654,7 +654,7 @@
       }
     },
     "category.doacao" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -671,7 +671,7 @@
       }
     },
     "category.educacao" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -688,7 +688,7 @@
       }
     },
     "category.eletrodomestico" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -705,7 +705,7 @@
       }
     },
     "category.eletronico" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -722,7 +722,7 @@
       }
     },
     "category.energia_eletrica" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -739,7 +739,7 @@
       }
     },
     "category.estetica" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -756,7 +756,7 @@
       }
     },
     "category.estorno" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -773,7 +773,7 @@
       }
     },
     "category.financiamento" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -790,7 +790,7 @@
       }
     },
     "category.imposto_tarifa" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -807,7 +807,7 @@
       }
     },
     "category.internet" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -824,7 +824,7 @@
       }
     },
     "category.investimento" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -841,7 +841,7 @@
       }
     },
     "category.lazer_hobby" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -858,7 +858,7 @@
       }
     },
     "category.participacao_resultados" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -875,7 +875,7 @@
       }
     },
     "category.pets" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -892,7 +892,7 @@
       }
     },
     "category.premio" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -909,7 +909,7 @@
       }
     },
     "category.presente" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -926,7 +926,7 @@
       }
     },
     "category.refeicao" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -943,7 +943,7 @@
       }
     },
     "category.salario" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -960,7 +960,7 @@
       }
     },
     "category.saude" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -977,7 +977,7 @@
       }
     },
     "category.seguro" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -994,7 +994,7 @@
       }
     },
     "category.streaming_tv" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1011,7 +1011,7 @@
       }
     },
     "category.telefonia" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1028,7 +1028,7 @@
       }
     },
     "category.transporte" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1045,7 +1045,7 @@
       }
     },
     "category.veiculo" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1062,7 +1062,7 @@
       }
     },
     "category.vestuario" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3642,19 +3642,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Version %@"
-          }
-        }
-      }
-    },
-    "Versão %@ (%@)" : {
-      "comment" : "A footer displaying the app version and build number.",
-      "extractionState" : "stale",
-      "isCommentAutoGenerated" : true,
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version %@ (%@)"
           }
         }
       }

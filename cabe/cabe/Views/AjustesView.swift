@@ -39,7 +39,7 @@ struct AjustesView: View {
                             } placeholder: {
                                 Image(systemName: "person.fill")
                                     .font(.system(size: 45))
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(.blue.gradient)
                                     .padding(.horizontal, 6)
                             }
                             .frame(width: 56, height: 56)

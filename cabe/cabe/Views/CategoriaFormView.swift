@@ -66,7 +66,7 @@ struct CategoriaFormView: View {
                         ZStack {
                             Circle()
                                 .fill(
-                                    categoriaPai?.cor.cor ?? corSelecionada.cor
+                                    categoriaPai?.cor.cor.gradient ?? corSelecionada.cor.gradient
                                 )
                                 .frame(width: 80, height: 80)
                             
