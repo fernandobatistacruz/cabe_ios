@@ -12,6 +12,7 @@ import Combine
 struct AppearanceSettingsView: View {
 
     @EnvironmentObject var themeManager: ThemeManager
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
@@ -60,6 +61,7 @@ struct AppearanceSettingsView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             themeManager.theme = theme
+            dismiss()
         }
     }
 }

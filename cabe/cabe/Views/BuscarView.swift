@@ -52,6 +52,9 @@ struct BuscarView: View {
                     }
                 }
             }
+            .refreshable {
+                vm.onTextoChange(searchText)
+            }
             .listStyle(.insetGrouped)
             .scrollDismissesKeyboard(.immediately)
             .scrollContentBackground(.hidden)
