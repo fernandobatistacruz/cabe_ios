@@ -107,7 +107,6 @@ extension AppDatabase {
             ).insert(db)
         }
         
-        //TODO: Revisar necessidade desta tabela e remover
         migrator.registerMigration("dropFavoritosTable") { db in
             try db.execute(sql: "DROP TABLE IF EXISTS favoritos")
         }
@@ -119,7 +118,6 @@ extension AppDatabase {
         }       
         
         migrator.registerMigration("v2_categoria_rgba") { db in
-            
             try db.alter(table: "categoria") { t in
                 t.add(column: "red", .double).notNull().defaults(to: 0)
                 t.add(column: "green", .double).notNull().defaults(to: 0)
@@ -129,36 +127,66 @@ extension AppDatabase {
             
             // Paleta antiga convertida para RGBA puro
             let palette: [(Double, Double, Double, Double)] = [
-                (0, 1, 0, 1),          // green
-                (0, 1, 0, 0.7),
-                (0, 0.5, 0.5, 1),      // teal
-                (0, 1, 1, 1),          // cyan
-                (1, 1, 0, 1),          // yellow
-                (1, 1, 0, 0.8),
-                (1, 1, 0, 0.6),
-                (1, 0.5, 0, 1),        // orange
-                (1, 0.5, 0, 0.8),
-                (1, 0.5, 0, 0.5),
-                (1, 0, 0.5, 1),        // pink
-                (1, 0, 0, 1),          // red
-                (1, 0, 0, 0.8),
-                (1, 0, 0.5, 0.8),
-                (0, 0, 1, 1),          // blue
-                (0, 0, 1, 0.8),
-                (0, 0, 1, 0.6),
-                (0, 1, 1, 0.6),
-                (0.29, 0, 0.51, 1),    // indigo
-                (0, 0.5, 0.5, 0.6),
-                (0.29, 0, 0.51, 0.6),
-                (1, 0, 0.5, 0.4),
-                (0.5, 0, 0.5, 1),      // purple
-                (0.5, 0, 0.5, 0.8),
-                (0.5, 0, 0.5, 0.6),
-                (0.5, 0, 0.5, 0.5),
-                (0.5, 0.5, 0.5, 1),    // gray
-                (0.5, 0.5, 0.5, 0.6),
-                (0.6, 1, 0.8, 1),      // mint
-                (0.6, 0.4, 0.2, 1)     // brown
+                // 0  - .green
+                (0.2039, 0.7804, 0.3490, 1.0),
+                // 1  - .green.opacity(0.8)
+                (0.2039, 0.7804, 0.3490, 0.8),
+                // 2  - .teal
+                (0.0000, 0.7373, 0.8314, 1.0),
+                // 3  - .cyan
+                (0.0000, 0.8000, 1.0000, 1.0),
+                // 4  - .yellow
+                (1.0000, 0.8000, 0.0000, 1.0),
+                // 5  - .yellow.opacity(0.8)
+                (1.0000, 0.8000, 0.0000, 0.8),
+                // 6  - .yellow.opacity(0.6)
+                (1.0000, 0.8000, 0.0000, 0.6),
+                // 7  - .orange
+                (1.0000, 0.5843, 0.0000, 1.0),
+                // 8  - .orange.opacity(0.8)
+                (1.0000, 0.5843, 0.0000, 0.8),
+                // 9  - .orange.opacity(0.5)
+                (1.0000, 0.5843, 0.0000, 0.5),
+                // 10 - .pink
+                (1.0000, 0.1765, 0.3333, 1.0),
+                // 11 - .red
+                (1.0000, 0.2314, 0.1882, 1.0),
+                // 12 - .red.opacity(0.8)
+                (1.0000, 0.2314, 0.1882, 0.8),
+                // 13 - .pink.opacity(0.8)
+                (1.0000, 0.1765, 0.3333, 0.8),
+                // 14 - .blue
+                (0.0000, 0.4784, 1.0000, 1.0),
+                // 15 - .blue.opacity(0.8)
+                (0.0000, 0.4784, 1.0000, 0.8),
+                // 16 - .blue.opacity(0.6)
+                (0.0000, 0.4784, 1.0000, 0.6),
+                // 17 - .cyan.opacity(0.6)
+                (0.0000, 0.8000, 1.0000, 0.6),
+                // 18 - .indigo
+                (0.3451, 0.3373, 0.8392, 1.0),
+                // 19 - .teal.opacity(0.6)
+                (0.0000, 0.7373, 0.8314, 0.6),
+                // 20 - .indigo.opacity(0.6)
+                (0.3451, 0.3373, 0.8392, 0.6),
+                // 21 - .pink.opacity(0.4)
+                (1.0000, 0.1765, 0.3333, 0.4),
+                // 22 - .purple
+                (0.6863, 0.3216, 0.8706, 1.0),
+                // 23 - .purple.opacity(0.8)
+                (0.6863, 0.3216, 0.8706, 0.8),
+                // 24 - .purple.opacity(0.6)
+                (0.6863, 0.3216, 0.8706, 0.6),
+                // 25 - .purple.opacity(0.5)
+                (0.6863, 0.3216, 0.8706, 0.5),
+                // 26 - .gray
+                (0.5569, 0.5569, 0.5765, 1.0),
+                // 27 - .gray.opacity(0.6)
+                (0.5569, 0.5569, 0.5765, 0.6),
+                // 28 - .mint
+                (0.0000, 0.7843, 0.6667, 1.0),
+                // 29 - .brown
+                (0.6353, 0.5176, 0.3686, 1.0),
             ]
             
             // Migrar dados
@@ -169,8 +197,8 @@ extension AppDatabase {
                 let corIndex: Int = row["cor"]
                 
                 let rgba = palette.indices.contains(corIndex)
-                    ? palette[corIndex]
-                    : (0.5, 0.5, 0.5, 1) // default gray
+                ? palette[corIndex]
+                : (0.5, 0.5, 0.5, 1) // default gray
                 
                 try db.execute(
                     sql: """

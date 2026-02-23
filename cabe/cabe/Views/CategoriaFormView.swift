@@ -186,6 +186,7 @@ struct CategoriaFormView: View {
         }
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.immediately)
+        .background(Color(.systemGroupedBackground))
         .navigationTitle(isEditar ? "Editar Categoria" : "Nova Categoria")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .top) {
@@ -371,6 +372,7 @@ struct SubcategoriaSheet: View {
             }
             .navigationTitle(subcategoria == nil ? "Nova Subcategoria" : "Editar Subcategoria")
             .navigationBarTitleDisplayMode(.inline)
+            .background(Color(.systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
