@@ -9,78 +9,6 @@ import GRDB
 import SwiftUI
 import UIKit
 
-enum DefaultColorPalette {
-    
-    static let palette: [(Double, Double, Double, Double)] = [
-        // 0  - .green
-        (0.2039, 0.7804, 0.3490, 1.0),
-        // 1  - .green.opacity(0.8)
-        (0.2039, 0.7804, 0.3490, 0.8),
-        // 2  - .teal
-        (0.0000, 0.7373, 0.8314, 1.0),
-        // 3  - .cyan
-        (0.0000, 0.8000, 1.0000, 1.0),
-        // 4  - .yellow
-        (1.0000, 0.8000, 0.0000, 1.0),
-        // 5  - .yellow.opacity(0.8)
-        (1.0000, 0.8000, 0.0000, 0.8),
-        // 6  - .yellow.opacity(0.6)
-        (1.0000, 0.8000, 0.0000, 0.6),
-        // 7  - .orange
-        (1.0000, 0.5843, 0.0000, 1.0),
-        // 8  - .orange.opacity(0.8)
-        (1.0000, 0.5843, 0.0000, 0.8),
-        // 9  - .orange.opacity(0.5)
-        (1.0000, 0.5843, 0.0000, 0.5),
-        // 10 - .pink
-        (1.0000, 0.1765, 0.3333, 1.0),
-        // 11 - .red
-        (1.0000, 0.2314, 0.1882, 1.0),
-        // 12 - .red.opacity(0.8)
-        (1.0000, 0.2314, 0.1882, 0.8),
-        // 13 - .pink.opacity(0.8)
-        (1.0000, 0.1765, 0.3333, 0.8),
-        // 14 - .blue
-        (0.0000, 0.4784, 1.0000, 1.0),
-        // 15 - .blue.opacity(0.8)
-        (0.0000, 0.4784, 1.0000, 0.8),
-        // 16 - .blue.opacity(0.6)
-        (0.0000, 0.4784, 1.0000, 0.6),
-        // 17 - .cyan.opacity(0.6)
-        (0.0000, 0.8000, 1.0000, 0.6),
-        // 18 - .indigo
-        (0.3451, 0.3373, 0.8392, 1.0),
-        // 19 - .teal.opacity(0.6)
-        (0.0000, 0.7373, 0.8314, 0.6),
-        // 20 - .indigo.opacity(0.6)
-        (0.3451, 0.3373, 0.8392, 0.6),
-        // 21 - .pink.opacity(0.4)
-        (1.0000, 0.1765, 0.3333, 0.4),
-        // 22 - .purple
-        (0.6863, 0.3216, 0.8706, 1.0),
-        // 23 - .purple.opacity(0.8)
-        (0.6863, 0.3216, 0.8706, 0.8),
-        // 24 - .purple.opacity(0.6)
-        (0.6863, 0.3216, 0.8706, 0.6),
-        // 25 - .purple.opacity(0.5)
-        (0.6863, 0.3216, 0.8706, 0.5),
-        // 26 - .gray
-        (0.5569, 0.5569, 0.5765, 1.0),
-        // 27 - .gray.opacity(0.6)
-        (0.5569, 0.5569, 0.5765, 0.6),
-        // 28 - .mint
-        (0.0000, 0.7843, 0.6667, 1.0),
-        // 29 - .brown
-        (0.6353, 0.5176, 0.3686, 1.0),
-    ]
-    
-    static func rgba(for index: Int) -> (Double, Double, Double, Double) {
-        palette.indices.contains(index)
-        ? palette[index]
-        : (0.5, 0.5, 0.5, 1)
-    }
-}
-
 struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     
     static let databaseTableName = "categoria"
@@ -123,34 +51,6 @@ struct CategoriaModel: Identifiable, Codable, FetchableRecord, PersistableRecord
         static let blue = Column("blue")
         static let opacity = Column("opacity")
         static let pai = Column("pai")
-    }
-}
-
-extension CategoriaModel {
-    
-    static func defaultCategoria(
-        id: Int64,
-        nomeKey: String,
-        tipo: Int,
-        iconeRaw: Int,
-        corIndex: Int
-    ) -> CategoriaModel {
-        
-        let rgba = DefaultColorPalette.rgba(for: corIndex)
-        
-        return CategoriaModel(
-            id: id,
-            nomeRaw: "",
-            nomeKey: nomeKey,
-            nomeSubcategoria: nil,
-            tipo: tipo,
-            iconeRaw: iconeRaw,
-            red: rgba.0,
-            green: rgba.1,
-            blue: rgba.2,
-            opacity: rgba.3,
-            pai: nil
-        )
     }
 }
 
