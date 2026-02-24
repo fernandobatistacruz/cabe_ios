@@ -140,6 +140,7 @@ struct CartaoListView: View {
                 }
             }
         }
+        .ifAvailableSearchable(searchText: $searchText)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) { // Use .navigationBarTrailing para iOS 16
                 Button {
@@ -148,27 +149,29 @@ struct CartaoListView: View {
                     Image(systemName: "plus")
                 }
             }
-            ToolbarItemGroup(placement: .bottomBar) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
-                    
-                    TextField("Buscar", text: $searchText)
-                        .focused($searchFocused)
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .clipShape(Capsule())
-                
-                if !searchText.isEmpty {
-                    Spacer()
-                    Button {
-                        searchText = ""
-                        UIApplication.shared.endEditing()
-                    } label: {
-                        Image(systemName: "xmark")
+            if #available(iOS 26, *) {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        
+                        TextField("Buscar", text: $searchText)
+                            .focused($searchFocused)
                     }
-                    .disabled(searchText.isEmpty)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .clipShape(Capsule())
+                    
+                    if !searchText.isEmpty {
+                        Spacer()
+                        Button {
+                            searchText = ""
+                            UIApplication.shared.endEditing()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                        .disabled(searchText.isEmpty)
+                    }
                 }
             }
         }

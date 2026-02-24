@@ -81,6 +81,7 @@ struct ZoomCategoriaView: View {
                 }
             }
         )
+        .ifAvailableSearchable(searchText: $searchText)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -89,16 +90,28 @@ struct ZoomCategoriaView: View {
                     Image(systemName: "xmark")
                 }
             }
-            ToolbarItemGroup(placement: .bottomBar) {
-                HStack(spacing: 12) {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        
-                        TextField("Buscar", text: $searchText)
+            if #available(iOS 26, *) {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    HStack(spacing: 12) {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.secondary)
+                            
+                            TextField("Buscar", text: $searchText)
+                        }
+                        .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                        .clipShape(Capsule())
                     }
-                    .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-                    .clipShape(Capsule())
+                    if !searchText.isEmpty {
+                        Spacer()
+                        Button {
+                            searchText = ""
+                            UIApplication.shared.endEditing()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                        .disabled(searchText.isEmpty)                        
+                    }
                 }
             }
         }

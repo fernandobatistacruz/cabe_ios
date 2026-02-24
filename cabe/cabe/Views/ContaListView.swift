@@ -98,43 +98,63 @@ struct ContaListView: View {
         message: {
             Text("Essa ação não poderá ser desfeita.")
         }
+        .ifAvailableSearchable(searchText: $searchText)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    mostrarTransferencia = true
-                } label: {
-                    Label("Transferência", systemImage: "arrow.left.arrow.right")
+            if #available(iOS 26, *) {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        mostrarTransferencia = true
+                    } label: {
+                        Label("Transferência", systemImage: "arrow.left.arrow.right")
+                    }
                 }
             }
-            ToolbarItemGroup(placement: .bottomBar) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
-                    
-                    TextField("Buscar", text: $searchText)
-                        .focused($searchFocused)
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .clipShape(Capsule())
-                
-                if !searchText.isEmpty {
-                    Spacer()
+            else {
+                ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
-                        searchText = ""                       
-                        UIApplication.shared.endEditing()
+                        mostrarTransferencia = true
                     } label: {
-                        Image(systemName: "xmark")
+                        Label("Transferência", systemImage: "arrow.left.arrow.right")
                     }
-                    .disabled(searchText.isEmpty)
                     
-                }
-                if searchText.isEmpty {
-                    Spacer()
                     Button {
                         mostrarNovaConta = true
                     } label: {
                         Image(systemName: "plus")
+                    }
+                }
+            }
+            if #available(iOS 26, *) {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        
+                        TextField("Buscar", text: $searchText)
+                            .focused($searchFocused)
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .clipShape(Capsule())
+                    
+                    if !searchText.isEmpty {
+                        Spacer()
+                        Button {
+                            searchText = ""
+                            UIApplication.shared.endEditing()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                        .disabled(searchText.isEmpty)
+                        
+                    }
+                    if searchText.isEmpty {
+                        Spacer()
+                        Button {
+                            mostrarNovaConta = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
             }

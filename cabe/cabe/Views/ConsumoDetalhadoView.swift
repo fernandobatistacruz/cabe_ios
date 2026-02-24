@@ -397,6 +397,8 @@ struct ConsumoListView: View {
                         .frame(width: 10, height: 10)
 
                     Text(item.nome)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
 
                     Spacer()
                     if(mostrarValores) {
