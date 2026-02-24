@@ -99,20 +99,6 @@ final class BalanceDetailViewModel: ObservableObject {
         guard anterior != 0 else { return 0 }
         return ((atual - anterior) / anterior as NSDecimalNumber).doubleValue * 100
     }
-
-    // MARK: Top gastos
-
-    struct GastoItem: Identifiable {
-        let id = UUID()
-        let descricao: String
-        let valor: Decimal
-      
-        var valorFormatado: String {
-            let f = NumberFormatter()
-            f.numberStyle = .currency
-            return f.string(for: valor as NSDecimalNumber) ?? "-"
-        }
-    }
     
     var topGastos: [LancamentoModel] {
         Array(
