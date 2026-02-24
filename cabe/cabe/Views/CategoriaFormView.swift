@@ -75,16 +75,13 @@ struct CategoriaFormView: View {
                             .foregroundColor(.white)
                         }
                         
-                        TextField(
-                            categoriaPai == nil ? "Nome da Categoria" : "Nome da Subcategoria",
-                            text: $nome
-                        )
-                        .padding()
-                        .background(Color(.systemGroupedBackground))
-                        .cornerRadius(22)
-                        .multilineTextAlignment(.center)
-                        .textInputAutocapitalization(.words)
-                        .focused($campoFocado, equals: .nome)
+                        TextField("Nome da Categoria", text: $nome)
+                            .padding()
+                            .background(Color(.systemGroupedBackground))
+                            .cornerRadius(22)
+                            .multilineTextAlignment(.center)
+                            .textInputAutocapitalization(.words)
+                            .focused($campoFocado, equals: .nome)
                     }
                     .padding()
                     .background(Color(.secondarySystemGroupedBackground))
@@ -92,7 +89,7 @@ struct CategoriaFormView: View {
                 }
                 .listRowInsets(.init())
                 .listRowBackground(Color.clear)
-             
+                
                 if isEditar {
                     Section {
                         if subcategorias.isEmpty {
@@ -108,7 +105,7 @@ struct CategoriaFormView: View {
                                     .onTapGesture {
                                         sheetSubcategoria = .editar(sub)
                                     }
-                                    .swipeActions {
+                                    .swipeActions (edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
                                             Task{
                                                 let existe = try await LancamentoRepository()
@@ -151,37 +148,37 @@ struct CategoriaFormView: View {
                     Spacer()
                     ColorPicker("", selection: $corSelecionada)
                 }
-                              
-                if categoriaPai == nil {
-                    Section {
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
-                            ForEach(IconeModel.icones, id: \.id) { icone in
-                                Image(systemName: icone.systemName)
-                                    .frame(width: 32, height: 32)
-                                    .padding(8)
-                                    .foregroundColor(icone.id == iconeSelecionado.id
-                                                     ? Color.white
-                                                     : Color.primary)
-                                    .background(
-                                        icone.id == iconeSelecionado.id
-                                        ? Color.accentColor
-                                        : Color.clear
-                                    )
-                                    .cornerRadius(8)
-                                    .onTapGesture { iconeSelecionado = icone }
-                            }
+                .padding(.horizontal)
+                .listRowInsets(.init())
+                
+                Section {
+                    LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 6)) {
+                        ForEach(IconeModel.icones, id: \.id) { icone in
+                            Image(systemName: icone.systemName)
+                                .frame(width: 32, height: 32)
+                                .padding(8)
+                                .foregroundColor(icone.id == iconeSelecionado.id
+                                                 ? Color.white
+                                                 : Color.primary)
+                                .background(
+                                    icone.id == iconeSelecionado.id
+                                    ? Color.accentColor
+                                    : Color.clear
+                                )
+                                .cornerRadius(8)
+                                .onTapGesture { iconeSelecionado = icone }
                         }
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .cornerRadius(22)
-                    } header: {
-                        HStack {
-                            Text("Ícone")
-                        }.padding(.horizontal)
                     }
-                    .listRowInsets(.init())
-                    .listRowBackground(Color.clear)
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .cornerRadius(22)
+                } header: {
+                    Text("Ícone")
+                        .padding(.vertical, 10)
+                        .padding(.horizontal)
                 }
+                .listRowInsets(.init())
+                .listRowBackground(Color.clear)
             }
         }
         .listStyle(.insetGrouped)
@@ -404,8 +401,6 @@ struct SubcategoriaSheet: View {
             ((try! CategoriaRepository().listar()
                 .compactMap { $0.id }
                 .max() ?? 0) + 1)
-        
-        
 
         let nova = CategoriaModel(
             id: id,
