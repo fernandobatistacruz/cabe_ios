@@ -90,19 +90,12 @@ extension BalanceDetailView {
             
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(vm.topGastos) { item in
-                    HStack {
-                        Text(item.descricao)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                        
-                        Spacer()
-                        
-                        Text(item.valorFormatado)
-                            .foregroundStyle(.secondary)
-                    }
+                    LancamentoRow(lancamento: item, mostrarPagamento: false)
+                        .listRowInsets(
+                            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+                        )
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 22)

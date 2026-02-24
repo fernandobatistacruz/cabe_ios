@@ -113,18 +113,14 @@ final class BalanceDetailViewModel: ObservableObject {
             return f.string(for: valor as NSDecimalNumber) ?? "-"
         }
     }
-
-    var topGastos: [GastoItem] {
-        lancamentos
-            .filter { $0.valorComSinal < 0 }
-            .sorted { $0.valorComSinal < $1.valorComSinal }
-            .prefix(5)
-            .map {
-                GastoItem(
-                    descricao: $0.descricao,
-                    valor: abs($0.valorComSinal)
-                )
-            }
+    
+    var topGastos: [LancamentoModel] {
+        Array(
+            lancamentos
+                .filter { $0.valorComSinal < 0 }
+                .sorted { $0.valorComSinal < $1.valorComSinal }
+                .prefix(5)
+        )
     }
 
     // MARK: Insights
