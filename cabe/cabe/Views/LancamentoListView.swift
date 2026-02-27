@@ -364,7 +364,7 @@ struct LancamentoListView: View {
             
             ShareSheetView(
                 message: String(localized: "Lançamentos de \(mes)/\(String(viewModel.anoAtual)) extraído do Cabe"),
-                subject: String(localized: "Lançamentos de \(mes))/\(String(viewModel.anoAtual)) extraído do Cabe"),
+                subject: String(localized: "Lançamentos de \(mes)/\(String(viewModel.anoAtual)) extraído do Cabe"),
                 fileURL: item.url
             )
         }
@@ -419,7 +419,7 @@ struct LancamentoListView: View {
             
             let url = try await ExportarLancamentos.export(
                 lancamentos: viewModel.lancamentos,
-                fileName: String(localized: "lancamentos_\(mesPorExtenso).csv")
+                fileName: "\(String(localized: "lancamentos"))_\(mesPorExtenso).csv"
             )
 
             shareItem = ShareItem(url: url)

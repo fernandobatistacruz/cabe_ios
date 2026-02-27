@@ -388,7 +388,7 @@ struct FaturaDetalharView: View {
         do {
             let url = try await ExportarLancamentos.export(
                 lancamentos: lancamentos,
-                fileName: String(localized: "lancamentos_fatura.csv")
+                fileName: "\(String(localized: "lancamentos_fatura")).csv"               
             )
             shareItem = ShareItem(url: url)
         } catch {

@@ -199,7 +199,7 @@ struct ResumoAnualView: View {
         do {
             let url = try await ExportarLancamentos.export(
                 lancamentos: vm.lancamentos,
-                fileName: String(localized: "lancamentos_anuais.csv")
+                fileName: "\(String(localized: "lancamentos_anuais")).csv"                
             )
 
             shareItem = ShareItem(url: url)
