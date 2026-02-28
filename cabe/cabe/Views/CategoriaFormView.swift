@@ -237,15 +237,15 @@ struct CategoriaFormView: View {
         } message: {
             Text("Essa ação não poderá ser desfeita.")
         }
-        .onAppear {
+        .task {
             todasCategorias = try! CategoriaRepository().listar()
             if let cat = categoria, isEditar {
                 subcategorias = todasCategorias.filter { $0.pai == cat.id }
             }
             if !isEditar{
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    campoFocado = .nome
-                }
+                await Task.yield()
+                campoFocado = .nome
+                
             }
         }
         .sheet(isPresented: $mostrarPaywall) {

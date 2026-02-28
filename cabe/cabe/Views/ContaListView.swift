@@ -352,10 +352,9 @@ struct NovaContaView: View {
                 .disabled(nome.isEmpty || saldoText.isEmpty)
             }
         }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                campoFocado = .nome
-            }
+        .task {
+            await Task.yield()
+            campoFocado = .nome
         }
     }
     

@@ -277,10 +277,9 @@ struct NovoLancamentoView: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    campoFocado = .valor
-                }
+            .task {
+                await Task.yield()
+                campoFocado = .valor
             }
             .onChange(of: vm.pagamentoSelecionado) { _ in
                 vm.sugerirDataFatura()
