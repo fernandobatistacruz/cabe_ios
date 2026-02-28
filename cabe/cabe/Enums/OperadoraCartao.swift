@@ -46,3 +46,23 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
         }
     }
 }
+
+extension OperadoraCartao {
+    
+    var exclusivaBrasil: Bool {
+        switch self {
+        case .elo, .hipercard:
+            return true
+        default:
+            return false
+        }
+    }
+
+    static var disponiveisParaRegiaoAtual: [OperadoraCartao] {
+        let isBrasil = Locale.current.region?.identifier == "BR"
+
+        return allCases.filter {
+            isBrasil || !$0.exclusivaBrasil
+        }
+    }
+}

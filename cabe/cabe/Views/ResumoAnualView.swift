@@ -23,7 +23,8 @@ struct ResumoAnualView: View {
                 ano: ano,
                 repository: repository
             )
-        )
+        )        
+        anoDraft = ano
     }
 
     var body: some View {
@@ -84,7 +85,9 @@ struct ResumoAnualView: View {
                     .pickerStyle(.wheel)
                     .labelsHidden()
                 }
-                .onAppear {
+                .navigationTitle("Ano")
+                .navigationBarTitleDisplayMode(.inline)
+                .task {
                     anoDraft = vm.anoSelecionado
                 }
                 .toolbar {

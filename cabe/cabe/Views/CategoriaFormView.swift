@@ -146,7 +146,8 @@ struct CategoriaFormView: View {
                 HStack {
                     Text("Cor")
                     Spacer()
-                    ColorPicker("", selection: $corSelecionada)
+                    ColorPicker("Cores", selection: $corSelecionada)
+                        .labelsHidden()
                 }
                 .padding(.horizontal)
                 .listRowInsets(.init())

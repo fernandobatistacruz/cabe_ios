@@ -327,7 +327,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.2.6;
+				MARKETING_VERSION = 5.2.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.cabe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -364,7 +364,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.2.6;
+				MARKETING_VERSION = 5.2.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.cabe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

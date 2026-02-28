@@ -12,7 +12,7 @@ struct ZoomOperadoraView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        List(OperadoraCartao.allCases
+        List(OperadoraCartao.disponiveisParaRegiaoAtual
             .sorted {
                 String(localized: $0.nome)
                     .localizedCompare(String(localized: $1.nome)) == .orderedAscending

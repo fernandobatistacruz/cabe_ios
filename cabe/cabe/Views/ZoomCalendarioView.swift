@@ -39,6 +39,7 @@ struct ZoomCalendarioView: View {
     var body: some View {
         NavigationStack {
             mainContent
+                .navigationTitle("Calendário")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     leadingToolbar

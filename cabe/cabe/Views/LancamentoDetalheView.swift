@@ -185,7 +185,7 @@ struct LancamentoDetalheView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .navigationTitle("Detalhar")
+            .navigationTitle("Detalhar Lançamento")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar)
             .toolbar {
