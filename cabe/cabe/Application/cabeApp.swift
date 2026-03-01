@@ -34,7 +34,8 @@ struct cabeApp: App {
     var appDelegate
     
     private let notificationService = NotificationService()
-    
+    private let reviewRequestService = ReviewRequestService()
+
     @Environment(\.scenePhase)
     private var scenePhase
 
@@ -64,6 +65,10 @@ struct cabeApp: App {
                     Task.detached(priority: .utility) {
                         await notificationService.atualizarNotificacoes()
                     }
+
+                    reviewRequestService.handleAppDidBecomeActive(
+                        isAuthenticated: auth.state == .authenticated
+                    )
                     
                 case .background:
                     if BackupPolicy.deveFazerBackupAutomatico() {

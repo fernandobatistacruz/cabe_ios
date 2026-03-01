@@ -11,4 +11,9 @@ enum AppSettings {
     static let backupAtivo = "backupAtivo"
     static let ultimoBackupTimestamp = "ultimoBackupTimestamp"
     static let pagamentoPadrao = "pagamentoPadrao"
+
+    static let reviewInstallDate = "reviewInstallDate"
+    static let reviewOpenCount = "reviewOpenCount"
+    static let reviewLastRequestDate = "reviewLastRequestDate"
+    static let reviewLastRequestVersion = "reviewLastRequestVersion"
 }
