@@ -10,7 +10,7 @@ import SwiftUI
 struct LancamentoListView: View {
     
     @ObservedObject var viewModel: LancamentoListViewModel
-    @State var filtroSelecionado: FiltroLancamento = .todos
+    @State private var filtrosSelecionados: Set<FiltroLancamento> = [.todos]
     @State var mostrarZoomCalendario: Bool = true
     @State private var searchText = ""
     @State private var mostrarNovoLancamento = false
@@ -27,8 +27,34 @@ struct LancamentoListView: View {
     @State private var selectedDate: Date = Date()
     @State private var direcao: Edge = .trailing
     
+    init(
+        viewModel: LancamentoListViewModel,
+        filtrosSelecionados: Set<FiltroLancamento> = [.todos],
+        mostrarZoomCalendario: Bool = true
+    ) {
+        self.viewModel = viewModel
+        _filtrosSelecionados = State(initialValue: filtrosSelecionados.isEmpty ? [.todos] : filtrosSelecionados)
+        _mostrarZoomCalendario = State(initialValue: mostrarZoomCalendario)
+    }
+    
+    init(
+        viewModel: LancamentoListViewModel,
+        filtroSelecionado: FiltroLancamento,
+        mostrarZoomCalendario: Bool = true
+    ) {
+        self.init(
+            viewModel: viewModel,
+            filtrosSelecionados: [filtroSelecionado],
+            mostrarZoomCalendario: mostrarZoomCalendario
+        )
+    }
+    
     private var filtroAtivo: Bool {
-        filtroSelecionado != .todos || filtroTipo != .todos
+        filtrosSelecionados != [.todos] || filtroTipo != .todos
+    }
+    
+    private var filtrosLancamentoAtivos: Set<FiltroLancamento> {
+        filtrosSelecionados.subtracting([.todos])
     }
     
     var lancamentosFiltrados: [LancamentoModel] {
@@ -49,30 +75,24 @@ struct LancamentoListView: View {
             break
         }
         
-        switch filtroSelecionado {
-        case .todos:
-            break
-            
-        case .recorrentes:
-            resultado = resultado.filter {
-                $0.tipoRecorrente == .semanal ||
-                $0.tipoRecorrente == .quinzenal ||
-                $0.tipoRecorrente == .mensal
-            }
-            
-        case .pagos:
-            resultado = resultado.filter {
-                $0.pago == true
-            }
-            
-        case .naoPagos:
-            resultado = resultado.filter {
-                $0.pago == false
-            }
-            
-        case .parcelados:
-            resultado = resultado.filter {
-                $0.tipoRecorrente == .parcelado
+        if !filtrosLancamentoAtivos.isEmpty {
+            resultado = resultado.filter { lancamento in
+                filtrosLancamentoAtivos.allSatisfy { filtro in
+                    switch filtro {
+                    case .todos:
+                        return true
+                    case .recorrentes:
+                        return lancamento.tipoRecorrente == .semanal ||
+                        lancamento.tipoRecorrente == .quinzenal ||
+                        lancamento.tipoRecorrente == .mensal
+                    case .pagos:
+                        return lancamento.pago
+                    case .naoPagos:
+                        return !lancamento.pago
+                    case .parcelados:
+                        return lancamento.tipoRecorrente == .parcelado
+                    }
+                }
             }
         }
             
@@ -230,14 +250,14 @@ struct LancamentoListView: View {
                     Section {
                         ForEach(FiltroLancamento.allCases) { filtro in
                             Button {
-                                filtroSelecionado = filtro
+                                toggleFiltroLancamento(filtro)
                             } label: {
                                 HStack {
                                     Text(filtro.titulo)
                                     
                                     Spacer()
                                     
-                                    if filtroSelecionado == filtro {
+                                    if filtrosSelecionados.contains(filtro) {
                                         Image(systemName: "checkmark")
                                     }
                                 }
@@ -488,6 +508,25 @@ struct LancamentoListView: View {
     private func excluir(_ lancamento: LancamentoModel) async {
         await viewModel.remover(id: lancamento.id ?? 0, uuid: lancamento.uuid)
     }
+    
+    private func toggleFiltroLancamento(_ filtro: FiltroLancamento) {
+        if filtro == .todos {
+            filtrosSelecionados = [.todos]
+            return
+        }
+        
+        filtrosSelecionados.remove(.todos)
+        
+        if filtrosSelecionados.contains(filtro) {
+            filtrosSelecionados.remove(filtro)
+        } else {
+            filtrosSelecionados.insert(filtro)
+        }
+        
+        if filtrosSelecionados.isEmpty {
+            filtrosSelecionados = [.todos]
+        }
+    }
 }
 
 struct LancamentoSectionAcumulada {
@@ -495,4 +534,3 @@ struct LancamentoSectionAcumulada {
     let items: [LancamentoItem]
     let saldoAcumulado: Decimal
 }
-
