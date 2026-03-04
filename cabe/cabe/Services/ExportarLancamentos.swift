@@ -19,7 +19,7 @@ struct ExportarLancamentos {
 
         let fileURL = FileManager.default
             .temporaryDirectory
-            .appendingPathComponent("\(fileName).csv")
+            .appendingPathComponent(fileName)
 
         try csv.write(to: fileURL, atomically: true, encoding: .utf8)
         return fileURL
