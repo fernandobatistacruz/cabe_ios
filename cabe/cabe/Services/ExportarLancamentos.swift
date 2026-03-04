@@ -10,10 +10,7 @@ import SwiftUI
 
 struct ExportarLancamentos {
 
-    static func export(
-        lancamentos: [LancamentoModel],
-        fileName: String = "lancamentos"
-    ) async throws -> URL {
+    static func export(lancamentos: [LancamentoModel], fileName: String) async throws -> URL {
 
         let csv = "\u{FEFF}" + makeCSV(from: lancamentos)
 
@@ -25,8 +22,6 @@ struct ExportarLancamentos {
         return fileURL
     }
 
-    // MARK: - CSV Builder
-
     private static func makeCSV(from lancamentos: [LancamentoModel]) -> String {
         var rows: [String] = []
         rows.append(header)
@@ -37,8 +32,6 @@ struct ExportarLancamentos {
 
         return rows.joined(separator: "\n")
     }
-
-    // MARK: - Header
 
     private static let header =
     String(localized: """
@@ -59,8 +52,6 @@ struct ExportarLancamentos {
     Criado em
     """)
     .replacingOccurrences(of: "\n", with: "")
-
-    // MARK: - Row
 
     private static func row(from l: LancamentoModel) -> String {
 
@@ -84,9 +75,7 @@ struct ExportarLancamentos {
             l.transferencia ? String(localized: "Sim") : String(localized: "Não"),
             formatDate(l.dataCriacaoDate)
         ].joined(separator: ";")
-    }
-
-    // MARK: - Helpers
+    }  
 
     private static func sanitize(_ value: String) -> String {
         value
