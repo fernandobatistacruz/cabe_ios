@@ -439,7 +439,8 @@ struct ConsumoCardView: View {
                     items: dados,
                     lineWidth: 18,
                     size: 70,
-                    currencyCode: dados.first?.currencyCode ?? Locale.systemCurrencyCode
+                    currencyCode: dados.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    round: true
                 )
                     .padding(.trailing, 30)
             }

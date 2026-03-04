@@ -58,6 +58,24 @@ struct LancamentosPorCategoriaView: View {
     var body: some View {
 
         List {
+            /*
+            VStack {
+                DonutChartView(
+                    items: gastosPorCategoriaDetalhado,
+                    lineWidth: 26,
+                    size: 180,
+                    detalhar: true,
+                    currencyCode: vm.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    round: false
+                )
+            }
+            .frame(maxWidth: .infinity)
+            .padding(24)
+            .background(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color(.secondarySystemGroupedBackground))
+            */
+            
             Section {
                 
                 categoriaRow(
@@ -119,6 +137,115 @@ struct LancamentosPorCategoriaView: View {
                 }
             }
         }
+    }
+    
+    var gastosPorCategoriaDetalhado: [CategoriaResumo] {
+
+        let despesas = vm.lancamentos.filter {
+            ($0.categoriaID == categoria.categoriaID || $0.categoria?.pai == categoria.categoriaID) &&
+            $0.tipo == Tipo.despesa.rawValue &&
+            $0.transferencia == false
+        }
+
+        // 🔑 NORMALIZA antes de agrupar
+        let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
+            let info = categoriaPrincipalInfo(from: lancamento.categoria)
+            
+            let valorDecimal = lancamento.dividido
+                ? lancamento.valor / 2
+                : lancamento.valor
+
+            let valor = NSDecimalNumber(decimal: valorDecimal).doubleValue
+
+            return (
+                id: info.id,
+                nome: info.nome,
+                cor: info.cor,
+                valor: valor
+            )
+        }
+
+        // 🔑 agora sim agrupa corretamente
+        let agrupado = Dictionary(grouping: normalizados, by: \.id)
+
+        let totaisBase = agrupado.map { (id, itens) in
+            let total = itens.reduce(0) { $0 + $1.valor }
+            let item = itens[0]
+            
+            return (
+                categoriaID: id,
+                nome: item.nome,
+                valor: total,
+                cor: item.cor
+            )
+        }
+
+        let totalGeral = totaisBase.reduce(0) { $0 + $1.valor }
+        guard totalGeral > 0 else { return [] }
+
+        return totaisBase
+            .sorted { $0.valor > $1.valor }
+            .enumerated()
+            .map { index, item in
+                CategoriaResumo(
+                    categoriaID: item.categoriaID,
+                    nome: item.nome,
+                    valor: item.valor,
+                    percentual: (item.valor / totalGeral) * 100,
+                    cor: item.cor.variation(index: index),
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                )
+            }
+    }
+    
+    private func categoriaPrincipalInfo(
+        from categoria: CategoriaModel?
+    ) -> (id: Int64, nome: String, cor: Color) {
+        if let categoria, categoria.isSub {
+            return (
+                id: categoria.id ?? 0,
+                nome: categoria.nomeSubcategoria ?? "",
+                cor: categoria.cor
+            )
+        }
+
+        return (
+            id: categoria?.id ?? 0,
+            nome: categoria?.nome ?? "",
+            cor: categoria?.cor ?? .gray
+        )
+    }
+}
+
+extension Color {
+    func variation(index: Int) -> Color {
+        #if os(iOS)
+        let uiColor = UIColor(self)
+        
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        if uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
+            
+            let step = CGFloat(index) * 0.08
+            let newBrightness = max(min(brightness - step, 1.0), 0.15)
+            
+            return Color(
+                UIColor(
+                    hue: hue,
+                    saturation: saturation,
+                    brightness: newBrightness,
+                    alpha: alpha
+                )
+            )
+        }
+        
+        return self
+        #else
+        return self
+        #endif
     }
 }
 

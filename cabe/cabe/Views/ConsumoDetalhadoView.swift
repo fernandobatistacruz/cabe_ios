@@ -141,7 +141,8 @@ struct ConsumoDetalhadoView: View {
                         lineWidth: 26,
                         size: 180,
                         detalhar: true,
-                        currencyCode: vm.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                        currencyCode: vm.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                        round: false
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -322,13 +323,15 @@ struct DonutChartView: View {
     var size: CGFloat
     let detalhar: Bool
     let currencyCode: String
+    let round: Bool
 
-    init(items: [CategoriaResumo], lineWidth: CGFloat, size: CGFloat, detalhar: Bool = false, currencyCode: String) {
+    init(items: [CategoriaResumo], lineWidth: CGFloat, size: CGFloat, detalhar: Bool = false, currencyCode: String, round: Bool) {
         self.items = items
         self.lineWidth = lineWidth
         self.size = size
         self.detalhar = detalhar
         self.currencyCode = currencyCode
+        self.round = round
     }
 
     private var total: Double {
@@ -348,7 +351,7 @@ struct DonutChartView: View {
                                 items[index].cor.gradient,
                                 style: StrokeStyle(
                                     lineWidth: lineWidth,
-                                    lineCap: .round
+                                    lineCap: round ? .round : .butt
                                 )
                             )
                             .rotationEffect(.degrees(-90))
