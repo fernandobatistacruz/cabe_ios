@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct LancamentosPorCategoriaView: View {
     
@@ -46,6 +47,10 @@ struct LancamentosPorCategoriaView: View {
         )
     }
 
+    private var corCategoriaPrincipalOriginal: Color {
+        lancamentosCategoriaPrincipal.first?.categoria?.cor ?? categoria.cor
+    }
+
     private func total(_ itens: [LancamentoModel]) -> Decimal {
         itens.reduce(0) { $0 + $1.valorDividido }
     }
@@ -55,34 +60,32 @@ struct LancamentosPorCategoriaView: View {
         total(lancamentosPorSub.values.flatMap { $0 })
     }
 
+    private var subcategoriasNaOrdemDaLista: [Int64] {
+        lancamentosPorSub.keys.sorted()
+    }
+
     var body: some View {
 
         List {
-            /*
+            
             VStack {
-                DonutChartView(
-                    items: gastosPorCategoriaDetalhado,
-                    lineWidth: 26,
-                    size: 180,
-                    detalhar: true,
-                    currencyCode: vm.lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
-                    round: false
-                )
+                graficoBarrasCategorias
             }
             .frame(maxWidth: .infinity)
-            .padding(24)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(Color(.secondarySystemGroupedBackground))
-            */
-            
+                )
+                       
             Section {
                 
                 categoriaRow(
                     id: categoria.categoriaID,
                     nome: String(localized: "Principal"),
                     total: total(lancamentosCategoriaPrincipal),
-                    cor: categoria.cor,
+                    cor: corCategoriaPrincipalOriginal,
                     expanded: expandedCategorias.contains(categoria.categoriaID)
                 )
                 
@@ -92,7 +95,7 @@ struct LancamentosPorCategoriaView: View {
                         lancamentoRow(lancamento)
                     }
                     
-                    ForEach(lancamentosPorSub.keys.sorted(), id: \.self) { subID in
+                    ForEach(subcategoriasNaOrdemDaLista, id: \.self) { subID in
                         
                         let itens = lancamentosPorSub[subID] ?? []
                         
@@ -104,7 +107,7 @@ struct LancamentosPorCategoriaView: View {
                             id: subID,
                             nome: nomeSub,
                             total: total(itens),
-                            cor: itens.first?.categoria?.cor ?? Color.gray,
+                            cor: itens.first?.categoria?.cor ?? .gray,
                             expanded: expandedSubs.contains(subID)
                         )
                         
@@ -139,114 +142,77 @@ struct LancamentosPorCategoriaView: View {
         }
     }
     
-    var gastosPorCategoriaDetalhado: [CategoriaResumo] {
+    private var dadosGraficoBarras: [CategoriaBarItem] {
+        var itens: [CategoriaBarItem] = []
 
-        let despesas = vm.lancamentos.filter {
-            ($0.categoriaID == categoria.categoriaID || $0.categoria?.pai == categoria.categoriaID) &&
-            $0.tipo == Tipo.despesa.rawValue &&
-            $0.transferencia == false
-        }
-
-        // 🔑 NORMALIZA antes de agrupar
-        let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
-            let info = categoriaPrincipalInfo(from: lancamento.categoria)
-            
-            let valorDecimal = lancamento.dividido
-                ? lancamento.valor / 2
-                : lancamento.valor
-
-            let valor = NSDecimalNumber(decimal: valorDecimal).doubleValue
-
-            return (
-                id: info.id,
-                nome: info.nome,
-                cor: info.cor,
-                valor: valor
+        let totalPrincipal = total(lancamentosCategoriaPrincipal)
+        itens.append(
+            CategoriaBarItem(
+                id: categoria.categoriaID,
+                nome: String(localized: "Principal"),
+                valor: NSDecimalNumber(decimal: totalPrincipal).doubleValue,
+                cor: corCategoriaPrincipalOriginal
             )
-        }
-
-        // 🔑 agora sim agrupa corretamente
-        let agrupado = Dictionary(grouping: normalizados, by: \.id)
-
-        let totaisBase = agrupado.map { (id, itens) in
-            let total = itens.reduce(0) { $0 + $1.valor }
-            let item = itens[0]
-            
-            return (
-                categoriaID: id,
-                nome: item.nome,
-                valor: total,
-                cor: item.cor
-            )
-        }
-
-        let totalGeral = totaisBase.reduce(0) { $0 + $1.valor }
-        guard totalGeral > 0 else { return [] }
-
-        return totaisBase
-            .sorted { $0.valor > $1.valor }
-            .enumerated()
-            .map { index, item in
-                CategoriaResumo(
-                    categoriaID: item.categoriaID,
-                    nome: item.nome,
-                    valor: item.valor,
-                    percentual: (item.valor / totalGeral) * 100,
-                    cor: item.cor.variation(index: index),
-                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
-                )
-            }
-    }
-    
-    private func categoriaPrincipalInfo(
-        from categoria: CategoriaModel?
-    ) -> (id: Int64, nome: String, cor: Color) {
-        if let categoria, categoria.isSub {
-            return (
-                id: categoria.id ?? 0,
-                nome: categoria.nomeSubcategoria ?? "",
-                cor: categoria.cor
-            )
-        }
-
-        return (
-            id: categoria?.id ?? 0,
-            nome: categoria?.nome ?? "",
-            cor: categoria?.cor ?? .gray
         )
+
+        for subID in subcategoriasNaOrdemDaLista {
+            let itensSub = lancamentosPorSub[subID] ?? []
+            let nomeSub = itensSub.first?.categoria?.nomeSubcategoria ?? "Subcategoria"
+            let totalSub = total(itensSub)
+
+            itens.append(
+                CategoriaBarItem(
+                    id: subID,
+                    nome: nomeSub,
+                    valor: NSDecimalNumber(decimal: totalSub).doubleValue,
+                    cor: itensSub.first?.categoria?.cor ?? .gray
+                )
+            )
+        }
+
+        return itens
+    }
+
+    @ViewBuilder
+    private var graficoBarrasCategorias: some View {
+        if dadosGraficoBarras.allSatisfy({ $0.valor == 0 }) {
+            EmptyView()
+        } else {
+            Chart(dadosGraficoBarras) { item in
+                BarMark(
+                    x: .value("Valor", item.valor),
+                    y: .value("Categoria", item.nome)
+                )
+                .foregroundStyle(item.cor.gradient)
+                .cornerRadius(5)
+            }
+            .frame(height: min(CGFloat(dadosGraficoBarras.count * 44), 320))
+            .chartXAxis {
+                AxisMarks(values: .automatic) { value in
+                    AxisGridLine()
+                    AxisTick()
+                    AxisValueLabel {
+                        if let doubleValue = value.as(Double.self) {
+                            Text(Decimal(doubleValue).currency())
+                        }
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks { _ in
+                    AxisValueLabel()
+                        .font(.caption)
+                }
+            }
+        }
     }
 }
 
-extension Color {
-    func variation(index: Int) -> Color {
-        #if os(iOS)
-        let uiColor = UIColor(self)
-        
-        var hue: CGFloat = 0
-        var saturation: CGFloat = 0
-        var brightness: CGFloat = 0
-        var alpha: CGFloat = 0
-        
-        if uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
-            
-            let step = CGFloat(index) * 0.08
-            let newBrightness = max(min(brightness - step, 1.0), 0.15)
-            
-            return Color(
-                UIColor(
-                    hue: hue,
-                    saturation: saturation,
-                    brightness: newBrightness,
-                    alpha: alpha
-                )
-            )
-        }
-        
-        return self
-        #else
-        return self
-        #endif
-    }
+private struct CategoriaBarItem: Identifiable {
+    let id: Int64
+    let nome: String
+    let valor: Double
+    let cor: Color
 }
 
 private extension LancamentosPorCategoriaView {
