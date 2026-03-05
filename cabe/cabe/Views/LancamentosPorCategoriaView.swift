@@ -68,12 +68,13 @@ struct LancamentosPorCategoriaView: View {
 
         List {
             
-            VStack {
+            VStack (alignment: .leading) {
+                Text("Categoria e Subcategoria")
+                    .font(.headline)
                 graficoBarrasCategorias
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)            
+            .padding(.vertical, 2)
             .background(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(Color(.secondarySystemGroupedBackground))
