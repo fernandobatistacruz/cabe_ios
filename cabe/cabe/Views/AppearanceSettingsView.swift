@@ -76,11 +76,11 @@ final class ThemeManager: ObservableObject {
         var title: LocalizedStringKey {
             switch self {
             case .system:
-                return "theme.system"
+                return "Sistema"
             case .light:
-                return "theme.light"
+                return "Claro"
             case .dark:
-                return "theme.dark"
+                return "Escuro"
             }
         }
     }

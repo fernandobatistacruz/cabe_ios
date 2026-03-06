@@ -287,15 +287,15 @@ struct ConsumoRow: View {
         HStack(spacing: 12) {
            
             Circle()
-                .fill(item.cor)
-                .frame(width: 10, height: 10)
+                .fill(item.cor.gradient)
+                .frame(width: 12, height: 12)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.nome)
                     .foregroundStyle(.primary)
 
                 Text(item.valorFormatado)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
 
@@ -396,8 +396,8 @@ struct ConsumoListView: View {
             ForEach(items) { item in
                 HStack {
                     Circle()
-                        .fill(item.cor)
-                        .frame(width: 10, height: 10)
+                        .fill(item.cor.gradient)
+                        .frame(width: 12, height: 12)
 
                     Text(item.nome)
                         .lineLimit(1)

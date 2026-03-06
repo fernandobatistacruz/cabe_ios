@@ -74,7 +74,7 @@ struct LancamentosPorCategoriaView: View {
                 graficoBarrasCategorias
             }
             .frame(maxWidth: .infinity)            
-            .padding(.vertical, 2)
+            .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(Color(.secondarySystemGroupedBackground))
@@ -171,7 +171,7 @@ struct LancamentosPorCategoriaView: View {
             )
         }
 
-        return itens
+        return itens.sorted { $0.valor > $1.valor }
     }
 
     @ViewBuilder
@@ -179,15 +179,27 @@ struct LancamentosPorCategoriaView: View {
         if dadosGraficoBarras.allSatisfy({ $0.valor == 0 }) {
             EmptyView()
         } else {
+            let temApenasUmaLinha = dadosGraficoBarras.count == 1
+
+            /*
+            if temApenasUmaLinha, let item = dadosGraficoBarras.first {
+                Text(item.nome)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+             */
+            
             Chart(dadosGraficoBarras) { item in
                 BarMark(
                     x: .value("Valor", item.valor),
-                    y: .value("Categoria", item.nome)
+                    y: .value("Categoria", item.nome),
+                    height: .fixed(12)
                 )
                 .foregroundStyle(item.cor.gradient)
                 .cornerRadius(5)
             }
-            .frame(height: min(CGFloat(dadosGraficoBarras.count * 44), 320))
+            .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
             .chartXAxis {
                 AxisMarks(values: .automatic) { value in
                     AxisGridLine()
@@ -199,10 +211,13 @@ struct LancamentosPorCategoriaView: View {
                     }
                 }
             }
+            .chartYAxis(temApenasUmaLinha ? .hidden : .visible)
             .chartYAxis {
-                AxisMarks { _ in
-                    AxisValueLabel()
-                        .font(.caption)
+                if !temApenasUmaLinha {
+                    AxisMarks { _ in
+                        AxisValueLabel()
+                            .font(.caption)
+                    }
                 }
             }
         }
@@ -231,8 +246,8 @@ private extension LancamentosPorCategoriaView {
         } label: {
             HStack(spacing: 12) {
                 Circle()
-                    .fill(cor)
-                    .frame(width: 10, height: 10)
+                    .fill(cor.gradient)
+                    .frame(width: 12, height: 12)
                 
                 Text(nome)
                     .lineLimit(1)
@@ -266,8 +281,8 @@ private extension LancamentosPorCategoriaView {
 
             HStack(spacing: 12) {
                 Circle()
-                    .fill(cor)
-                    .frame(width: 10, height: 10)
+                    .fill(cor.gradient)
+                    .frame(width: 12, height: 12)
 
                 Text(nome)
                     .lineLimit(1)
@@ -321,10 +336,11 @@ struct LancamentoRowConsumo: View {
     }
     
     var body: some View {
+        let cor = lancamento.categoria?.cor ?? .gray
         HStack(spacing: 12) {
             Circle()
-                .fill(lancamento.categoria?.cor ?? .gray)
-                .frame(width: 10, height: 10)
+                .fill(cor.gradient)
+                .frame(width: 12, height: 12)
                         
             VStack(alignment: .leading) {
                                 

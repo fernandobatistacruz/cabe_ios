@@ -88,15 +88,18 @@ extension BalanceDetailView {
                     .padding(.horizontal)
             
             
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(vm.topGastos) { item in
-                    LancamentoRow(lancamento: item, mostrarPagamento: false)
-                        .listRowInsets(
-                            EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-                        )
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(vm.topGastos.enumerated()), id: \.element.id) { index, item in
+                    GastoRow(lancamento: item)
+                        .padding(.vertical, 14)
+                        .padding(.horizontal)
+                    
+                    if index < vm.topGastos.count - 1 {
+                        Divider()
+                            .padding(.leading, 50)
+                    }
                 }
             }
-            .padding()
             .background(
                 RoundedRectangle(cornerRadius: 22)
                     .fill(Color(.secondarySystemGroupedBackground))
@@ -110,8 +113,7 @@ extension BalanceDetailView {
             Text("Análises")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal)
-            
+                .padding(.horizontal)            
             
             ForEach(vm.insights.indices, id: \.self) { index in
                 let texto = vm.insights[index]
@@ -120,6 +122,47 @@ extension BalanceDetailView {
         }
     }
 }
+
+struct GastoRow: View {
+    let lancamento: LancamentoModel
+    
+    init(lancamento: LancamentoModel) {
+        self.lancamento = lancamento
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: lancamento.categoria?
+                .icone.systemName ?? "questionmark")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 20, height: 20)
+            .foregroundColor(lancamento.categoria?.cor ?? .primary)
+            
+            VStack(alignment: .leading) {
+                HStack{
+                    Text(lancamento.descricao)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                }
+            }
+            
+            Spacer()
+            
+            Text(
+                lancamento.valorComSinal,
+                format: .currency(
+                    code: lancamento.currencyCode
+                )
+            )
+            .foregroundColor(.secondary)
+            
+        }
+    }
+}
+
 
 struct SummaryCard: View {
     let title: String

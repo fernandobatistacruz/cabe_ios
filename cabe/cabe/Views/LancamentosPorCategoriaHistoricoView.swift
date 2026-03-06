@@ -83,8 +83,8 @@ private extension LancamentosPorCategoriaHistoricoView {
         HStack {
 
             Circle()
-                .fill(item.cor)
-                .frame(width: 10, height: 10)
+                .fill(item.cor.gradient)
+                .frame(width: 12, height: 12)
 
             Text(item.nome)
                 .lineLimit(1)
