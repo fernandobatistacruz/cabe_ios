@@ -51,14 +51,14 @@ extension BalanceDetailView {
         LazyVGrid(columns: [.init(), .init()]) {
             SummaryCard(title: String(localized: "Receitas"),
                         value: vm.receitasFormatado,
-                        color: .green,
+                        color: .green
             )
             .padding(.trailing, 2)
             .padding(.horizontal, 1)
             
             SummaryCard(title: String(localized: "Despesas"),
                         value: vm.despesasFormatado,
-                        color: .red,
+                        color: .red
             )
             .padding(.vertical, 2)
             .padding(.horizontal, 1)
@@ -157,6 +157,9 @@ struct GastoRow: View {
                     code: lancamento.currencyCode
                 )
             )
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
             .foregroundColor(.secondary)
             
         }
@@ -179,8 +182,9 @@ struct SummaryCard: View {
                 .font(.headline)
                 .fontDesign(.rounded)
                 .foregroundColor(color)
+                .monospacedDigit()
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.70)
         }
         .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
         .padding(.horizontal)

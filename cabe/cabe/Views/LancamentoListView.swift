@@ -191,6 +191,9 @@ struct LancamentoListView: View {
                             )
                         )
                         .font(.subheadline)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                     }
                 }
             }

@@ -118,8 +118,11 @@ struct LancamentoRow: View {
                     lancamento.valorComSinal,
                     format: .currency(
                         code: lancamento.currencyCode
-                    )
+                    )                   
                 )
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
                 .foregroundColor(.secondary)
             } else {
                 Text("•••")

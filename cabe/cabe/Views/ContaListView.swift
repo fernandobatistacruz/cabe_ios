@@ -199,6 +199,9 @@ struct ContaRow: View {
 
             Text(conta.saldo, format: .currency(code: conta.currencyCode))
                 .foregroundStyle(.gray)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
                
         }
     }
@@ -249,6 +252,9 @@ struct ContaDetalheView: View {
                 .font(.title3.bold())
                 .foregroundStyle(.primary)
                 .fixedSize(horizontal: true, vertical: false)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
             }
             .padding(.vertical, 4)
             

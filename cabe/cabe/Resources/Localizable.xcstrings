@@ -11816,13 +11816,13 @@
         "es-419" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tarjeta MasterCard"
+            "value" : "MasterCard"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tarjeta MasterCard"
+            "value" : "MasterCard"
           }
         },
         "fr-FR" : {
@@ -17771,7 +17771,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visum"
+            "value" : "Visa"
           }
         },
         "en" : {

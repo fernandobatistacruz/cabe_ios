@@ -86,6 +86,9 @@ struct LancamentoDetalheView: View {
                         .font(.title3.bold())
                         .foregroundStyle(.primary)
                         .fixedSize(horizontal: true, vertical: false)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                     }
                 }
 
@@ -153,6 +156,9 @@ struct LancamentoDetalheView: View {
                                 format: .currency(code: lancamento.currencyCode)
                             )
                             .foregroundColor(.secondary)
+                            .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                         }
                     }
                 }

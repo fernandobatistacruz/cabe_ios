@@ -417,8 +417,9 @@ struct CardResumoView: View {
                 .font(.headline)
                 .fontDesign(.rounded)
                 .foregroundColor(cor)
+                .monospacedDigit()
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.75)
             
         }
         .frame(maxWidth: .infinity)

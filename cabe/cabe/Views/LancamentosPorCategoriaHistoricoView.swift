@@ -159,6 +159,9 @@ private extension LancamentosPorCategoriaHistoricoView {
 
             Text(item.valorFormatado)
                 .foregroundColor(.secondary)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }
         .listRowInsets(
             EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)

@@ -106,6 +106,9 @@ private struct VenceHojeSection: View {
             Spacer()
             Text(formatarValor(totalHoje))
                 .foregroundColor(.secondary)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }) {
             ForEach(vmNotificacao.vencemHoje) { lancamento in
                 NavigationLink {
@@ -207,6 +210,9 @@ private struct VencidosSection: View {
             Spacer()
             Text(formatarValor(totalVencidos))
                 .foregroundColor(.secondary)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }) {
             ForEach(vmNotificacao.vencidos) { lancamento in
                 NavigationLink {
@@ -305,6 +311,9 @@ struct CartaoRowNotification: View {
             Spacer()
             Text("\(formatarValor(totalDoCartao))")
                 .foregroundColor(.secondary)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }
     }
     

@@ -48,6 +48,9 @@ struct LancamentoCartaoRow: View {
                 format: .currency(code: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode)
             )
             .foregroundColor(.secondary)
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
         }
     }
 }

@@ -305,10 +305,14 @@ struct ConsumoRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.nome)
                     .foregroundStyle(.primary)
-
+                
                 Text(item.valorFormatado)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                
             }
 
             Spacer()
@@ -376,6 +380,9 @@ struct DonutChartView: View {
                     Text(total, format: .currency(code: currencyCode))
                         .font(.headline)
                         .fontWeight(.bold)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                 }
             }
         }

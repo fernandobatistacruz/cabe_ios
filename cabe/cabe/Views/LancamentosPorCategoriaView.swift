@@ -125,6 +125,9 @@ struct LancamentosPorCategoriaView: View {
                     Text("Lançamentos")
                     Spacer()
                     Text(totalCategoriaCompleta.currency())
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                 }
             }
         }
@@ -273,6 +276,9 @@ private extension LancamentosPorCategoriaView {
 
                 Text(total.currency())
                     .foregroundColor(.secondary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
@@ -311,6 +317,9 @@ private extension LancamentosPorCategoriaView {
 
                 Text(total.currency())
                     .foregroundColor(.secondary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
@@ -381,6 +390,9 @@ struct LancamentoRowConsumo: View {
                 )
             )
             .foregroundColor(.secondary)
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
         }
         .padding(.leading, 24)
     }

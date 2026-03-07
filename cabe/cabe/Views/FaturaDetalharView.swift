@@ -118,12 +118,16 @@ struct FaturaDetalharView: View {
                     format: .currency(
                         code: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
                     )
+                    
                 )
                 .font(.title3.bold())
                 .foregroundStyle(
                     modoConferencia ? Color.accentColor : .primary
                 )
-                .fixedSize(horizontal: true, vertical: false) // 🔒 nunca trunca
+                .fixedSize(horizontal: true, vertical: false)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
             }
 
             if !filtroLancamentos.isEmpty {

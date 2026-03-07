@@ -283,6 +283,9 @@ struct CardItem: View {
                         .fontDesign(.rounded)
                         .fontWeight(.heavy)
                         .foregroundStyle(.white.opacity(0.9))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.70)
                 }else{
                     Text("•••")
                         .font(.headline)
@@ -330,7 +333,6 @@ struct CardItem: View {
         formatter.numberStyle = .currency
         formatter.currencyCode = moeda
         formatter.locale = locale
-        formatter.maximumFractionDigits = 2
         
         formatter.currencySymbol = ""
         formatter.internationalCurrencySymbol = ""
@@ -485,6 +487,9 @@ struct RecentesListView: View {
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 6)
                             .padding(.top, viewModel.lancamentosRecentesAgrupadosSimples.first?.date == grupo.date ? 0 : 10)
+                            .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                     } else {
                         Text("•••")
                             .font(.subheadline)
