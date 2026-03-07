@@ -359,7 +359,6 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
             atualizado.valor = novo.valor
-            atualizado.pagoRaw = novo.pagoRaw
             atualizado.divididoRaw = novo.divididoRaw
             atualizado.categoriaID = novo.categoriaID
             atualizado.cartaoUuid = novo.cartaoUuid
@@ -407,8 +406,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             atualizado.anoCompra = novo.anoCompra
             atualizado.descricao = novo.descricao
             atualizado.anotacao = novo.anotacao
-            atualizado.valor = novo.valor
-            atualizado.pagoRaw = novo.pagoRaw
+            atualizado.valor = novo.valor           
             atualizado.divididoRaw = novo.divididoRaw
             atualizado.categoriaID = novo.categoriaID
             atualizado.cartaoUuid = novo.cartaoUuid

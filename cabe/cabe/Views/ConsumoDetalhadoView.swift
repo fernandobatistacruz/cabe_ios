@@ -410,6 +410,7 @@ struct ConsumoListView: View {
                     Circle()
                         .fill(item.cor.gradient)
                         .frame(width: 12, height: 12)
+                        .padding(.trailing, 2)
 
                     Text(item.nome)
                         .lineLimit(1)
