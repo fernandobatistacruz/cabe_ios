@@ -68,23 +68,25 @@ struct LancamentosPorCategoriaView: View {
 
         List {
             
-            VStack (alignment: .leading) {
-                Text("Categoria e Subcategoria")
-                    .font(.headline)
-                graficoBarrasCategorias
-            }
-            .frame(maxWidth: .infinity)            
-            .padding(.vertical, 4)
-            .background(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
+            Section {
+                VStack (alignment: .leading) {
+                    Text("Categoria e Subcategoria")
+                        .font(.headline)
+                    graficoBarrasCategorias
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(Color(.secondarySystemGroupedBackground))
                 )
+            }
                        
             Section {
                 
                 categoriaRow(
                     id: categoria.categoriaID,
-                    nome: String(localized: "Principal"),
+                    nome: categoria.nome,
                     total: total(lancamentosCategoriaPrincipal),
                     cor: corCategoriaPrincipalOriginal,
                     expanded: expandedCategorias.contains(categoria.categoriaID)
@@ -121,7 +123,7 @@ struct LancamentosPorCategoriaView: View {
                 }
             } header: {
                 HStack {
-                    Text("Total")
+                    Text("Lançamentos")
                     Spacer()
                     Text(totalCategoriaCompleta.currency())
                 }
@@ -147,14 +149,16 @@ struct LancamentosPorCategoriaView: View {
         var itens: [CategoriaBarItem] = []
 
         let totalPrincipal = total(lancamentosCategoriaPrincipal)
-        itens.append(
-            CategoriaBarItem(
-                id: categoria.categoriaID,
-                nome: String(localized: "Principal"),
-                valor: NSDecimalNumber(decimal: totalPrincipal).doubleValue,
-                cor: corCategoriaPrincipalOriginal
+        if !totalPrincipal.isZero {
+            itens.append(
+                CategoriaBarItem(
+                    id: categoria.categoriaID,
+                    nome: categoria.nome,
+                    valor: totalPrincipal,
+                    cor: corCategoriaPrincipalOriginal
+                )
             )
-        )
+        }
 
         for subID in subcategoriasNaOrdemDaLista {
             let itensSub = lancamentosPorSub[subID] ?? []
@@ -165,7 +169,7 @@ struct LancamentosPorCategoriaView: View {
                 CategoriaBarItem(
                     id: subID,
                     nome: nomeSub,
-                    valor: NSDecimalNumber(decimal: totalSub).doubleValue,
+                    valor: totalSub,
                     cor: itensSub.first?.categoria?.cor ?? .gray
                 )
             )
@@ -180,15 +184,6 @@ struct LancamentosPorCategoriaView: View {
             EmptyView()
         } else {
             let temApenasUmaLinha = dadosGraficoBarras.count == 1
-
-            /*
-            if temApenasUmaLinha, let item = dadosGraficoBarras.first {
-                Text(item.nome)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-             */
             
             Chart(dadosGraficoBarras) { item in
                 BarMark(
@@ -198,17 +193,21 @@ struct LancamentosPorCategoriaView: View {
                 )
                 .foregroundStyle(item.cor.gradient)
                 .cornerRadius(5)
+                .annotation(position: .trailing) {
+                    if !temApenasUmaLinha {
+                        Text(
+                            item.valor
+                                .abreviado(currencyCode: categoria.currencyCode)
+                        )
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    }
+                }
             }
             .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
             .chartXAxis {
                 AxisMarks(values: .automatic) { value in
-                    AxisGridLine()
-                    AxisTick()
-                    AxisValueLabel {
-                        if let doubleValue = value.as(Double.self) {
-                            Text(Decimal(doubleValue).currency())
-                        }
-                    }
+                    AxisValueLabel {}
                 }
             }
             .chartYAxis(temApenasUmaLinha ? .hidden : .visible)
@@ -227,7 +226,7 @@ struct LancamentosPorCategoriaView: View {
 private struct CategoriaBarItem: Identifiable {
     let id: Int64
     let nome: String
-    let valor: Double
+    let valor: Decimal
     let cor: Color
 }
 
@@ -245,9 +244,11 @@ private extension LancamentosPorCategoriaView {
             toggle(&expandedCategorias, id)
         } label: {
             HStack(spacing: 12) {
-                Circle()
-                    .fill(cor.gradient)
-                    .frame(width: 12, height: 12)
+                Image(systemName: categoria.icone)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundColor(categoria.cor)
                 
                 Text(nome)
                     .lineLimit(1)
@@ -280,9 +281,12 @@ private extension LancamentosPorCategoriaView {
         } label: {
 
             HStack(spacing: 12) {
-                Circle()
-                    .fill(cor.gradient)
-                    .frame(width: 12, height: 12)
+                Image(systemName: categoria.icone)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundColor(categoria.cor)
+                
 
                 Text(nome)
                     .lineLimit(1)
@@ -300,7 +304,7 @@ private extension LancamentosPorCategoriaView {
                     .foregroundStyle(Color.accentColor)
             }
             .padding(.vertical, 2)
-            .padding(.leading, 10)
+            .padding(.leading, 20)
         }
     }
 
@@ -340,7 +344,7 @@ struct LancamentoRowConsumo: View {
         HStack(spacing: 12) {
             Circle()
                 .fill(cor.gradient)
-                .frame(width: 12, height: 12)
+                .frame(width: 10, height: 10)
                         
             VStack(alignment: .leading) {
                                 
@@ -365,7 +369,7 @@ struct LancamentoRowConsumo: View {
             )
             .foregroundColor(.secondary)
         }
-        .padding(.leading, 18)
+        .padding(.leading, 24)
     }
 }
 

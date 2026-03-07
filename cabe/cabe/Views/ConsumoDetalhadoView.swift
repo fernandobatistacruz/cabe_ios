@@ -201,7 +201,14 @@ struct ConsumoDetalhadoView: View {
         }
 
         // 🔑 NORMALIZA antes de agrupar
-        let normalizados = despesas.map { lancamento -> (id: Int64, nome: String, cor: Color, valor: Double) in
+        let normalizados = despesas.map { lancamento -> (
+            id: Int64,
+            nome: String,
+            cor: Color,
+            valor: Double,
+            icone: String
+           
+        ) in
             let info = categoriaPrincipalInfo(from: lancamento.categoria)
             
             let valorDecimal = lancamento.valorDividido
@@ -211,7 +218,8 @@ struct ConsumoDetalhadoView: View {
                 id: info.id,
                 nome: info.nome,
                 cor: info.cor,
-                valor: valor
+                valor: valor,
+                icone: info.icone
             )
         }
 
@@ -223,7 +231,8 @@ struct ConsumoDetalhadoView: View {
                 categoriaID: itens.first!.id,
                 nome: itens.first!.nome,
                 valor: itens.reduce(0) { $0 + $1.valor },
-                cor: itens.first!.cor
+                cor: itens.first!.cor,
+                icone: itens.first?.icone ?? "questionmark"
             )
         }
 
@@ -240,26 +249,28 @@ struct ConsumoDetalhadoView: View {
                     percentual: ($0.valor / totalGeral) * 100,
                     cor: $0.cor,
                     currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
-                    icone: lancamentos.first?.categoria?.icone.systemName ?? "questionmark"
+                    icone: $0.icone
                 )
             }
     }
 
     private func categoriaPrincipalInfo(
         from categoria: CategoriaModel?
-    ) -> (id: Int64, nome: String, cor: Color) {
+    ) -> (id: Int64, nome: String, cor: Color, icone: String) {
         if let categoria, categoria.isSub, let paiID = categoria.pai {
             return (
                 id: paiID,
                 nome: categoria.nome,
-                cor: categoria.cor
+                cor: categoria.cor,
+                icone: categoria.icone.systemName
             )
         }
 
         return (
             id: categoria?.id ?? 0,
             nome: categoria?.nome ?? "",
-            cor: categoria?.cor ?? .gray
+            cor: categoria?.cor ?? .gray,
+            icone: categoria?.icone.systemName ?? "questionmark"
         )
     }
         
