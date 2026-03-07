@@ -184,16 +184,34 @@ struct LancamentosPorCategoriaView: View {
         } else {
             let temApenasUmaLinha = dadosGraficoBarras.count == 1
             
-            Chart(dadosGraficoBarras) { item in
-                BarMark(
-                    x: .value("Valor", item.valor),
-                    y: .value("Categoria", item.nome),
-                    height: .fixed(12)
-                )
-                .foregroundStyle(item.cor.gradient)
-                .cornerRadius(5)
-                .annotation(position: .trailing) {
-                    if !temApenasUmaLinha {
+            if temApenasUmaLinha, let itemUnico = dadosGraficoBarras.first {
+                Chart(dadosGraficoBarras) { item in
+                    BarMark(
+                        x: .value("Valor", item.valor),
+                        y: .value("Categoria", item.nome),
+                        height: .fixed(12)
+                    )
+                    .foregroundStyle(item.cor.gradient)
+                    .cornerRadius(5)
+                }
+                .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
+                .chartXScale(domain: 0...itemUnico.valor)
+                .chartYAxis(.hidden)
+                .chartXAxis {
+                    AxisMarks(values: .automatic) { _ in
+                        AxisValueLabel {}
+                    }
+                }
+            } else {
+                Chart(dadosGraficoBarras) { item in
+                    BarMark(
+                        x: .value("Valor", item.valor),
+                        y: .value("Categoria", item.nome),
+                        height: .fixed(12)
+                    )
+                    .foregroundStyle(item.cor.gradient)
+                    .cornerRadius(5)
+                    .annotation(position: .trailing) {
                         Text(
                             item.valor
                                 .abreviado(currencyCode: categoria.currencyCode)
@@ -202,16 +220,13 @@ struct LancamentosPorCategoriaView: View {
                         .foregroundColor(.secondary)
                     }
                 }
-            }
-            .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
-            .chartXAxis {
-                AxisMarks(values: .automatic) { value in
-                    AxisValueLabel {}
+                .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
+                .chartXAxis {
+                    AxisMarks(values: .automatic) { _ in
+                        AxisValueLabel {}
+                    }
                 }
-            }
-            .chartYAxis(temApenasUmaLinha ? .hidden : .visible)
-            .chartYAxis {
-                if !temApenasUmaLinha {
+                .chartYAxis {
                     AxisMarks { _ in
                         AxisValueLabel()
                             .font(.caption)

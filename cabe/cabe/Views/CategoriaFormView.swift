@@ -204,13 +204,11 @@ struct CategoriaFormView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    if sub.isSubscribed {
-                        Task{
-                            await salvar()
-                        }
-                    } else {
-                        mostrarPaywall = true
+                    
+                    Task{
+                        await salvar()
                     }
+                    
                 } label: {
                     Image(systemName: "checkmark").foregroundColor(.white)
                 }
@@ -379,7 +377,6 @@ struct SubcategoriaSheet: View {
                         Image(systemName: "xmark")
                     }
                 }
-
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task{

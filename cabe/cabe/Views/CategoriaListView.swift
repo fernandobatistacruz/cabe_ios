@@ -19,7 +19,6 @@ struct CategoriaListView: View {
     @State private var mostrarEditarCategoria = false
     @State private var categoriaSelecionada: CategoriaModel? = nil
     @StateObject private var viewModel: CategoriaListViewModel
-    @EnvironmentObject var sub: SubscriptionManager
     @Environment(\.isSearching) private var isSearching
     
     init() {
@@ -154,11 +153,7 @@ struct CategoriaListView: View {
         }
         .sheet(isPresented: $mostrarNovaCategoria) {
             NavigationStack {
-                if sub.isSubscribed {
-                    CategoriaFormView(categoria: nil, isEditar: false)
-                } else {
-                    PaywallView()
-                }
+                CategoriaFormView(categoria: nil, isEditar: false)                
             }
         }
     }
