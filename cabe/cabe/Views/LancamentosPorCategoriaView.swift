@@ -26,8 +26,7 @@ struct LancamentosPorCategoriaView: View {
         self.vm = vm
         self.lancamentos = lancamentos
         self.categoria = categoria
-
-        _expandedCategorias = State(initialValue: [categoria.categoriaID])
+        _expandedCategorias = State(initialValue: [])
     }
 
     private var lancamentosCategoriaPrincipal: [LancamentoModel] {
@@ -97,27 +96,27 @@ struct LancamentosPorCategoriaView: View {
                     ForEach(lancamentosCategoriaPrincipal) { lancamento in
                         lancamentoRow(lancamento)
                     }
+                }
+                
+                ForEach(subcategoriasNaOrdemDaLista, id: \.self) { subID in
                     
-                    ForEach(subcategoriasNaOrdemDaLista, id: \.self) { subID in
-                        
-                        let itens = lancamentosPorSub[subID] ?? []
-                        
-                        let nomeSub =
-                        itens.first?.categoria?.nomeSubcategoria
-                        ?? "Subcategoria"
-                        
-                        subcategoriaRow(
-                            id: subID,
-                            nome: nomeSub,
-                            total: total(itens),
-                            cor: itens.first?.categoria?.cor ?? .gray,
-                            expanded: expandedSubs.contains(subID)
-                        )
-                        
-                        if expandedSubs.contains(subID) {
-                            ForEach(itens) { lancamento in
-                                lancamentoRow(lancamento)
-                            }
+                    let itens = lancamentosPorSub[subID] ?? []
+                    
+                    let nomeSub =
+                    itens.first?.categoria?.nomeSubcategoria
+                    ?? "Subcategoria"
+                    
+                    subcategoriaRow(
+                        id: subID,
+                        nome: nomeSub,
+                        total: total(itens),
+                        cor: itens.first?.categoria?.cor ?? .gray,
+                        expanded: expandedSubs.contains(subID)
+                    )
+                    
+                    if expandedSubs.contains(subID) {
+                        ForEach(itens) { lancamento in
+                            lancamentoRow(lancamento)
                         }
                     }
                 }
@@ -304,7 +303,6 @@ private extension LancamentosPorCategoriaView {
                     .foregroundStyle(Color.accentColor)
             }
             .padding(.vertical, 2)
-            .padding(.leading, 20)
         }
     }
 
