@@ -32,8 +32,10 @@ struct LancamentoRow: View {
         HStack(spacing: 12) {
             if (mostrarPagamento)  {
                 Circle()
-                    .fill(lancamento.pago ? Color.clear : .accentColor)
-                    .frame(width: 12, height: 12)
+                    .fill(
+                        lancamento.pago ? Color.clear.gradient : Color.blue.gradient
+                    )
+                    .frame(width: 10, height: 10)
             }
             let systemName: String = {
                 if lancamento.transferencia {

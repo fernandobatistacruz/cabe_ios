@@ -170,7 +170,7 @@ struct FaturaDetalharView: View {
         .listStyle(.insetGrouped)
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Fatura")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         .toolbar(.hidden, for: .tabBar)
         .ifAvailableSearchable(searchText: $searchText)
         .toolbar {

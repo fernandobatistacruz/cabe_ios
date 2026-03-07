@@ -21,8 +21,8 @@ struct LancamentoCartaoRow: View {
         HStack(spacing: 12) {
         
             Circle()
-                .fill(temPendentes ? .accentColor : Color.clear)
-                .frame(width: 12, height: 12)
+                .fill(temPendentes ? Color.blue.gradient : Color.clear.gradient)
+                .frame(width: 10, height: 10)
           
             Image(cartao.operadoraEnum.imageName)
                 .resizable()
