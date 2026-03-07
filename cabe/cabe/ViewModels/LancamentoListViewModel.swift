@@ -144,7 +144,8 @@ final class LancamentoListViewModel: ObservableObject {
                     valor: $0.valor,
                     percentual: ($0.valor / totalGeral) * 100,
                     cor: $0.cor,
-                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    icone: lancamentos.first?.categoria?.icone.systemName ?? "questionmark"
                 )
             }
         } else {
@@ -160,7 +161,8 @@ final class LancamentoListViewModel: ObservableObject {
                     valor: $0.valor,
                     percentual: ($0.valor / totalGeral) * 100,
                     cor: $0.cor,
-                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    icone: lancamentos.first?.categoria?.icone.systemName ?? "questionmark"
                 )
             }
 
@@ -171,7 +173,8 @@ final class LancamentoListViewModel: ObservableObject {
                     valor: valorOutros,
                     percentual: (valorOutros / totalGeral) * 100,
                     cor: .gray,
-                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    icone: lancamentos.first?.categoria?.icone.systemName ?? "questionmark"
                 )
             )
         }
@@ -228,7 +231,8 @@ final class LancamentoListViewModel: ObservableObject {
                     valor: $0.valor,
                     percentual: ($0.valor / totalGeral) * 100,
                     cor: $0.cor,
-                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    icone: lancamentos.first?.categoria?.icone.systemName ?? "questionmark"
                 )
             }
     }
@@ -350,6 +354,7 @@ struct CategoriaResumo: Identifiable {
     let percentual: Double
     let cor: Color
     let currencyCode: String
+    let icone: String
 
     var valorFormatado: String {
         valor.formatted(

@@ -136,7 +136,7 @@ struct LancamentosPorCategoriaView: View {
                 NavigationLink("Histórico") {
                     LancamentosPorCategoriaHistoricoView(
                         vm: vm,
-                        categoriaID: categoria.categoriaID
+                        categoria: categoria
                     )
                 }
             }

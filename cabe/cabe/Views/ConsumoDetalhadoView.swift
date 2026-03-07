@@ -239,7 +239,8 @@ struct ConsumoDetalhadoView: View {
                     valor: $0.valor,
                     percentual: ($0.valor / totalGeral) * 100,
                     cor: $0.cor,
-                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode
+                    currencyCode: lancamentos.first?.currencyCode ?? Locale.systemCurrencyCode,
+                    icone: lancamentos.first?.categoria?.icone.systemName ?? "questionmark"
                 )
             }
     }
