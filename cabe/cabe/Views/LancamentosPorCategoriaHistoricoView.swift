@@ -93,31 +93,9 @@ struct LancamentosPorCategoriaHistoricoView: View {
             }
         }
     }
-    
-    private func exportarCSV() async {
-        guard !isExporting else { return }
-
-        isExporting = true
-
-        defer { isExporting = false }
-
-        do {
-            let url = try await ExportarLancamentos.export(
-                lancamentos: vm.lancamentos,
-                fileName: "\(String(localized: "lancamentos"))_\(String(categoria.nome.lowercased())).csv"
-            )
-
-            shareItem = ShareItem(url: url)
-        } catch {
-            print("Erro ao exportar CSV:", error)
-        }
-    }
 }
 
-
-
-private extension LancamentosPorCategoriaHistoricoView {    
-    
+private extension LancamentosPorCategoriaHistoricoView {
 
     var headerTotalGeral: some View {
         
@@ -255,7 +233,7 @@ private extension LancamentosPorCategoriaHistoricoView {
 
 private extension LancamentosPorCategoriaHistoricoView {
 
-    func carregar() async {
+    private func carregar() async {
         do {
             historico = try await vm.repository
                 .listarLancamentosAteAno(
@@ -265,6 +243,25 @@ private extension LancamentosPorCategoriaHistoricoView {
         }
         catch {
             print(error)
+        }
+    }
+    
+    private func exportarCSV() async {
+        guard !isExporting else { return }
+
+        isExporting = true
+
+        defer { isExporting = false }
+
+        do {
+            let url = try await ExportarLancamentos.export(
+                lancamentos: historico,
+                fileName: "\(String(localized: "lancamentos"))_\(String(categoria.nome.lowercased())).csv"
+            )
+
+            shareItem = ShareItem(url: url)
+        } catch {
+            print("Erro ao exportar CSV:", error)
         }
     }
 }
