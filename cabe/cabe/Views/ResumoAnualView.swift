@@ -282,10 +282,10 @@ struct ResumoAnualView: View {
                     AxisValueLabel {
                         if let doubleValue = value.as(Double.self),
                            doubleValue != 0 {
-                            Text(
-                                Decimal(doubleValue)
-                                    .abreviado(currencyCode: vm.lancamentos.first?.currencyCode ?? "")
-                            )
+                            Text(doubleValue, format: .number.notation(.compactName).locale(.current))
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
                         }
                     }
                 }
@@ -330,9 +330,12 @@ struct ResumoAnualView: View {
             .cornerRadius(3)
             .foregroundStyle(.blue.gradient)
             .annotation(position: .trailing) {
-                Text(item.total.abreviado(currencyCode: currencyCode))
+                Text(item.total, format: .number.notation(.compactName).locale(.current))
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
             }
         }
         .chartXAxis {
@@ -413,7 +416,7 @@ struct CardResumoView: View {
                 .font(.footnote)
                 .foregroundColor(.secondary)
             
-            Text(valor.abreviado(currencyCode: currencyCode))
+            Text(valor, format: .number.notation(.compactName).locale(.current))
                 .font(.headline)
                 .fontDesign(.rounded)
                 .foregroundColor(cor)

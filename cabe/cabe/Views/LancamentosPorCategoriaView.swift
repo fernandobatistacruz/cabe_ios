@@ -215,12 +215,12 @@ struct LancamentosPorCategoriaView: View {
                     .foregroundStyle(item.cor.gradient)
                     .cornerRadius(5)
                     .annotation(position: .trailing) {
-                        Text(
-                            item.valor
-                                .abreviado(currencyCode: categoria.currencyCode)
-                        )
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        Text(item.valor, format: .number.notation(.compactName).locale(.current))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                     }
                 }
                 .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
