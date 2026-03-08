@@ -619,11 +619,16 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
 
         return try await db.dbQueue.read { db in
             let sql = baseSelectQuery() + "\n" + """
-                WHERE lower(l.notas) LIKE ?
+                WHERE (
+                    lower(l.notas) LIKE ?
+                    OR lower(l.anotacao) LIKE ?
+                )
                 AND l.id IN (
                     SELECT MIN(id)
                     FROM lancamento
-                    WHERE lower(notas) LIKE ?
+                    WHERE 
+                        lower(notas) LIKE ?
+                        OR lower(anotacao) LIKE ?
                     GROUP BY uuid
                 )
                 ORDER BY 
@@ -635,7 +640,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
             let rows = try Row.fetchAll(
                 db,
                 sql: sql,
-                arguments: [termo, termo, limit]
+                arguments: [termo, termo, termo, termo, limit]
             )
 
             return mapRows(rows)
