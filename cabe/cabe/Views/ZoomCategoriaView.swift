@@ -22,7 +22,9 @@ struct ZoomCategoriaView: View {
         searchText.isEmpty
         ? categorias
         : categorias
-            .filter { $0.nome.localizedCaseInsensitiveContains(searchText) }
+            .filter { $0.nome.localizedCaseInsensitiveContains(searchText) ||
+                ($0.nomeSubcategoria?.localizedCaseInsensitiveContains(searchText)) ?? false
+            }
     }
 
     var body: some View {
