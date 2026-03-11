@@ -350,7 +350,6 @@ struct ResumoAnualView: View {
                     .font(.footnote)
             }
         }
-       
     }
     
     var graficoCategorias: some View {

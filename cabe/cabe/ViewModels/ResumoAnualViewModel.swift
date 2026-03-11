@@ -119,61 +119,28 @@ private extension ResumoAnualViewModel {
             $0.transferencia == false
         }
 
-        // 🔹 Mapa de todas as categorias envolvidas nos lançamentos
-        let categoriasPorID: [Int64: CategoriaModel] = Dictionary(
-            despesas.compactMap { $0.categoria }.compactMap {
-                guard let id = $0.id else { return nil }
-                return (id, $0)
-            },
-            uniquingKeysWith: { first, _ in first }
-        )
-
-        // 🔹 Acumulador: categoriaPaiID -> total
-        var acumulado: [Int64: (categoria: CategoriaModel, total: Decimal)] = [:]
-
-        for lancamento in despesas {
-
+        let agrupado = Dictionary(grouping: despesas) { lancamento -> Int64 in
             guard let categoria = lancamento.categoria,
-                  let categoriaID = categoria.id
-            else { continue }
+                  let id = categoria.id
+            else { return -1 }
 
-            // 🔹 Resolve a categoria pai
-            let categoriaPai: CategoriaModel
-            let categoriaPaiID: Int64
-
-            if let paiID = categoria.pai,
-               let pai = categoriasPorID[paiID] {
-                // subcategoria → soma no pai
-                categoriaPai = pai
-                categoriaPaiID = paiID
-            } else {
-                // já é categoria pai
-                categoriaPai = categoria
-                categoriaPaiID = categoriaID
-            }
-
-            // 🔹 Soma os valores
-            if let existente = acumulado[categoriaPaiID] {
-                acumulado[categoriaPaiID] = (
-                    categoria: existente.categoria,
-                    total: existente.total + lancamento.valorDividido
-                )
-            } else {
-                acumulado[categoriaPaiID] = (
-                    categoria: categoriaPai,
-                    total: lancamento.valorDividido
-                )
-            }
+            return categoria.pai ?? id
         }
 
-        despesasPorCategoria = acumulado.values
-            .map {
-                DespesaPorCategoriaModel(
-                    categoria: $0.categoria,
-                    total: $0.total
-                )
+        despesasPorCategoria = agrupado.compactMap { (_, itens) -> DespesaPorCategoriaModel? in
+
+            guard let categoria = itens.first?.categoria else { return nil }
+
+            let total = itens.reduce(Decimal.zero) { total, lancamento in
+                total + lancamento.valorDividido
             }
-            .sorted { $0.total > $1.total }
+
+            return DespesaPorCategoriaModel(
+                categoria: categoria,
+                total: total
+            )
+        }
+        .sorted { $0.total > $1.total }
     }
     
     func gerarInsights(_ lancamentos: [LancamentoModel]) {
