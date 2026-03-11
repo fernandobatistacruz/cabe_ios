@@ -324,11 +324,11 @@ struct ResumoAnualView: View {
         Chart(categorias) { item in
             BarMark(
                 x: .value("Total", item.total),
-                y: .value("Categoria", item.categoria.nome),
-                width: .fixed(10)
+                y: .value("Categoria", item.categoria.nome),                
+                height: .fixed(12)
             )
-            .cornerRadius(3)
             .foregroundStyle(.blue.gradient)
+            .cornerRadius(3)
             .annotation(position: .trailing) {
                 Text(item.total, format: .number.notation(.compactName).locale(.current))
                     .font(.caption)
@@ -338,20 +338,19 @@ struct ResumoAnualView: View {
                     .minimumScaleFactor(0.75)
             }
         }
+        .frame(height: min(CGFloat(categorias.count * 40), 320))
         .chartXAxis {
-            AxisMarks(values: .automatic) { value in              
+            AxisMarks(values: .automatic) { _ in
                 AxisValueLabel {}
             }
         }
-        .frame(
-            height: min(CGFloat(categorias.count * 36), 320)
-        )
         .chartYAxis {
             AxisMarks { _ in
                 AxisValueLabel()
-                    .font(.caption)
+                    .font(.footnote)
             }
         }
+       
     }
     
     var graficoCategorias: some View {
@@ -372,7 +371,7 @@ struct ResumoAnualView: View {
                 }
             } else {
                 CardContainer {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading) {
                         Text("Despesas por Categoria")
                             .font(.headline)
 
@@ -381,6 +380,7 @@ struct ResumoAnualView: View {
                             vm.lancamentos
                                 .first?.currencyCode ?? Locale.systemCurrencyCode)
                     }
+                    .frame(maxWidth: .infinity)
                 }
             }
         }

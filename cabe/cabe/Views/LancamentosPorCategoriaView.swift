@@ -71,6 +71,7 @@ struct LancamentosPorCategoriaView: View {
                 VStack (alignment: .leading) {
                     Text("Categoria e Subcategoria")
                         .font(.headline)
+                    
                     graficoBarrasCategorias
                 }
                 .frame(maxWidth: .infinity)
@@ -125,6 +126,7 @@ struct LancamentosPorCategoriaView: View {
                     Text("Lançamentos")
                     Spacer()
                     Text(totalCategoriaCompleta.currency())
+                        .font(.subheadline)
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
@@ -213,7 +215,7 @@ struct LancamentosPorCategoriaView: View {
                         height: .fixed(12)
                     )
                     .foregroundStyle(item.cor.gradient)
-                    .cornerRadius(5)
+                    .cornerRadius(3)
                     .annotation(position: .trailing) {
                         Text(item.valor, format: .number.notation(.compactName).locale(.current))
                             .font(.caption)
@@ -232,7 +234,7 @@ struct LancamentosPorCategoriaView: View {
                 .chartYAxis {
                     AxisMarks { _ in
                         AxisValueLabel()
-                            .font(.caption)
+                            .font(.footnote)
                     }
                 }
             }

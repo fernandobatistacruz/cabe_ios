@@ -23,6 +23,7 @@ struct LancamentosPorCategoriaHistoricoView: View {
         List {
             Section {
                 headerTotalGeral
+                    .padding(.vertical, 8)
             }
             
             ForEach(Array(agrupadoPorAno.enumerated()), id: \.element.ano) { index, grupo in
@@ -41,8 +42,10 @@ struct LancamentosPorCategoriaHistoricoView: View {
                             Spacer()
                             
                             Text(totalAnoFormatado(grupo))
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.secondary)
+                                .font(.subheadline)
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
                         }
                     }
                 }
