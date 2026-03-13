@@ -223,9 +223,10 @@ struct LancamentosPorCategoriaView: View {
                             .monospacedDigit()
                             .lineLimit(1)
                             .minimumScaleFactor(0.75)
+                            .padding(.leading, 5)
                     }
                 }
-                .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
+                .frame(height: min(CGFloat(dadosGraficoBarras.count * 50), 320))
                 .chartXAxis {
                     AxisMarks(values: .automatic) { _ in
                         AxisValueLabel {}
@@ -234,7 +235,7 @@ struct LancamentosPorCategoriaView: View {
                 .chartYAxis {
                     AxisMarks { _ in
                         AxisValueLabel()
-                            .font(.footnote)
+                            .font(.subheadline)
                     }
                 }
             }

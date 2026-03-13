@@ -324,7 +324,7 @@ struct ResumoAnualView: View {
         Chart(categorias) { item in
             BarMark(
                 x: .value("Total", item.total),
-                y: .value("Categoria", item.categoria.nome),                
+                y: .value("Categoria", item.categoria.nome),
                 height: .fixed(12)
             )
             .foregroundStyle(.blue.gradient)
@@ -336,9 +336,10 @@ struct ResumoAnualView: View {
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
+                    .padding(.leading, 5)
             }
         }
-        .frame(height: min(CGFloat(categorias.count * 40), 320))
+        .frame(height: min(CGFloat(categorias.count * 50), 320))
         .chartXAxis {
             AxisMarks(values: .automatic) { _ in
                 AxisValueLabel {}
@@ -347,7 +348,7 @@ struct ResumoAnualView: View {
         .chartYAxis {
             AxisMarks { _ in
                 AxisValueLabel()
-                    .font(.footnote)
+                    .font(.subheadline)
             }
         }
     }
