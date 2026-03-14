@@ -189,6 +189,15 @@ extension LancamentoModel {
             time: .omitted
         )
     }
+    /* DEBUG
+    var dataCriacaoDate: Date {
+        let diasAleatorios = Int.random(in: 0...365)
+        return Calendar(identifier: .gregorian).date(
+            byAdding: .day,
+            value: -diasAleatorios,
+            to: Date()
+        )!
+    }*/
     
     var dataCriacaoDate: Date {
         if let date = DataCivil.extrairDataCivil(dataCriacao) {
