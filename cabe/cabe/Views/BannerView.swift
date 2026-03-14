@@ -70,8 +70,13 @@ struct AdMobBannerView: UIViewRepresentable {
             .compactMap { ($0 as? UIWindowScene)?.keyWindow }
             .first?
             .rootViewController
+        
+        let request = Request()
+        let extras = Extras()
+        extras.additionalParameters = ["max_ad_content_rating": "G"]
+        request.register(extras)
 
-        banner.load(Request())
+        banner.load(request)
         return banner
     }
 
