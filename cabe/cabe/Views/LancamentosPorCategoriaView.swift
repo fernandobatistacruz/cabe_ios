@@ -189,7 +189,7 @@ struct LancamentosPorCategoriaView: View {
         } else {
             let temApenasUmaLinha = dadosGraficoBarras.count == 1
             
-            if temApenasUmaLinha, let itemUnico = dadosGraficoBarras.first {
+            if temApenasUmaLinha {
                 Chart(dadosGraficoBarras) { item in
                     BarMark(
                         x: .value("Valor", item.valor),
@@ -197,10 +197,18 @@ struct LancamentosPorCategoriaView: View {
                         height: .fixed(12)
                     )
                     .foregroundStyle(item.cor.gradient)
-                    .cornerRadius(5)
+                    .cornerRadius(3)
+                    .annotation(position: .trailing) {
+                        Text(item.valor, format: .number.notation(.compactName).locale(.current))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                            .padding(.leading, 5)
+                    }
                 }
                 .frame(height: min(CGFloat(dadosGraficoBarras.count * 40), 320))
-                .chartXScale(domain: 0...itemUnico.valor)
                 .chartYAxis(.hidden)
                 .chartXAxis {
                     AxisMarks(values: .automatic) { _ in
