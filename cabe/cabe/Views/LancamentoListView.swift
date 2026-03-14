@@ -129,17 +129,20 @@ struct LancamentoListView: View {
                                 .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                     Button() {
                                         Task{
-                                            await viewModel.togglePago([lancamento])
+                                            await viewModel.togglePago([lancamento], pago: !lancamento.pago)
                                         }
                                     } label: {
                                         Label(lancamento.pago ? String(localized: "Não Pago") : String(localized: "Pago"), systemImage: lancamento.pago ? "checklist.unchecked" : "checklist")
                                             .tint(.accentColor)
-                                        
                                     }
                                 }
                             }
                             
                         case .cartaoAgrupado(let cartao, let total, let lancamentos):
+                            var temPendentes: Bool {
+                                lancamentos.contains { !$0.pago }
+                            }
+                            
                             NavigationLink {
                                 FaturaDetalharView(
                                     viewModel: viewModel,
@@ -156,18 +159,14 @@ struct LancamentoListView: View {
                                 .swipeActions(edge: .leading,allowsFullSwipe: false) {
                                     Button() {
                                         Task{
-                                            await viewModel.togglePago(lancamentos)
+                                            await viewModel.togglePago(lancamentos, pago: temPendentes)
                                         }
                                     } label: {
-                                        var temPendentes: Bool {
-                                            lancamentos.contains { !$0.pago }
-                                        }
                                         Label(
-                                            temPendentes ? String(
-                                                localized: "Pago"
-                                            ): String(localized: "Não Pago"),
-                                            systemImage: temPendentes ?
-                                            "checklist.checked" : "checklist.unchecked"
+                                            temPendentes ? String(localized: "Pago")
+                                                         : String(localized: "Não Pago"),
+                                            systemImage: temPendentes ? "checklist.checked"
+                                                                      : "checklist.unchecked"
                                         )
                                     }.tint(.accentColor)
                                 }

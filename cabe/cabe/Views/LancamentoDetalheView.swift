@@ -213,10 +213,10 @@ struct LancamentoDetalheView: View {
                         }                       
                     }
                 }
-                ToolbarItemGroup(placement: .bottomBar) {                    
+                ToolbarItemGroup(placement: .bottomBar) {
                     Button {
                         Task{
-                            await vmLancamentos.togglePago([lancamento])
+                            await vmLancamentos.togglePago([lancamento], pago: !lancamento.pago)
                         }
                     } label: {
                         Text(lancamento.pago ? "Não Pago" : "Pago")

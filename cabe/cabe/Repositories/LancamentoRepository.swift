@@ -538,12 +538,12 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
-    func togglePago(_ lancamentos: [LancamentoModel]) async throws {
+    func togglePago(_ lancamentos: [LancamentoModel], pago: Bool) async throws {
         try await db.dbQueue.write { db in
             for var lancamento in lancamentos {
 
                 let antigo = lancamento
-                lancamento.pago.toggle()
+                lancamento.pago = pago
 
                 try aplicarDeltaSaldo(
                     antigo: antigo,

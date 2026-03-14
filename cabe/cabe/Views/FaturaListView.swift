@@ -28,6 +28,10 @@ struct FaturaListView: View {
                 Section {
                     ForEach(section.items) { item in
                         if case .cartaoAgrupado(let cartao, let total, let lancamentos) = item {
+                            var temPendentes: Bool {
+                                lancamentos.contains { !$0.pago }
+                            }
+                            
                             NavigationLink {
                                 FaturaDetalharView(
                                     viewModel: viewModel,
@@ -44,10 +48,9 @@ struct FaturaListView: View {
                                 .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                     Button {
                                         Task {
-                                            await viewModel.togglePago(lancamentos)
+                                            await viewModel.togglePago(lancamentos, pago: temPendentes)
                                         }
                                     } label: {
-                                        let temPendentes = lancamentos.contains { !$0.pago }
                                         Label(
                                             temPendentes
                                             ? String(localized: "Pago")

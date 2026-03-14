@@ -299,8 +299,8 @@ final class LancamentoListViewModel: ObservableObject {
         catch { print("Erro ao remover lançamento:", error) }
     }
     
-    func togglePago(_ lancamentos: [LancamentoModel]) async {
-        do { try await repository.togglePago(lancamentos) }
+    func togglePago(_ lancamentos: [LancamentoModel], pago: Bool) async {
+        do { try await repository.togglePago(lancamentos, pago: pago) }
         catch { print("Erro ao alternar pagamento:", error) }
     }
     
