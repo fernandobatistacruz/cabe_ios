@@ -213,16 +213,15 @@ struct LancamentoDetalheView: View {
                         }                       
                     }
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    if lancamento.cartao == nil {
-                        Button {
-                            Task{
-                                await vmLancamentos.togglePago([lancamento])
-                            }
-                        } label: {
-                            Text(lancamento.pago ? "Não Pago" : "Pago")
-                        }                        
+                ToolbarItemGroup(placement: .bottomBar) {                    
+                    Button {
+                        Task{
+                            await vmLancamentos.togglePago([lancamento])
+                        }
+                    } label: {
+                        Text(lancamento.pago ? "Não Pago" : "Pago")
                     }
+                    
                     Button {
                         mostrarDialogExclusao = true
                     } label: {
