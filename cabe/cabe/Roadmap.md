@@ -1,6 +1,6 @@
 # Roadmap e bugs
 
-- Alterar campo Repete na edição de lançamento.
+- Adicionar repetição anual, semestral e trimestral no lançamento de despesas/receitas
 
 - Mostrar o limite disponível do cartão naquele mês. No momento, consigo ver o total gasto, mas não
   o limite disponível. Esse limite deveria considerar o limite total do cartão de crédito,
@@ -20,11 +20,4 @@
   parte do dinheiro, colocar metas de valor e data. E aí na tela inicial do app, poderia ter isso
   discriminado: valor total acumulado em contas correntes vs. valor guardado em cofrinhos.
 
-- Sugerir a inclusão de mais cores para as categorias (talvez apenas uma opção que abra seletor de
-  cores do próprio iOS) e ícones (a biblioteca do SF symbols é linda, mas não sei se seria difícil
-  de implementar…). De quebra, a interface de Liquid Glass seria a cereja do bolo, mas estou fazendo
-  muitos pedidos.
-
 - Permitir a edição em massa: selecionar vários itens e alterar algumas classificações em massa, como data, categoria etc.
-
-- Venho informar que o aplicativo não está atualizando a conta de pagamento do cartão. Por exemplo, se eu altero a conta de pagamento do cartão e pago o cartão, o dinheiro sai da conta antiga, não da nova que selecionei.

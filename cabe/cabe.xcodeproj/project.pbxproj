@@ -338,7 +338,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.3.3;
+				MARKETING_VERSION = 5.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.cabe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -383,7 +383,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.3.3;
+				MARKETING_VERSION = 5.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.cabe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
