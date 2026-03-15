@@ -348,7 +348,8 @@ struct ResumoAnualView: View {
         .chartYAxis {
             AxisMarks { _ in
                 AxisValueLabel()
-                    .font(.subheadline)
+                    .font(.footnote)
+                    
             }
         }
     }
