@@ -21,7 +21,6 @@ struct BannerView: View {
         
         ZStack(alignment: .topTrailing) {
             
-            // Card
             VStack {
                 AdMobBannerView(adUnitID: adUnitID)
                     .background(Color(uiColor: .secondarySystemBackground))

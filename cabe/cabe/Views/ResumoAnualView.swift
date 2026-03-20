@@ -335,8 +335,7 @@ struct ResumoAnualView: View {
                     .foregroundColor(.secondary)
                     .monospacedDigit()
                     .lineLimit(1)
-                    .minimumScaleFactor(0.75)
-                    .padding(.leading, 5)
+                    .minimumScaleFactor(0.75)                  
             }
         }
         .frame(height: min(CGFloat(categorias.count * 50), 320))
