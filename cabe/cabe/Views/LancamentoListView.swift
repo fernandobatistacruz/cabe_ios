@@ -20,6 +20,7 @@ struct LancamentoListView: View {
     @EnvironmentObject var sub: SubscriptionManager
     @State private var showingPaywall = false
     @State private var mostrarTransferencia = false
+    @State private var mostrarTransferirCategoria = false
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var shareItem: ShareItem?
@@ -303,12 +304,16 @@ struct LancamentoListView: View {
                     }
                     .disabled(isExporting)
                     
-                    Divider()
-                    
                     Button {
                         mostrarTransferencia = true
                     } label: {
                         Label("Transferência", systemImage: "arrow.left.arrow.right")
+                    }
+                    
+                    Button {
+                        mostrarTransferirCategoria = true
+                    } label: {
+                        Label("Mover Lancamentos de Categoria", systemImage: "arrowshape.turn.up.backward.2")
                     }
                     
                 } label: {
@@ -378,6 +383,11 @@ struct LancamentoListView: View {
         .sheet(isPresented: $mostrarTransferencia) {
             NavigationStack {
                 TransferenciaView()
+            }
+        }
+        .sheet(isPresented: $mostrarTransferirCategoria) {
+            NavigationStack {
+                CategoriaMoverView()
             }
         }
         .sheet(item: $shareItem) { item in

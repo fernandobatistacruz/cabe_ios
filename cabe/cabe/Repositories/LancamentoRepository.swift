@@ -258,6 +258,34 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         }
     }
     
+    func transferirCategoria(
+        tipo: Int,
+        categoriaOrigemID: Int64,
+        categoriaDestinoID: Int64
+    ) async throws {
+        
+        guard categoriaOrigemID != categoriaDestinoID else {
+            return
+        }
+        
+        try await db.dbQueue.write { db in
+            
+            try db.execute(
+                sql: """
+                    UPDATE lancamento
+                    SET categoria = ?
+                    WHERE tipo = ?
+                      AND categoria = ?
+                """,
+                arguments: [
+                    categoriaDestinoID,
+                    tipo,
+                    categoriaOrigemID
+                ]
+            )
+        }
+    }
+    
     func salvar(_ lancamento: LancamentoModel) async throws {
         try await db.dbQueue.write { db in
             
