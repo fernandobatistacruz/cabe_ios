@@ -17,6 +17,9 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
     case elo = 6
     case outra = 7
     case discover = 8
+    case renner = 9
+    case cea = 10
+    case riachuelo = 11
 
     var id: Int { rawValue }
 
@@ -30,6 +33,9 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
         case .elo: return "Elo"
         case .outra: return "Outras"
         case .discover: return "Discover"
+        case .renner: return "Renner"
+        case .cea: return "C&A"
+        case .riachuelo: return "Riachuelo"
         }
     }
 
@@ -43,6 +49,9 @@ enum OperadoraCartao: Int, CaseIterable, Identifiable {
         case .elo: return "elo"
         case .outra: return "outra"
         case .discover: return "discover"
+        case .renner: return "renner"
+        case .cea: return "cea"
+        case .riachuelo: return "riachuelo"
         }
     }
 }
@@ -51,7 +60,7 @@ extension OperadoraCartao {
     
     var exclusivaBrasil: Bool {
         switch self {
-        case .elo, .hipercard:
+        case .elo, .hipercard, .renner, .cea, .riachuelo:
             return true
         default:
             return false
