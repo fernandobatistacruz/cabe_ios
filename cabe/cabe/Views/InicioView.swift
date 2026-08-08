@@ -87,8 +87,7 @@ struct InicioView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     showCalendar = true
-                } label: {
-                    //Image(systemName: "chevron.left")
+                } label: {                   
                     Text(selectedDate, format: .dateTime.year())
                 }
             }

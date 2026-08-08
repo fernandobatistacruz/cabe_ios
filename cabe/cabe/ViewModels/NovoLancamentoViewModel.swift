@@ -352,18 +352,24 @@ final class NovoLancamentoViewModel: ObservableObject {
     
     func salvar(desconsiderarPrimeiro: Bool) async {
         switch recorrente {
-        case .mensal:
-            await salvarMensal(desconsiderarPrimeiro)
-        case .quinzenal:
-            await salvarPorDias(desconsiderarPrimeiro, intervalo: 14)
         case .semanal:
             await salvarPorDias(desconsiderarPrimeiro,intervalo: 7)
+        case .quinzenal:
+            await salvarPorDias(desconsiderarPrimeiro, intervalo: 14)
+        case .mensal:
+            await salvarPorMes(desconsiderarPrimeiro, intervalo: 1)
+        case .trimestral:
+            await salvarPorMes(desconsiderarPrimeiro, intervalo: 3)
+        case .semestral:
+            await salvarPorMes(desconsiderarPrimeiro, intervalo: 6)
+        case .anual:
+            await salvarPorMes(desconsiderarPrimeiro, intervalo: 12)
         default:
             await salvarNuncaParcelado(desconsiderarPrimeiro)
         }
     }
 
-    private func salvarMensal(_ desconsiderarPrimeiro: Bool) async {
+    private func salvarPorMes(_ desconsiderarPrimeiro: Bool, intervalo: Int) async {
             guard let meioPagamento = pagamentoSelecionado else { return }
             let calendar = Calendar.current
             let dataInicial: Date
@@ -405,7 +411,7 @@ final class NovoLancamentoViewModel: ObservableObject {
                         parcelaMes: ""
                     )
                     
-                    dataAtual = calendar.date(byAdding: .month, value: 1, to: dataAtual)!
+                    dataAtual = calendar.date(byAdding: .month, value: intervalo, to: dataAtual)!
                     
                     if desconsiderarPrimeiro && isPrimeiro {
                         isPrimeiro = false

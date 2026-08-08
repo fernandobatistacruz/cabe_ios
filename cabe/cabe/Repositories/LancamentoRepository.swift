@@ -411,6 +411,12 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 dataVencimento = calendar.date(byAdding: .day, value: 14, to: dataVencimento)!
             case .semanal:
                 dataVencimento = calendar.date(byAdding: .day, value: 7, to: dataVencimento)!
+            case .trimestral:
+                dataVencimento = calendar.date(byAdding: .month, value: 3, to: dataVencimento)!
+            case .semestral:
+                dataVencimento = calendar.date(byAdding: .month, value: 6, to: dataVencimento)!
+            case .anual:
+                dataVencimento = calendar.date(byAdding: .year, value: 1, to: dataVencimento)!
             }
         }
     }

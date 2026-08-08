@@ -41,6 +41,12 @@ struct RecorrenciaPolicy {
                 switch tipoAtual {
                 case .mensal:
                     return [.mensal]
+                case .trimestral:
+                    return [.trimestral]
+                case .semestral:
+                    return [.semestral]
+                case .anual:
+                    return [.anual]
                 case .nunca:
                     return [.nunca, .mensal, .parcelado]
                 case .parcelado:
@@ -52,12 +58,18 @@ struct RecorrenciaPolicy {
             case .conta:
                 
                 switch tipoAtual {
-                case .mensal:
-                    return [.mensal]
                 case .quinzenal:
                     return [.quinzenal]
                 case .semanal:
                     return [.semanal]
+                case .mensal:
+                    return [.mensal]
+                case .semestral:
+                    return [.semestral]
+                case .trimestral:
+                    return [.trimestral]
+                case .anual:
+                    return [.anual]
                 case .nunca:
                     return TipoRecorrente.allCases
                 case .parcelado:
@@ -78,7 +90,7 @@ struct RecorrenciaPolicy {
 
     var requerConfirmacaoEscopoAlterar: Bool {
         switch tipoAnterior {
-        case .mensal, .semanal, .quinzenal, .parcelado:
+        case .mensal, .semanal, .quinzenal, .parcelado, .trimestral, .semestral, .anual:
             return true
         default:
             return false

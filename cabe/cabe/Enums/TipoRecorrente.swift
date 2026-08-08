@@ -10,9 +10,12 @@ import SwiftUI
 
 enum TipoRecorrente: Int, CaseIterable, Identifiable {
     case nunca      = 0
-    case mensal     = 1
-    case quinzenal  = 2
     case semanal    = 3
+    case quinzenal  = 2
+    case mensal     = 1
+    case trimestral = 7
+    case semestral  = 6
+    case anual      = 5
     case parcelado  = 4
 
     var id: Int { rawValue }
@@ -24,6 +27,9 @@ enum TipoRecorrente: Int, CaseIterable, Identifiable {
         case .quinzenal:  return "Quinzenal"
         case .semanal:    return "Semanal"
         case .parcelado:  return "Parcelado"
+        case .anual:      return "Anual"
+        case .semestral:  return "Semestral"
+        case .trimestral: return "Trimestral"
         }
     }
 }
