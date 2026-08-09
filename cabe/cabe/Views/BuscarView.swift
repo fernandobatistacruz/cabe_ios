@@ -13,9 +13,9 @@ enum BuscarAtalho: CaseIterable, Hashable, Identifiable {
 
     var titulo: String {
         switch self {
-        case .cartao: "Cartão"
-        case .conta: "Conta"
-        case .categoria: "Categoria"
+        case .cartao: "Cartões"
+        case .conta: "Contas"
+        case .categoria: "Categorias"
         case .consumo: "Consumo"
         }
     }
@@ -167,10 +167,10 @@ struct BuscarView<AtalhoDestino: View>: View {
 
 private struct BuscarAtalhoDestinoSheet<Destino: View>: View {
     @Environment(\.dismiss) private var dismiss
-
+    
     let titulo: String
     let destino: Destino
-
+    
     var body: some View {
         NavigationStack {
             destino
@@ -178,8 +178,10 @@ private struct BuscarAtalhoDestinoSheet<Destino: View>: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("Fechar") {
+                        Button {
                             dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
                         }
                     }
                 }
