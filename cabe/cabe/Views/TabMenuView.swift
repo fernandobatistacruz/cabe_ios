@@ -63,10 +63,14 @@ struct TabMenuView: View {
                 }
                 Tab(value: TabItem.buscar, role: .search) {
                     NavigationStack {
-                        BuscarView(
-                            vmLancamentos: vmLancamentos,
-                            searchText: $searchText,                           
-                        )
+                        BuscarView(vmLancamentos: vmLancamentos, searchText: $searchText) { atalho in
+                             switch atalho {
+                             case .cartao: CartaoListView()
+                             case .conta: ContaListView(vmLancamentos: vmLancamentos)
+                             case .categoria: CategoriaListView()
+                             case .consumo:  ConsumoDetalhadoView(vm: vmLancamentos)
+                             }
+                         }
                     }
                 }
             }
@@ -112,10 +116,14 @@ struct TabMenuView: View {
                 .tag(TabItem.ajustes)
                 
                 NavigationStack {
-                    BuscarView(
-                        vmLancamentos: vmLancamentos,
-                        searchText: $searchText,
-                    )
+                    BuscarView(vmLancamentos: vmLancamentos, searchText: $searchText) { atalho in
+                         switch atalho {
+                         case .cartao: CartaoListView()
+                         case .conta: ContaListView(vmLancamentos: vmLancamentos)
+                         case .categoria: CategoriaListView()
+                         case .consumo:  ConsumoDetalhadoView(vm: vmLancamentos)
+                         }
+                     }
                 }
                 .searchable(text: $searchText)
                 .tabItem {
