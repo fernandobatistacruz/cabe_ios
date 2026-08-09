@@ -77,12 +77,12 @@ struct ContaListView: View {
         )
         .toolbar(.hidden, for: .tabBar)
         .alert("", isPresented: $mostrarAlerta) {
-            Button("OK", role: .cancel) {}
+           Button("OK", role: .cancel) {}
         } message: {
             Text("Esta conta está um uso e não poderá ser excluída.")
         }
         .alert(
-            "Excluir Conta?",
+            "Deseja excluir essa conta?",
             isPresented: $mostrarConfirmacao,
         )
         {
@@ -93,7 +93,6 @@ struct ContaListView: View {
                     }
                 }
             }
-            Button("Cancelar", role: .cancel) { }
         }       
         .ifAvailableSearchable(searchText: $searchText)
         .toolbar {

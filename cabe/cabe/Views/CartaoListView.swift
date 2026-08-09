@@ -119,15 +119,14 @@ struct CartaoListView: View {
         } message: {
             Text("Este cartão está um uso e não poderá ser excluído.")
         }
-        .alert("Excluir Cartão?", isPresented: $mostrarConfirmacao) {
+        .alert("Deseja excluir esse cartão?", isPresented: $mostrarConfirmacao) {
             Button("Confirmar", role: .destructive) {
                 Task{
                     if let cartao = cartaoParaExcluir {
                         await viewModel.remover(cartao)
                     }
                 }
-            }
-            Button("Cancelar", role: .cancel) { }
+            }            
         } 
         .sheet(isPresented: $mostrarNovoCartao) {
             NavigationStack {

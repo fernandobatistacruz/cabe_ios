@@ -44,20 +44,15 @@ struct NotificacoesView: View {
                 }
             }
         }
-        .confirmationDialog(
-            "Marcar Tudo como Lido?",
-            isPresented: $showConfirmMarcarLidos,
-            titleVisibility: .visible
+        .alert(
+            "Marcar todos como lido?",
+            isPresented: $showConfirmMarcarLidos
         ) {
-            Button("Marcar Todos como Lidos", role: .destructive) {
+            Button("Confirmar", role: .destructive) {
                 Task {
                     await vmNotificacao.marcarTodosComoLidos()
                 }
             }
-
-            Button("Cancelar", role: .cancel) { }
-        } message: {
-            Text("Essa ação não pode ser desfeita.")
         }
         .overlay{
             Group {

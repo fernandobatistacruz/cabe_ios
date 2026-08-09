@@ -102,10 +102,10 @@ struct CategoriaListView: View {
             Text("Esta categoria está um uso e não poderá ser excluída.")
         }
         .alert(
-            "Excluir Categoria?",
+            "Deseja excluir essa categoria?",
             isPresented: $mostrarConfirmacao
         ) {
-            Button("Excluir", role: .destructive) {
+            Button("Confirmar", role: .destructive) {
                 Task{
                     if let categoria = categoriaParaExcluir {
                         await viewModel.remover(categoria)
@@ -113,9 +113,7 @@ struct CategoriaListView: View {
                 }
             }
             Button("Cancelar", role: .cancel) { }
-        } message: {
-            Text("Essa ação não poderá ser desfeita.")
-        }
+        } 
         .ifAvailableSearchable(searchText: $searchText)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

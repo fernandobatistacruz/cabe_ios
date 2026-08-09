@@ -222,18 +222,16 @@ struct CategoriaFormView: View {
             Text("Esta subcategoria está um uso e não poderá ser excluída.")
         }
         .alert(
-            "Excluir Subcategoria?",
+            "Deseja excluir essa subcategoria?",
             isPresented: $mostrarConfirmacao
         ) {
-            Button("Excluir", role: .destructive) {
+            Button("Confirmar", role: .destructive) {
                 Task {
                     guard let categoria = categoriaParaExcluir else { return }
                     await removerSubcategoria(categoria)
                 }
             }
             Button("Cancelar", role: .cancel) { }
-        } message: {
-            Text("Essa ação não poderá ser desfeita.")
         }
         .task {
             todasCategorias = try! CategoriaRepository().listar()
