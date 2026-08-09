@@ -86,7 +86,7 @@ struct ContaListView: View {
             isPresented: $mostrarConfirmacao,
         )
         {
-            Button("Excluir", role: .destructive) {
+            Button("Confirmar", role: .destructive) {
                 Task{
                     if let conta = contaParaExcluir {
                        await viewModel.remover(conta)
@@ -94,10 +94,7 @@ struct ContaListView: View {
                 }
             }
             Button("Cancelar", role: .cancel) { }
-        }
-        message: {
-            Text("Essa ação não poderá ser desfeita.")
-        }
+        }       
         .ifAvailableSearchable(searchText: $searchText)
         .toolbar {
             if #available(iOS 26, *) {

@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @MainActor
-final class NovoLancamentoViewModel: ObservableObject {
+final class LancamentoNovoViewModel: ObservableObject {
 
     // MARK: - Inputs da tela
 

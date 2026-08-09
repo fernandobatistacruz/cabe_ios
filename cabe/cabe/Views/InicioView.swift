@@ -140,7 +140,7 @@ struct InicioView: View {
             .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
-            NovoLancamentoView(repository: vmLancamentos.repository)
+            LancamentoNovoView(repository: vmLancamentos.repository)
         }
         
     }

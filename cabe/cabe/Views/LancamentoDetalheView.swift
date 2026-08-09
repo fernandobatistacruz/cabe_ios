@@ -230,7 +230,7 @@ struct LancamentoDetalheView: View {
                 }
             }
             .sheet(isPresented: $mostrarEdicao) {
-                EditarLancamentoView(
+                LancamentoEditarView(
                     lancamento: lancamento,
                     repository: vmLancamentos.repository
                 )

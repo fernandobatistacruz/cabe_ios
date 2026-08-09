@@ -120,7 +120,7 @@ struct CartaoListView: View {
             Text("Este cartão está um uso e não poderá ser excluído.")
         }
         .alert("Excluir Cartão?", isPresented: $mostrarConfirmacao) {
-            Button("Excluir", role: .destructive) {
+            Button("Confirmar", role: .destructive) {
                 Task{
                     if let cartao = cartaoParaExcluir {
                         await viewModel.remover(cartao)
@@ -128,9 +128,7 @@ struct CartaoListView: View {
                 }
             }
             Button("Cancelar", role: .cancel) { }
-        } message: {
-            Text("Essa ação não poderá ser desfeita.")
-        }
+        } 
         .sheet(isPresented: $mostrarNovoCartao) {
             NavigationStack {
                 if viewModel.cartoes.isEmpty || sub.isSubscribed {
@@ -299,7 +297,7 @@ private enum CampoFoco {
 struct NovoCartaoView: View {
    
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = NovoCartaoViewModel()
+    @StateObject private var viewModel = CartaoNovoViewModel()
     @State private var sheetAtivo: NovoCartaoSheet?
     @State private var erroValidacao: CartaoValidacaoErro?
     @FocusState private var campoFocado: CampoFoco?
@@ -436,7 +434,7 @@ struct EditarCartaoView: View {
     
     @State var cartao: CartaoModel
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = NovoCartaoViewModel()
+    @StateObject private var viewModel = CartaoNovoViewModel()
     @State private var sheetAtivo: NovoCartaoSheet?
     @State private var erroValidacao: CartaoValidacaoErro?
 

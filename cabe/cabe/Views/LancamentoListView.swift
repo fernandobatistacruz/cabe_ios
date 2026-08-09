@@ -360,7 +360,7 @@ struct LancamentoListView: View {
             Text(lancamentoParaExcluir?.tipoRecorrente == .nunca ? "": "Quais deseja excluir?")
         }
         .sheet(isPresented: $mostrarNovoLancamento) {
-            NovoLancamentoView(repository: viewModel.repository)
+            LancamentoNovoView(repository: viewModel.repository)
         }
         .sheet(isPresented: $showCalendar) {
             ZoomCalendarioView(

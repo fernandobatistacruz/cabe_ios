@@ -14,10 +14,10 @@ private enum CampoFoco {
     case anotacao
 }
 
-struct NovoLancamentoView: View {
+struct LancamentoNovoView: View {
     
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var vm: NovoLancamentoViewModel
+    @StateObject private var vm: LancamentoNovoViewModel
     @State var pagamentoSelecionado: MeioPagamento?
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
@@ -29,7 +29,7 @@ struct NovoLancamentoView: View {
     
     init(repository: LancamentoRepository, meioPagamento: MeioPagamento? = nil) {
         _vm = StateObject(
-            wrappedValue: NovoLancamentoViewModel(repository: repository, meioPagamento: meioPagamento)
+            wrappedValue: LancamentoNovoViewModel(repository: repository, meioPagamento: meioPagamento)
         )
     }
     

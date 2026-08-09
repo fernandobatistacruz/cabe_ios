@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @MainActor
-final class NovoCartaoViewModel: ObservableObject {
+final class CartaoNovoViewModel: ObservableObject {
 
     // MARK: - Inputs da tela
     

@@ -333,7 +333,7 @@ struct FaturaDetalharView: View {
             )
         }
         .sheet(isPresented: $mostrarNovaDespesa) {
-            NovoLancamentoView(
+            LancamentoNovoView(
                 repository: viewModel.repository,
                 meioPagamento: MeioPagamento.cartao(cartao)
             )

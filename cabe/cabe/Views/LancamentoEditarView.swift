@@ -11,12 +11,12 @@
 
 import SwiftUI
 
-struct EditarLancamentoView: View {
+struct LancamentoEditarView: View {
 
     let lancamento: LancamentoModel
     
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var vm: NovoLancamentoViewModel
+    @StateObject private var vm: LancamentoNovoViewModel
     @State private var sheetAtivo: NovoLancamentoSheet?
     @State private var erroValidacao: LancamentoValidacaoErro?
     @State private var mostrarCalendario = false
@@ -28,7 +28,7 @@ struct EditarLancamentoView: View {
     init(lancamento: LancamentoModel, repository: LancamentoRepository) {
         self.lancamento = lancamento
         _vm = StateObject(
-            wrappedValue: NovoLancamentoViewModel(
+            wrappedValue: LancamentoNovoViewModel(
                 lancamento: lancamento,
                 repository: repository)
         )
