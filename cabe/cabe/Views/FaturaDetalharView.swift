@@ -346,33 +346,32 @@ struct FaturaDetalharView: View {
                 }
             }
         }
-        .confirmationDialog(
-            "Excluir Lançamento?",
+        .alert(
+            lancamentoParaExcluir?.tipoRecorrente == .nunca ? "Deseja excluir esse lançamento?" : "Este lançamento faz parte de uma recorrência.",
             isPresented: $mostrarDialogExclusao,
-            titleVisibility: .visible
         ) {
             if let lancamento = lancamentoParaExcluir {
                 if lancamento.tipoRecorrente == .nunca {
-                    Button("Confirmar Exclusão", role: .destructive) {
+                    Button("Confirmar", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 } else {
-                    Button("Excluir Somente Este", role: .destructive) {
+                    Button("Somente Este", role: .destructive) {
                         Task { await viewModel.removerSomenteEste(lancamento) }
                     }
                     
-                    Button("Excluir Este e os Próximos", role: .destructive) {
+                    Button("Este e os Próximos", role: .destructive) {
                         Task { await viewModel.removerEsteEProximos(lancamento) }
                     }
                     
-                    Button("Excluir Todos", role: .destructive) {
+                    Button("Todos", role: .destructive) {
                         Task { await viewModel.removerTodosRecorrentes(lancamento) }
                     }
                 }
             }
         }
         message: {
-            Text("Essa ação não poderá ser desfeita.")
+            Text(lancamentoParaExcluir?.tipoRecorrente == .nunca ? "": "Quais deseja excluir?")
         }
     }
   

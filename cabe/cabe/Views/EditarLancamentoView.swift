@@ -268,16 +268,18 @@ struct EditarLancamentoView: View {
                 "Este lançamento faz parte de uma recorrência.",
                 isPresented: $mostrarConfirmacaoEscopo
             ) {
-                Button("Somente Este") {
+                Button("Somente Este", role: .destructive) {
                     salvarAsync(.somenteEste)
                 }
-                Button("Este e os Próximos") {
+                Button("Este e os Próximos", role: .destructive) {
                     salvarAsync(.esteEProximos)
                 }
-                Button("Todos") {
+                Button("Todos", role: .destructive) {
                     salvarAsync(.todos)
                 }
-                Button("Cancelar", role: .cancel) {}
+            }
+            message: {
+                Text("Quais deseja alterar?")
             }
         }
     }

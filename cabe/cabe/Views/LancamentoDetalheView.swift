@@ -235,45 +235,43 @@ struct LancamentoDetalheView: View {
                     repository: vmLancamentos.repository
                 )
             }
-            .confirmationDialog(
-                "Excluir Lançamento?",
+            .alert(
+                lancamento.tipoRecorrente == .nunca ? "Deseja excluir esse lançamento?" : "Este lançamento faz parte de uma recorrência.",
                 isPresented: $mostrarDialogExclusao,
-                titleVisibility: .visible
             ) {
                 
                 if lancamento.tipoRecorrente == .nunca {
-                    Button("Confirmar Exclusão", role: .destructive) {
+                    Button("Confirmar", role: .destructive) {
                         Task {
                             await vmLancamentos.removerTodosRecorrentes(lancamento)
                             dismiss()
                         }
                     }
                 } else {
-                    Button("Excluir Somente Este", role: .destructive) {
+                    Button("Somente Este", role: .destructive) {
                         Task {
                             await vmLancamentos.removerSomenteEste(lancamento)
                             dismiss()
                         }
                     }
                     
-                    Button("Excluir Este e os Próximos", role: .destructive) {
+                    Button("Este e os Próximos", role: .destructive) {
                         Task {
                             await vmLancamentos.removerEsteEProximos(lancamento)
                             dismiss()
                         }
                     }
                     
-                    Button("Excluir Todos", role: .destructive) {
+                    Button("Todos", role: .destructive) {
                         Task {
                             await vmLancamentos.removerTodosRecorrentes(lancamento)
                             dismiss()
                         }
                     }
                 }
-                
             }
             message: {
-                Text("Essa ação não poderá ser desfeita.")
+                Text(lancamento.tipoRecorrente == .nunca ? "": "Quais deseja excluir?")
             }
 
         } else {
