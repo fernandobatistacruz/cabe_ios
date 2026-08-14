@@ -67,10 +67,10 @@ struct BuscarView<AtalhoDestino: View>: View {
                     if searchText.isEmpty {
                         LazyVGrid(
                             columns: [
-                                GridItem(.flexible(), spacing: 12),
-                                GridItem(.flexible(), spacing: 12)
+                                GridItem(.flexible(), spacing: 10),
+                                GridItem(.flexible(), spacing: 10)
                             ],
-                            spacing: 12
+                            spacing: 10
                         ) {
                             ForEach(BuscarAtalho.allCases) { atalho in
                                 Button {
@@ -81,10 +81,9 @@ struct BuscarView<AtalhoDestino: View>: View {
                                 .buttonStyle(.plain)
                             }
                         }
-                        .padding(.vertical, 4)
                     }
                 }
-                .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                 .listRowBackground(Color.clear)
 
                 Section {
@@ -195,21 +194,19 @@ private struct BuscarAtalhoCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Image(systemName: atalho.icone)
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-
-            Spacer(minLength: 0)
-
-            HStack(alignment: .firstTextBaseline) {
-                Text(atalho.titulo)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                Spacer()
-            }
+                .resizable()
+                .scaledToFit()
+                .frame(width: 22, height: 22)
+                .foregroundStyle(.white.opacity(0.9))
+            
+            Text(atalho.titulo)
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundStyle(.white.opacity(0.9))
+            
         }
         .padding(16)
-        .frame(maxWidth: .infinity, minHeight: 132, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 50, alignment: .leading)
         .background(
             ZStack {
                 LinearGradient(
@@ -232,6 +229,6 @@ private struct BuscarAtalhoCard: View {
                 .blendMode(.softLight)
             }
         )
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))        
     }
 }
