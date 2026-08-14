@@ -229,6 +229,6 @@ private struct BuscarAtalhoCard: View {
                 .blendMode(.softLight)
             }
         )
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))        
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 }
