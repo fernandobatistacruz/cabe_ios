@@ -159,7 +159,8 @@ struct ResumoAnualView: View {
                     insightsView
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom)
         }
     }
     

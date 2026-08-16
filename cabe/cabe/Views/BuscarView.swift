@@ -31,10 +31,10 @@ enum BuscarAtalho: CaseIterable, Hashable, Identifiable {
 
     var cor: Color {
         switch self {
-        case .cartao: .blue
-        case .conta: .teal
-        case .categoria: .orange
-        case .consumo: .purple
+        case .cartao: .orange
+        case .conta: .blue
+        case .categoria: .purple
+        case .consumo: .indigo
         }
     }
 }
