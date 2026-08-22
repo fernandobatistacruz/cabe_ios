@@ -38,7 +38,7 @@ struct LancamentoDetalheView: View {
     var body: some View {
         if let lancamento = vm.lancamento {
 
-            Form {
+            List {
                 Section {
                     HStack(spacing: 10) {
 

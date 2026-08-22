@@ -36,7 +36,7 @@ struct BalanceDetailView: View {
                     insightsView
                 }
             }
-            .padding()
+            .padding(.horizontal)
         }
         .navigationTitle("Balanço")
         .navigationBarTitleDisplayMode(.large)

@@ -112,7 +112,8 @@ struct CartaoListView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom)
         }
         .alert("", isPresented: $mostrarAlerta) {
             Button("OK", role: .cancel) {}

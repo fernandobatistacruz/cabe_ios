@@ -189,7 +189,7 @@ struct ConsumoDetalhadoView: View {
                     )
                 }
             }
-            .padding()
+            .padding(.horizontal)
         }
     }
 
