@@ -63,7 +63,7 @@ struct ZoomPagamentoView: View {
                             PagamentoRowView(
                                 titulo: conta.nome,
                                 subtitulo: conta.saldoFormatado,
-                                leadingImage: Image(systemName: "building.columns"),
+                                leadingImage: Image(conta.bancoEnum.assetName),
                                 isSelected: meio == selecionado
                             )
                         }
@@ -128,7 +128,7 @@ struct PagamentoRowView: View {
                     .scaledToFit()
                     .frame(width: 28, height: 28)
             }
-
+            
             VStack(alignment: .leading, spacing: 2) {
                 Text(titulo)
                     .foregroundColor(.primary)

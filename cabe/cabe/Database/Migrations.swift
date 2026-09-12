@@ -89,23 +89,6 @@ extension AppDatabase {
                     .defaults(to: defaultCurrencyCode)
             }
         }
-         
-        migrator.registerMigration("insertContaInicial") { db in
-            let count = try Int.fetchOne(
-                db,
-                sql: "SELECT COUNT(*) FROM conta"
-            ) ?? 0
-
-            guard count == 0 else { return }
-
-            try ContaModel(
-                id: nil,
-                uuid: UUID().uuidString,
-                nome: NSLocalizedString("Conta Inicial", comment: ""),
-                saldo: 0,
-                currencyCode: defaultCurrencyCode
-            ).insert(db)
-        }
         
         migrator.registerMigration("dropFavoritosTable") { db in
             try db.execute(sql: "DROP TABLE IF EXISTS favoritos")
@@ -285,6 +268,32 @@ extension AppDatabase {
                     WHERE cartao_uuid IS NULL
                 """
             )
+        }
+        
+        migrator.registerMigration("addLogoBancoToConta") { db in
+            try db.alter(table: "conta") { t in
+                t.add(column: "logo", .integer)
+                    .notNull()
+                    .defaults(to: 0)
+            }
+        }
+        
+        migrator.registerMigration("insertContaInicial") { db in
+            let count = try Int.fetchOne(
+                db,
+                sql: "SELECT COUNT(*) FROM conta"
+            ) ?? 0
+
+            guard count == 0 else { return }
+
+            try ContaModel(
+                id: nil,
+                uuid: UUID().uuidString,
+                nome: NSLocalizedString("Conta Inicial", comment: ""),
+                saldo: 0,
+                currencyCode: defaultCurrencyCode,
+                logo : 0,
+            ).insert(db)
         }
         
         return migrator

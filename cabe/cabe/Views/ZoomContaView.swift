@@ -18,6 +18,10 @@ struct ZoomContaView: View {
     var body: some View {
         List(contas) { conta in
             HStack {
+                Image(conta.bancoEnum.assetName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 28, height: 28)
                 Text(conta.nome)
                 Spacer()
                 if conta.id == contaSelecionada?.id {

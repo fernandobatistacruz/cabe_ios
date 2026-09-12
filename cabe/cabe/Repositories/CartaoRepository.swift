@@ -101,7 +101,8 @@ final class CartaoRepository : CartaoRepositoryProtocol{
                     a.uuid          AS conta_uuid,
                     a.nome          AS conta_nome,
                     a.saldo,
-                    a.currency_code
+                    a.currency_code,
+                    a.logo
                 FROM cartao c
                 JOIN conta a ON c.conta_uuid = a.uuid
                 ORDER BY c.nome ASC
@@ -114,7 +115,8 @@ final class CartaoRepository : CartaoRepositoryProtocol{
                 uuid: row["conta_uuid"],
                 nome: row["conta_nome"],
                 saldo: row["saldo"],
-                currencyCode: row["currency_code"]
+                currencyCode: row["currency_code"],
+                logo : row["logo"]
             )
             
             return CartaoModel(

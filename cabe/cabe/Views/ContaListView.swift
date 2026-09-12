@@ -184,9 +184,8 @@ struct ContaRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "building.columns.fill")
-                .foregroundStyle(iconColor)
-                .font(.system(size: 18, weight: .medium))
+            
+            LogoBancoView(codigo: conta.logo)
 
             Text(conta.nome)
                 .font(.body)
@@ -230,10 +229,7 @@ struct ContaDetalheView: View {
     var body: some View {
         List {
             HStack(spacing: 10) {
-                Image(systemName: "building.columns.fill")
-                    .font(.system(size: 30))
-                    .foregroundStyle(conta.saldo >= 0 ? .green : .red)
-               
+                LogoBancoView(codigo: conta.logo)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(conta.nome)
@@ -309,6 +305,8 @@ struct NovaContaView: View {
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal = 0
     @FocusState private var campoFocado: CampoFoco?
+    @State private var logo: Int = 0
+    @State private var mostrarSelecaoIcone = false
 
 
     var body: some View {
@@ -321,6 +319,21 @@ struct NovaContaView: View {
                         campoFocado = .saldo
                     }
             
+            Button {
+                mostrarSelecaoIcone = true
+            } label: {
+                HStack(spacing: 12) {
+                    Text("Ícone")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    LogoBancoView(codigo: logo)
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.gray)
+                        .font(.footnote)
+                }
+                
+            }
+            
             TextField("Saldo", text: $saldoText)
                 .keyboardType(.numberPad)
                 .focused($campoFocado, equals: .saldo)
@@ -331,6 +344,11 @@ struct NovaContaView: View {
         }
         .navigationTitle("Nova Conta")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $mostrarSelecaoIcone) {
+            SelecaoIconeModalView(logo: $logo)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -379,7 +397,8 @@ struct NovaContaView: View {
             uuid: UUID().uuidString,
             nome: nome,
             saldo: saldoDecimal,
-            currencyCode : Locale.current.currency?.identifier ?? Locale.systemCurrencyCode
+            currencyCode : Locale.current.currency?.identifier ?? Locale.systemCurrencyCode,
+            logo: logo
         )
         
         do {
@@ -405,12 +424,29 @@ struct EditarContaView: View {
     @State private var nome: String = ""
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal = 0
+    @State private var logo: Int = 0
+    @State private var mostrarSelecaoIcone = false
     
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Nome", text: $nome)
                     .textInputAutocapitalization(.words)
+                
+                Button {
+                    mostrarSelecaoIcone = true
+                } label: {
+                    HStack(spacing: 12) {
+                        Text("Ícone")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        LogoBancoView(codigo: logo)
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                            .font(.footnote)
+                    }
+                    
+                }
                 
                 TextField("Saldo", text: $saldoText)
                     .keyboardType(.numberPad)
@@ -420,6 +456,11 @@ struct EditarContaView: View {
             }
             .navigationTitle("Editar Conta")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $mostrarSelecaoIcone) {
+                SelecaoIconeModalView(logo: $logo)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -447,7 +488,7 @@ struct EditarContaView: View {
                 nome = conta.nome
                 let formatter = CurrencyFormatter.formatter(currencyCode: conta.currencyCode)
                 saldoText = formatter.string(from: conta.saldo as NSDecimalNumber) ?? ""
-
+                logo = conta.logo
             }
         }
     }
@@ -469,6 +510,7 @@ struct EditarContaView: View {
         
         conta.nome = nome
         conta.saldo = saldoDecimal
+        conta.logo = logo
         
         do {
             try await ContaRepository().editar(conta)
@@ -485,6 +527,103 @@ struct EditarContaView: View {
         }
         
         dismiss()
+    }
+}
+
+// MARK: - Modal de Seleção de Ícones (Grade com Zoom)
+struct SelecaoIconeModalView: View {
+    @Binding var logo: Int
+    @Environment(\.dismiss) private var dismiss
+    
+    // Configuração de 3 colunas flexíveis para a grade
+    private let colunas = [
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: colunas, spacing: 20) {                   
+                    ForEach(BancoLogo.allCases) { banco in
+                        CartaoIconeView(
+                            isSelecionado: logo == banco.rawValue,
+                            acao: { selecionar(banco.rawValue) }
+                        ) {
+                            Image(banco.assetName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Escolha o Ícone")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
+        }
+    }
+    
+    private func selecionar(_ novoCodigo: Int) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            logo = novoCodigo
+        }
+        dismiss()
+    }
+}
+
+// MARK: - Componentes Auxiliares de UI
+struct CartaoIconeView<Content: View>: View {
+    let isSelecionado: Bool
+    let acao: () -> Void
+    let content: () -> Content
+    
+    var body: some View {
+        Button(action: acao) {
+            VStack {
+                content()
+            }
+            .frame(width: 80, height: 80)
+            .background(Color(.tertiarySystemBackground))
+            .cornerRadius(22)
+            .overlay(
+                RoundedRectangle(cornerRadius: 22)
+                    .stroke(isSelecionado ? Color.blue : Color.clear, lineWidth: 3)
+            )
+            .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+            .scaleEffect(isSelecionado ? 1.05 : 1.0)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct IconeBancoView: View {
+    let logo: Int?
+    let tamanho: CGFloat
+    
+    var body: some View {
+        if let codigo = logo, let banco = BancoLogo(rawValue: codigo) {
+            Image(banco.assetName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: tamanho, height: tamanho)
+        } else {
+            Image(systemName: "building.columns.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: tamanho, height: tamanho)
+                .foregroundColor(.blue)
+        }
     }
 }
 

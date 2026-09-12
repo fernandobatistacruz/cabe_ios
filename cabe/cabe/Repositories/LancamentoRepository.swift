@@ -21,7 +21,7 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
         static let selectBase = """
             SELECT
                 l.*,
-                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code",
+                c.id AS "c.id", c.uuid AS "c.uuid", c.nome AS "c.nome", c.saldo AS "c.saldo", c.currency_code AS "c.currency_code", c.logo AS "c.logo",
                 ca.id AS "ca.id", ca.uuid AS "ca.uuid", ca.nome AS "ca.nome", ca.vencimento AS "ca.vencimento",
                 ca.fechamento AS "ca.fechamento", ca.operadora AS "ca.operadora", ca.arquivado AS "ca.arquivado",
                 ca.conta_uuid AS "ca.conta_uuid", ca.limite AS "ca.limite",
@@ -717,7 +717,8 @@ final class LancamentoRepository : LancamentoRepositoryProtocol{
                 uuid: row["c.uuid"],
                 nome: row["c.nome"],
                 saldo: row["c.saldo"],
-                currencyCode: row["c.currency_code"]
+                currencyCode: row["c.currency_code"],
+                logo: row["c.logo"]
             ) : nil
 
             let cartao = row["ca.id"] != nil ? CartaoModel(

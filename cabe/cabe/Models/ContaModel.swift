@@ -9,6 +9,7 @@ struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var nome: String
     var saldo: Decimal
     var currencyCode: String
+    var logo: Int
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -16,6 +17,7 @@ struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         case nome
         case saldo
         case currencyCode = "currency_code"
+        case logo = "logo"
     }
     
     enum Columns {
@@ -24,6 +26,11 @@ struct ContaModel: Identifiable, Codable, FetchableRecord, PersistableRecord {
         static let nome = Column("nome")
         static let saldo = Column("saldo")
         static let currencyCode = Column("currency_code")
+        static let logo = Column("logo")
+    }
+    
+    var bancoEnum: BancoLogo {
+        BancoLogo(rawValue: logo) ?? .outro
     }
 }
 
