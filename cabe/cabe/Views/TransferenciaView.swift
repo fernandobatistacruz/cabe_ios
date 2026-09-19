@@ -56,7 +56,7 @@ struct TransferenciaView: View {
                     text: $vm.valorTexto
                 )
                 .keyboardType(.numberPad)
-                .onChange(of: vm.valorTexto) { novoValor in
+                .onChange(of: vm.valorTexto) {_, novoValor in
                     vm.atualizarValor(novoValor)
                 }
             }           

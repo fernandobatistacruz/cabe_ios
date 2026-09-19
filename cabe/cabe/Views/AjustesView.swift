@@ -66,7 +66,7 @@ struct AjustesView: View {
                             Image(systemName: "sun.max.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.blue)
                             Text("Aparência")
                             Spacer()
@@ -83,7 +83,7 @@ struct AjustesView: View {
                             Image(systemName: "bell.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.red)
                             Text("Notificações")
                             Spacer()
@@ -99,7 +99,7 @@ struct AjustesView: View {
                             Image(systemName: "cloud.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.cyan)
                             Text("Backup")
                             Spacer()
@@ -115,7 +115,7 @@ struct AjustesView: View {
                             Image(systemName: "purchased")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.pink)
                             Text("Assinatura")
                             Spacer()
@@ -131,7 +131,7 @@ struct AjustesView: View {
                             Image(systemName: "iphone")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.gray)
                             Text("Sobre")
                         }
@@ -149,7 +149,7 @@ struct AjustesView: View {
                             Image(systemName: "banknote.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.green)
                             Text("Pagamento Padrão")
                             Spacer()
@@ -170,7 +170,7 @@ struct AjustesView: View {
                             Image(systemName: "square.split.2x2.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.purple)
                             Text("Categorias")
                         }
@@ -183,7 +183,7 @@ struct AjustesView: View {
                             Image(systemName: "creditcard.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.orange)
                             Text("Cartões")
                         }
@@ -196,7 +196,7 @@ struct AjustesView: View {
                             Image(systemName: "building.columns.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 22, height: 22)
                                 .foregroundStyle(.blue)
                             Text("Contas")
                         }
@@ -207,7 +207,7 @@ struct AjustesView: View {
         }
         .navigationTitle("Ajustes")
         .navigationBarTitleDisplayMode(.large)
-        .onChange(of: pagamentoPadraoData) { newValue in
+        .onChange(of: pagamentoPadraoData) {_, newValue in
             if let data = newValue {
                 pagamentoPadrao = try? JSONDecoder().decode(MeioPagamento.self, from: data)
             } else {

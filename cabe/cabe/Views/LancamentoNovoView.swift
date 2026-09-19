@@ -40,7 +40,7 @@ struct LancamentoNovoView: View {
                     TextField("Valor", text: $vm.valorTexto)
                         .keyboardType(.numberPad)
                         .focused($campoFocado, equals: .valor)
-                        .onChange(of: vm.valorTexto) { novoValor in
+                        .onChange(of: vm.valorTexto) {_, novoValor in
                             vm.atualizarValor(novoValor)
                         }
                     
@@ -281,7 +281,7 @@ struct LancamentoNovoView: View {
                 await Task.yield()
                 campoFocado = .valor
             }
-            .onChange(of: vm.pagamentoSelecionado) { _ in
+            .onChange(of: vm.pagamentoSelecionado) {_, _ in
                 vm.sugerirDataFatura()
             }
         }

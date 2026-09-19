@@ -19,7 +19,7 @@ struct NotificacoesSettingsView: View {
         List {
             Section {
                 Toggle("Notificações", isOn: $notificacoesAtivas)
-                    .onChange(of: notificacoesAtivas) { ativo in
+                    .onChange(of: notificacoesAtivas) {_, ativo in
                         if ativo {
                             if sub.isSubscribed {
                                 solicitarPermissaoSeNecessario()

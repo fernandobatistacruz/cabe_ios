@@ -112,7 +112,7 @@ struct ResumoAnualView: View {
             await vm.carregarDados()
             isLoadingData = false
         }
-        .onChange(of: vm.anoSelecionado) { _ in
+        .onChange(of: vm.anoSelecionado) {_,_ in
             Task {
                 isLoadingData = true
                 await vm.carregarDados()

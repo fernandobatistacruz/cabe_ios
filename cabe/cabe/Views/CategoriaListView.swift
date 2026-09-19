@@ -48,17 +48,22 @@ struct CategoriaListView: View {
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button(role: .destructive) {
                         categoriaParaExcluir = categoria
-                        
+
                         Task {
-                            let existe = try await LancamentoRepository()
-                                .existeLancamentoParaCategoria(
-                                    id: categoria.id ?? 0,
-                                    tipo: categoria.tipo
-                                )
-                            if existe {
-                                mostrarAlerta = true
-                            } else {
-                                mostrarConfirmacao = true
+                            do {
+                                let existe = try await LancamentoRepository()
+                                    .existeLancamentoParaCategoria(
+                                        id: categoria.id ?? 0,
+                                        tipo: categoria.tipo
+                                    )
+
+                                if existe {
+                                    mostrarAlerta = true
+                                } else {
+                                    mostrarConfirmacao = true
+                                }
+                            } catch {
+                                print("Erro ao verificar lançamentos da categoria: \(error)")
                             }
                         }
                     } label: {
@@ -170,7 +175,7 @@ struct CategoriaListRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: categoria.icone.systemName)
-                .frame(width: 24)
+                .frame(width: 24, height: 24)
                 .foregroundColor(categoria.cor)
 
             Text(categoria.nome)

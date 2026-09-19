@@ -37,7 +37,7 @@ struct ZoomCategoriaView: View {
                     HStack {
                         if categoria.pai == nil {
                             Image(systemName: categoria.icone.systemName)
-                                .frame(width: 24)
+                                .frame(width: 24, height: 24)
                                 .foregroundColor(categoria.cor)
 
                             Text(categoria.nome)

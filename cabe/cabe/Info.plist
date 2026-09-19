@@ -16,15 +16,13 @@
 		</dict>
 	</array>
 	<key>GADApplicationIdentifier</key>
-    <string>ca-app-pub-1562286138930391~9422079548</string>
+	<string>ca-app-pub-1562286138930391~9422079548</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-    	<key>NSAllowsArbitraryLoads</key>
-    	<true/>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
 	</dict>
-    <key>UIFileSharingEnabled</key>
-    <true/>
-    <key>LSSupportsOpeningDocumentsInPlace</key>
-    <true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>

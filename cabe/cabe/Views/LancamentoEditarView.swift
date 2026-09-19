@@ -40,7 +40,7 @@ struct LancamentoEditarView: View {
                 Section {
                     TextField("Valor", text: $vm.valorTexto)
                         .keyboardType(.numberPad)
-                        .onChange(of: vm.valorTexto) { novoValor in
+                        .onChange(of: vm.valorTexto) {_, novoValor in
                             vm.atualizarValor(novoValor)
                         }
                     
@@ -260,7 +260,7 @@ struct LancamentoEditarView: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
-            .onChange(of: vm.pagamentoSelecionado) { _ in
+            .onChange(of: vm.pagamentoSelecionado) {_, _ in
                 vm.ajustarRecorrenciaSeNecessario()
                 vm.sugerirDataFatura()
             }

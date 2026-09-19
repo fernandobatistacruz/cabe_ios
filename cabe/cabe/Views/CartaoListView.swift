@@ -62,17 +62,22 @@ struct CartaoListView: View {
                                 Button(role: .destructive) {
                                     cartaoParaExcluir = cartao
                                     
-                                    Task{
-                                        let existe = try await LancamentoRepository().existeLancamentoParaCartao(
-                                            cartaoUuid: cartao.uuid)
-                                        
-                                        if existe {
-                                            mostrarAlerta = true
-                                        } else {
-                                            mostrarConfirmacao = true
+                                    Task {
+                                        do {
+                                            let existe = try await LancamentoRepository()
+                                                .existeLancamentoParaCartao(
+                                                    cartaoUuid: cartao.uuid
+                                                )
+                                            
+                                            if existe {
+                                                mostrarAlerta = true
+                                            } else {
+                                                mostrarConfirmacao = true
+                                            }
+                                        } catch {
+                                            print("Erro ao verificar lançamentos do cartão: \(error)")
                                         }
                                     }
-                                    
                                 } label: {
                                     Label("Excluir", systemImage: "trash")
                                 }

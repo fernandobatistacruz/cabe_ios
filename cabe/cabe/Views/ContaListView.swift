@@ -40,18 +40,22 @@ struct ContaListView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             contaParaExcluir = conta
-                            
+
                             Task {
-                                let existeLancamento = try await LancamentoRepository()
-                                    .existeLancamentoParaConta(contaUuid: conta.uuid)
-                                
-                                let existeCartao = try await CartaoRepository()
-                                    .existeCartaoParaConta(contaUuid: conta.uuid)
-                                
-                                if existeLancamento || existeCartao {
-                                    mostrarAlerta = true
-                                } else {
-                                    mostrarConfirmacao = true
+                                do {
+                                    let existeLancamento = try await LancamentoRepository()
+                                        .existeLancamentoParaConta(contaUuid: conta.uuid)
+
+                                    let existeCartao = try await CartaoRepository()
+                                        .existeCartaoParaConta(contaUuid: conta.uuid)
+
+                                    if existeLancamento || existeCartao {
+                                        mostrarAlerta = true
+                                    } else {
+                                        mostrarConfirmacao = true
+                                    }
+                                } catch {
+                                    print("Erro ao verificar dependências da conta: \(error)")
                                 }
                             }
                         } label: {
@@ -185,7 +189,7 @@ struct ContaRow: View {
     var body: some View {
         HStack(spacing: 12) {
             
-            LogoBancoView(codigo: conta.logo)
+            LogoBancoView(bancoID: conta.logo)
 
             Text(conta.nome)
                 .font(.body)
@@ -229,7 +233,7 @@ struct ContaDetalheView: View {
     var body: some View {
         List {
             HStack(spacing: 10) {
-                LogoBancoView(codigo: conta.logo)
+                LogoBancoView(bancoID: conta.logo)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(conta.nome)
@@ -305,7 +309,7 @@ struct NovaContaView: View {
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal = 0
     @FocusState private var campoFocado: CampoFoco?
-    @State private var logo: Int = 0
+    @State private var bancoID: Int = 0
     @State private var mostrarSelecaoIcone = false
 
 
@@ -326,7 +330,7 @@ struct NovaContaView: View {
                     Text("Ícone")
                         .foregroundColor(.primary)
                     Spacer()
-                    LogoBancoView(codigo: logo)
+                    LogoBancoView(bancoID: bancoID)
                     Image(systemName: "chevron.right")
                         .foregroundColor(.gray)
                         .font(.footnote)
@@ -337,7 +341,7 @@ struct NovaContaView: View {
             TextField("Saldo", text: $saldoText)
                 .keyboardType(.numberPad)
                 .focused($campoFocado, equals: .saldo)
-                .onChange(of: saldoText) { novoValor in
+                .onChange(of: saldoText) {_, novoValor in
                     atualizarValor(novoValor)
                 }
             
@@ -345,9 +349,11 @@ struct NovaContaView: View {
         .navigationTitle("Nova Conta")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $mostrarSelecaoIcone) {
-            SelecaoIconeModalView(logo: $logo)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.hidden)
+            NavigationStack {
+                ZoomIconeContaView(
+                    bancoID: $bancoID
+                )
+            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -398,7 +404,7 @@ struct NovaContaView: View {
             nome: nome,
             saldo: saldoDecimal,
             currencyCode : Locale.current.currency?.identifier ?? Locale.systemCurrencyCode,
-            logo: logo
+            logo: bancoID
         )
         
         do {
@@ -424,7 +430,7 @@ struct EditarContaView: View {
     @State private var nome: String = ""
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal = 0
-    @State private var logo: Int = 0
+    @State private var bancoID: Int = 0
     @State private var mostrarSelecaoIcone = false
     
     var body: some View {
@@ -440,7 +446,7 @@ struct EditarContaView: View {
                         Text("Ícone")
                             .foregroundColor(.primary)
                         Spacer()
-                        LogoBancoView(codigo: logo)
+                        LogoBancoView(bancoID: bancoID)
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)
                             .font(.footnote)
@@ -450,16 +456,18 @@ struct EditarContaView: View {
                 
                 TextField("Saldo", text: $saldoText)
                     .keyboardType(.numberPad)
-                    .onChange(of: saldoText) { novoValor in
+                    .onChange(of: saldoText) {_, novoValor in
                         atualizarValor(novoValor)
                     }
             }
             .navigationTitle("Editar Conta")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $mostrarSelecaoIcone) {
-                SelecaoIconeModalView(logo: $logo)
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.hidden)
+                NavigationStack {
+                    ZoomIconeContaView(
+                        bancoID: $bancoID
+                    )
+                }               
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -488,7 +496,7 @@ struct EditarContaView: View {
                 nome = conta.nome
                 let formatter = CurrencyFormatter.formatter(currencyCode: conta.currencyCode)
                 saldoText = formatter.string(from: conta.saldo as NSDecimalNumber) ?? ""
-                logo = conta.logo
+                bancoID = conta.logo
             }
         }
     }
@@ -510,7 +518,7 @@ struct EditarContaView: View {
         
         conta.nome = nome
         conta.saldo = saldoDecimal
-        conta.logo = logo
+        conta.logo = bancoID
         
         do {
             try await ContaRepository().editar(conta)
@@ -529,103 +537,3 @@ struct EditarContaView: View {
         dismiss()
     }
 }
-
-// MARK: - Modal de Seleção de Ícones (Grade com Zoom)
-struct SelecaoIconeModalView: View {
-    @Binding var logo: Int
-    @Environment(\.dismiss) private var dismiss
-    
-    // Configuração de 3 colunas flexíveis para a grade
-    private let colunas = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-    
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: colunas, spacing: 20) {                   
-                    ForEach(BancoLogo.allCases) { banco in
-                        CartaoIconeView(
-                            isSelecionado: logo == banco.rawValue,
-                            acao: { selecionar(banco.rawValue) }
-                        ) {
-                            Image(banco.assetName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 40, height: 40)
-                        }
-                    }
-                }
-                .padding()
-            }
-            .navigationTitle("Escolha o Ícone")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
-            }
-        }
-    }
-    
-    private func selecionar(_ novoCodigo: Int) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            logo = novoCodigo
-        }
-        dismiss()
-    }
-}
-
-// MARK: - Componentes Auxiliares de UI
-struct CartaoIconeView<Content: View>: View {
-    let isSelecionado: Bool
-    let acao: () -> Void
-    let content: () -> Content
-    
-    var body: some View {
-        Button(action: acao) {
-            VStack {
-                content()
-            }
-            .frame(width: 80, height: 80)
-            .background(Color(.tertiarySystemBackground))
-            .cornerRadius(22)
-            .overlay(
-                RoundedRectangle(cornerRadius: 22)
-                    .stroke(isSelecionado ? Color.blue : Color.clear, lineWidth: 3)
-            )
-            .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
-            .scaleEffect(isSelecionado ? 1.05 : 1.0)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-struct IconeBancoView: View {
-    let logo: Int?
-    let tamanho: CGFloat
-    
-    var body: some View {
-        if let codigo = logo, let banco = BancoLogo(rawValue: codigo) {
-            Image(banco.assetName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: tamanho, height: tamanho)
-        } else {
-            Image(systemName: "building.columns.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: tamanho, height: tamanho)
-                .foregroundColor(.blue)
-        }
-    }
-}
-
-
-// MARK: - Preview

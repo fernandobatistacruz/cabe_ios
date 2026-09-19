@@ -379,10 +379,10 @@ struct AnimatedCounterText: View {
             .foregroundStyle(color)
             .onAppear {
                 animatedValue = value
-            }
-            .onChange(of: value, perform: { newValue in
+            }            
+            .onChange(of: value) { _, newValue in
                 animate(to: newValue)
-            })
+            }
     }
 
     private func animate(to target: Decimal) {

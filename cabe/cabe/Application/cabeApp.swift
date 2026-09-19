@@ -58,7 +58,7 @@ struct cabeApp: App {
                     TabMenuView()
                 }
             }
-            .onChange(of: scenePhase) { phase in
+            .onChange(of: scenePhase) { _, phase in
                 switch phase {
                     
                 case .active:

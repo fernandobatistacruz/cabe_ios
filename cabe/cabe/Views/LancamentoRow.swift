@@ -57,7 +57,7 @@ struct LancamentoRow: View {
             Image(systemName: systemName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 20, height: 20)
+                .frame(width: 24, height: 24)
                 .foregroundColor(color)
             
             VStack(alignment: .leading) {

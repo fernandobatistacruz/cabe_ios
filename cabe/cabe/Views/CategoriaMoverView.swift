@@ -78,7 +78,7 @@ struct CategoriaMoverView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding()
-                .onChange(of: tipoFiltro) { novoValor in
+                .onChange(of: tipoFiltro) {_, novoValor in
                     categoriaOrigem = nil
                     categoriaDestino = nil
                 }

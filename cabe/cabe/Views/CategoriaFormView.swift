@@ -105,19 +105,24 @@ struct CategoriaFormView: View {
                                     .onTapGesture {
                                         sheetSubcategoria = .editar(sub)
                                     }
-                                    .swipeActions (edge: .trailing, allowsFullSwipe: false) {
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
-                                            Task{
-                                                let existe = try await LancamentoRepository()
-                                                    .existeLancamentoParaCategoria(
-                                                        id: sub.id ?? 0,
-                                                        tipo: sub.tipo
-                                                    )
-                                                if existe {
-                                                    mostrarAlerta = true
-                                                } else {
-                                                    categoriaParaExcluir = sub
-                                                    mostrarConfirmacao = true
+                                            Task {
+                                                do {
+                                                    let existe = try await LancamentoRepository()
+                                                        .existeLancamentoParaCategoria(
+                                                            id: sub.id ?? 0,
+                                                            tipo: sub.tipo
+                                                        )
+                                                    
+                                                    if existe {
+                                                        mostrarAlerta = true
+                                                    } else {
+                                                        categoriaParaExcluir = sub
+                                                        mostrarConfirmacao = true
+                                                    }
+                                                } catch {
+                                                    print("Erro ao verificar lançamentos da categoria: \(error)")
                                                 }
                                             }
                                         } label: {

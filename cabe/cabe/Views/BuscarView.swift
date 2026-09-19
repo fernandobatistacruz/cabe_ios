@@ -140,7 +140,7 @@ struct BuscarView<AtalhoDestino: View>: View {
         .navigationTitle("Buscar")
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Descrição ou Anotação")
-        .onChange(of: searchText) { novoValor in
+        .onChange(of: searchText) {_, novoValor in
             vm.onTextoChange(novoValor)
         }
         .onAppear {

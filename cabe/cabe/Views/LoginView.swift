@@ -52,7 +52,7 @@ struct LoginView: View {
                             .background(Color(.systemBackground))
                             .cornerRadius(12)
                             .foregroundColor(.primary)
-                            .onChange(of: auth.email) { _ in
+                            .onChange(of: auth.email) {_, _ in
                                 auth.errorMessage = nil
                                 auth.infoMessage = nil
                             }
@@ -63,7 +63,7 @@ struct LoginView: View {
                             .background(Color(.systemBackground))
                             .cornerRadius(12)
                             .foregroundColor(.primary)
-                            .onChange(of: auth.password) {_ in
+                            .onChange(of: auth.password) {_,_ in
                                 auth.errorMessage = nil
                                 auth.infoMessage = nil
                             }
