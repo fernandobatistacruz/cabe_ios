@@ -119,10 +119,10 @@ enum BancoLogo: Int, CaseIterable, Identifiable {
 }
 
 struct LogoBancoView: View {
-    let bancoID: Int
+    let logo: Int
     
     var body: some View {
-        if let banco = BancoLogo(rawValue: bancoID) {
+        if let banco = BancoLogo(rawValue: logo) {
             Image(banco.imageName)
                 .resizable()
                 .scaledToFit()

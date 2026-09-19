@@ -189,7 +189,7 @@ struct ContaRow: View {
     var body: some View {
         HStack(spacing: 12) {
             
-            LogoBancoView(bancoID: conta.logo)
+            LogoBancoView(logo: conta.logo)
 
             Text(conta.nome)
                 .font(.body)
@@ -233,7 +233,7 @@ struct ContaDetalheView: View {
     var body: some View {
         List {
             HStack(spacing: 10) {
-                LogoBancoView(bancoID: conta.logo)
+                LogoBancoView(logo: conta.logo)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(conta.nome)
@@ -309,7 +309,7 @@ struct NovaContaView: View {
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal = 0
     @FocusState private var campoFocado: CampoFoco?
-    @State private var bancoID: Int = 0
+    @State private var logo: Int = 0
     @State private var mostrarSelecaoIcone = false
 
 
@@ -330,7 +330,7 @@ struct NovaContaView: View {
                     Text("Ícone")
                         .foregroundColor(.primary)
                     Spacer()
-                    LogoBancoView(bancoID: bancoID)
+                    LogoBancoView(logo: logo)
                     Image(systemName: "chevron.right")
                         .foregroundColor(.gray)
                         .font(.footnote)
@@ -351,7 +351,7 @@ struct NovaContaView: View {
         .sheet(isPresented: $mostrarSelecaoIcone) {
             NavigationStack {
                 ZoomIconeContaView(
-                    bancoID: $bancoID
+                    logo: $logo
                 )
             }
         }
@@ -404,7 +404,7 @@ struct NovaContaView: View {
             nome: nome,
             saldo: saldoDecimal,
             currencyCode : Locale.current.currency?.identifier ?? Locale.systemCurrencyCode,
-            logo: bancoID
+            logo: logo
         )
         
         do {
@@ -430,7 +430,7 @@ struct EditarContaView: View {
     @State private var nome: String = ""
     @State private var saldoText: String = ""
     @State private var saldoDecimal: Decimal = 0
-    @State private var bancoID: Int = 0
+    @State private var logo: Int = 0
     @State private var mostrarSelecaoIcone = false
     
     var body: some View {
@@ -446,7 +446,7 @@ struct EditarContaView: View {
                         Text("Ícone")
                             .foregroundColor(.primary)
                         Spacer()
-                        LogoBancoView(bancoID: bancoID)
+                        LogoBancoView(logo: logo)
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)
                             .font(.footnote)
@@ -465,7 +465,7 @@ struct EditarContaView: View {
             .sheet(isPresented: $mostrarSelecaoIcone) {
                 NavigationStack {
                     ZoomIconeContaView(
-                        bancoID: $bancoID
+                        logo: $logo
                     )
                 }               
             }
@@ -496,7 +496,7 @@ struct EditarContaView: View {
                 nome = conta.nome
                 let formatter = CurrencyFormatter.formatter(currencyCode: conta.currencyCode)
                 saldoText = formatter.string(from: conta.saldo as NSDecimalNumber) ?? ""
-                bancoID = conta.logo
+                logo = conta.logo
             }
         }
     }
@@ -518,7 +518,7 @@ struct EditarContaView: View {
         
         conta.nome = nome
         conta.saldo = saldoDecimal
-        conta.logo = bancoID
+        conta.logo = logo
         
         do {
             try await ContaRepository().editar(conta)

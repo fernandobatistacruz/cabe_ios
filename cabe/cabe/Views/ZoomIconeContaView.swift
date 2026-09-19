@@ -15,7 +15,7 @@
 import SwiftUI
 
 struct ZoomIconeContaView: View {
-    @Binding var bancoID: Int
+    @Binding var logo: Int
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -34,14 +34,14 @@ struct ZoomIconeContaView: View {
 
                 Spacer()
 
-                if banco.id == bancoID {
+                if banco.id == logo {
                     Image(systemName: "checkmark")
                         .foregroundColor(.accentColor)
                 }
             }
             .listStyle(.insetGrouped)
             .onTapGesture {
-                bancoID = banco.id
+                logo = banco.id
                 dismiss()
             }
         }
