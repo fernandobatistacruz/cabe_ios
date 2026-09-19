@@ -14,7 +14,7 @@
 
 import SwiftUI
 
-struct ZoomIconeContaView: View {
+struct ZoomBancoView: View {
     @Binding var logo: Int
     @Environment(\.dismiss) private var dismiss
 

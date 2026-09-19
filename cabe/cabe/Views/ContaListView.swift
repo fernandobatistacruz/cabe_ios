@@ -350,7 +350,7 @@ struct NovaContaView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $mostrarSelecaoIcone) {
             NavigationStack {
-                ZoomIconeContaView(
+                ZoomBancoView(
                     logo: $logo
                 )
             }
@@ -464,7 +464,7 @@ struct EditarContaView: View {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $mostrarSelecaoIcone) {
                 NavigationStack {
-                    ZoomIconeContaView(
+                    ZoomBancoView(
                         logo: $logo
                     )
                 }               
