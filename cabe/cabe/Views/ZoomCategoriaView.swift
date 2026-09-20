@@ -37,7 +37,7 @@ struct ZoomCategoriaView: View {
                     HStack {
                         if categoria.pai == nil {
                             Image(systemName: categoria.icone.systemName)
-                                .frame(width: 24, height: 24)
+                                .frame(width: 22, height: 22)
                                 .foregroundColor(categoria.cor)
 
                             Text(categoria.nome)
@@ -46,7 +46,7 @@ struct ZoomCategoriaView: View {
                         } else {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 10))
-                                .frame(width: 24)
+                                .frame(width: 22, height: 22)
                                 .foregroundColor(categoria.cor)
 
                             Text(categoria.nomeSubcategoria ?? "")
@@ -83,37 +83,25 @@ struct ZoomCategoriaView: View {
                 }
             }
         )
-        .ifAvailableSearchable(searchText: $searchText)
+        .searchable(
+            text: $searchText,
+            placement: .toolbar,
+            prompt: "Buscar"
+        )
+        .toolbar {
+            if #available(iOS 26.0, *) {
+                DefaultToolbarItem(
+                    kind: .search,
+                    placement: .bottomBar
+                )
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
-                }
-            }
-            if #available(iOS 26, *) {
-                ToolbarItemGroup(placement: .bottomBar) {
-                    HStack(spacing: 12) {
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.secondary)
-                            
-                            TextField("Buscar", text: $searchText)
-                        }
-                        .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-                        .clipShape(Capsule())
-                    }
-                    if !searchText.isEmpty {
-                        Spacer()
-                        Button {
-                            searchText = ""
-                            UIApplication.shared.endEditing()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
-                        .disabled(searchText.isEmpty)                        
-                    }
                 }
             }
         }

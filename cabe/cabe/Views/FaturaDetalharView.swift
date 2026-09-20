@@ -176,75 +176,44 @@ struct FaturaDetalharView: View {
         .navigationTitle("Fatura")
         .navigationBarTitleDisplayMode(.large)
         .toolbar(.hidden, for: .tabBar)
-        .ifAvailableSearchable(searchText: $searchText)
+        .searchable(
+            text: $searchText,
+            placement: .toolbar,
+            prompt: "Buscar"
+        )
         .toolbar {
-            if #available(iOS 26, *) {
-                ToolbarItemGroup(placement: .bottomBar) {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        
-                        TextField("Buscar", text: $searchText)
-                            .focused($searchFocused)
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .clipShape(Capsule())
-                    
-                    if !searchText.isEmpty {
-                        Spacer()
-                        Button {
-                            searchText = ""
-                            UIApplication.shared.endEditing()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
-                        .disabled(searchText.isEmpty)
-                    }
-                    if searchText.isEmpty {
-                        Spacer()
-                        Button {
+            if #available(iOS 26.0, *) {
+                DefaultToolbarItem(
+                    kind: .search,
+                    placement: .bottomBar
+                )
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                        if searchText.isEmpty {
                             mostrarNovaDespesa = true
-                        } label: {
-                            Image(systemName: "plus")
+                        } else {
+                            searchText = ""
                         }
+                    } label: {
+                        Image(systemName: searchText.isEmpty ? "plus" : "xmark")
                     }
                 }
             }
+        }
+        .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                    Section {
+                    Picker("Ordenação", selection: $ordemData) {
                         ForEach(OrdemData.allCases, id: \.self) { ordem in
-                            Button {
-                                ordemData = ordem
-                            } label: {
-                                HStack {
-                                    Text(ordem.titulo)
-
-                                    Spacer()
-
-                                    if ordemData == ordem {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
+                            Text(ordem.titulo)
+                                .tag(ordem)
                         }
                     }
-                    Section {
+                    Picker("Filtro", selection: $filtroSelecionado) {
                         ForEach(FiltroLancamentoFatura.allCases) { filtro in
-                            Button {
-                                filtroSelecionado = filtro
-                            } label: {
-                                HStack {
-                                    Text(filtro.titulo)
-
-                                    Spacer()
-
-                                    if filtroSelecionado == filtro {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
+                            Text(filtro.titulo)
+                                .tag(filtro)
                         }
                     }
                 } label: {

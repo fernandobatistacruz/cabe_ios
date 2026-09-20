@@ -27,7 +27,7 @@ struct LancamentoCartaoRow: View {
             Image(cartao.operadoraEnum.imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 24, height: 24)
+                .frame(width: 22, height: 22)
         
             VStack(alignment: .leading, spacing: 2) {
                 Text(cartao.nome)

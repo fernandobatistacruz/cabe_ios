@@ -233,38 +233,38 @@ struct LancamentoListView: View {
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                    Section {
+                    Picker("Tipo", selection: $filtroTipo) {
                         ForEach(FiltroTipo.allCases) { filtro in
-                            Button {
-                                filtroTipo = filtro
-                            } label: {
-                                HStack {
-                                    Text(filtro.titulo)
-                                    
-                                    Spacer()
-                                    
-                                    if filtroTipo == filtro {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
+                            Text(filtro.titulo)
+                                .tag(filtro)
                         }
-                    }
+                    }                    
                     Section {
                         ForEach(FiltroLancamento.allCases) { filtro in
-                            Button {
-                                toggleFiltroLancamento(filtro)
-                            } label: {
-                                HStack {
-                                    Text(filtro.titulo)
-                                    
-                                    Spacer()
-                                    
-                                    if filtrosSelecionados.contains(filtro) {
-                                        Image(systemName: "checkmark")
+                            Toggle(
+                                filtro.titulo,
+                                isOn: Binding(
+                                    get: {
+                                        filtrosSelecionados.contains(filtro)
+                                    },
+                                    set: { selecionado in
+                                        if selecionado {
+                                            if filtro == .todos {
+                                                filtrosSelecionados = [.todos]
+                                            } else {
+                                                filtrosSelecionados.remove(.todos)
+                                                filtrosSelecionados.insert(filtro)
+                                            }
+                                        } else {
+                                            filtrosSelecionados.remove(filtro)
+
+                                            if filtrosSelecionados.isEmpty {
+                                                filtrosSelecionados = [.todos]
+                                            }
+                                        }
                                     }
-                                }
-                            }
+                                )
+                            )
                         }
                     }
                 } label: {
@@ -518,25 +518,6 @@ struct LancamentoListView: View {
     
     private func excluir(_ lancamento: LancamentoModel) async {
         await viewModel.remover(id: lancamento.id ?? 0, uuid: lancamento.uuid)
-    }
-    
-    private func toggleFiltroLancamento(_ filtro: FiltroLancamento) {
-        if filtro == .todos {
-            filtrosSelecionados = [.todos]
-            return
-        }
-        
-        filtrosSelecionados.remove(.todos)
-        
-        if filtrosSelecionados.contains(filtro) {
-            filtrosSelecionados.remove(filtro)
-        } else {
-            filtrosSelecionados.insert(filtro)
-        }
-        
-        if filtrosSelecionados.isEmpty {
-            filtrosSelecionados = [.todos]
-        }
     }
 }
 

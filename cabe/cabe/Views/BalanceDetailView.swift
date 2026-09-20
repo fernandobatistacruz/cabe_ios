@@ -136,7 +136,7 @@ struct GastoRow: View {
                 .icone.systemName ?? "questionmark")
             .resizable()
             .scaledToFit()
-            .frame(width: 20, height: 20)
+            .frame(width: 22, height: 22)
             .foregroundColor(lancamento.categoria?.cor ?? .primary)
             
             VStack(alignment: .leading) {

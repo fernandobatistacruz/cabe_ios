@@ -126,7 +126,7 @@ struct LogoBancoView: View {
             Image(banco.imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 28, height: 28)
+                .frame(width: 22, height: 22)
         } else {
             Image(systemName: "building.columns.fill")
                 .resizable()

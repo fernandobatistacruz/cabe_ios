@@ -21,7 +21,7 @@ struct ZoomContaView: View {
                 Image(conta.bancoEnum.imageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 22, height: 22)
                 Text(conta.nome)
                 Spacer()
                 if conta.id == contaSelecionada?.id {

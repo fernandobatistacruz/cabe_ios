@@ -29,7 +29,7 @@ struct TabMenuView: View {
     @StateObject private var vmContas = ContaListViewModel(repository: ContaRepository())
     
     var body: some View {
-        if #available(iOS 18.0, *) {
+        if #available(iOS 26, *) {
             TabView (selection: $deepLinkManager.selectedTab) {
                 Tab("Início", systemImage: "text.rectangle.page.fill", value: TabItem.inicio) {
                     NavigationStack(path: $deepLinkManager.path) {
@@ -74,6 +74,7 @@ struct TabMenuView: View {
                     }
                 }
             }
+            .tabViewSearchActivation(.searchTabSelection)
         } else {
             TabView (selection: $deepLinkManager.selectedTab) {
                 NavigationStack(path: $deepLinkManager.path) {
