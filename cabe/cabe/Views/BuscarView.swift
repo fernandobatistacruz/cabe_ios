@@ -65,6 +65,11 @@ struct BuscarView<AtalhoDestino: View>: View {
             List {
                 Section {
                     if searchText.isEmpty {
+                        if #available(iOS 26, *) {
+                            Text("Buscar")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                        }
                         LazyVGrid(
                             columns: [
                                 GridItem(.flexible(), spacing: 10),
@@ -85,6 +90,7 @@ struct BuscarView<AtalhoDestino: View>: View {
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                 .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
 
                 Section {
                     ForEach(vm.resultados) { lancamento in
@@ -137,7 +143,7 @@ struct BuscarView<AtalhoDestino: View>: View {
                     .multilineTextAlignment(.center)
             }
         }
-        .navigationTitle("Buscar")
+        .navigationTitleForLegacyIOS("Buscar")
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Descrição ou Anotação")
         .onChange(of: searchText) {_, novoValor in
@@ -160,6 +166,17 @@ struct BuscarView<AtalhoDestino: View>: View {
                 titulo: atalho.titulo,
                 destino: destinoDoAtalho(atalho)
             )
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func navigationTitleForLegacyIOS(_ title: String) -> some View {
+        if #available(iOS 26, *) {
+            self
+        } else {
+            self.navigationTitle(title)
         }
     }
 }
