@@ -13,10 +13,10 @@ enum BuscarAtalho: CaseIterable, Hashable, Identifiable {
 
     var titulo: String {
         switch self {
-        case .cartao: "Cartões"
-        case .conta: "Contas"
-        case .categoria: "Categorias"
-        case .consumo: "Consumo"
+        case .cartao: String(localized:"Cartões")
+        case .conta: String(localized:"Contas")
+        case .categoria: String(localized:"Categorias")
+        case .consumo: String(localized:"Consumo")
         }
     }
 

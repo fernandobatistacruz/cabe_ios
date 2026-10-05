@@ -52,8 +52,7 @@ struct ResumoAnualView: View {
                     tempDate = Calendar.current.date(from: comps) ?? .now
                     showingYearPicker = true
                 } label: {
-                    Text("\(String(vm.anoSelecionado))")
-                        .font(.subheadline)
+                    Text("\(String(vm.anoSelecionado))")                       
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
