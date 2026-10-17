@@ -217,8 +217,7 @@ struct LancamentoListView: View {
             isPresented: $searchPresented,
             placement: .navigationBarDrawer(displayMode: .automatic),
             prompt: "Buscar"
-        )
-        //.searchable(text: $searchText, prompt: "Buscar")
+        )        
         .onAppear {
             selectedDate = Calendar.current.date(
                 from: DateComponents(
