@@ -13,6 +13,7 @@ struct LancamentoListView: View {
     @State private var filtrosSelecionados: Set<FiltroLancamento> = [.todos]
     @State var mostrarZoomCalendario: Bool = true
     @State private var searchText = ""
+    @State private var searchPresented = false
     @State private var mostrarNovoLancamento = false
     @State private var lancamentoParaExcluir: LancamentoModel?
     @State private var showCalendar = false
@@ -211,7 +212,13 @@ struct LancamentoListView: View {
             )
         )
         .navigationBarTitleDisplayMode(.large)
-        .searchable(text: $searchText, prompt: "Buscar")
+        .searchable(
+            text: $searchText,
+            isPresented: $searchPresented,
+            placement: .navigationBarDrawer(displayMode: .automatic),
+            prompt: "Buscar"
+        )
+        //.searchable(text: $searchText, prompt: "Buscar")
         .onAppear {
             selectedDate = Calendar.current.date(
                 from: DateComponents(

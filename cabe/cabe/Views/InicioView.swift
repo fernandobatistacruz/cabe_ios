@@ -97,16 +97,7 @@ struct InicioView: View {
                 } label: {
                     ZStack(alignment: .topTrailing) {
                         Image(systemName: "bell")
-                                              
-                        if vmLancamentos.totalNotificacoes > 0 {
-                            Text("\(vmLancamentos.totalNotificacoes)")
-                                .font(.caption)
-                                .foregroundColor(.white)
-                                .padding(4)
-                                .background(Color.red)
-                                .clipShape(Circle())
-                                .offset(x: 6, y: -5)
-                        }
+                            .badge(vmLancamentos.totalNotificacoes)
                     }
                 }
                 Button {
@@ -142,16 +133,6 @@ struct InicioView: View {
         .sheet(isPresented: $mostrarNovoLancamento) {
             LancamentoNovoView(repository: vmLancamentos.repository)
         }
-        
-    }
-}
-
-struct FloatingButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.92 : 1)
-            .animation(.spring(response: 0.25, dampingFraction: 0.6),
-                       value: configuration.isPressed)
     }
 }
 
